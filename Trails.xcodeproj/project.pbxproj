@@ -8,17 +8,23 @@
 
 /* Begin PBXBuildFile section */
 		0416F156299E91B000B90E68 /* TrailsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0416F155299E91B000B90E68 /* TrailsApp.swift */; };
-		0416F158299E91B000B90E68 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0416F157299E91B000B90E68 /* ContentView.swift */; };
 		0416F15A299E91B200B90E68 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0416F159299E91B200B90E68 /* Assets.xcassets */; };
-		0416F15D299E91B200B90E68 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0416F15C299E91B200B90E68 /* Preview Assets.xcassets */; };
+		0416F164299E91C300B90E68 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0416F163299E91C300B90E68 /* RootView.swift */; };
+		0416F166299E920B00B90E68 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0416F165299E920B00B90E68 /* MapView.swift */; };
+		0416F168299E921700B90E68 /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0416F167299E921700B90E68 /* ViewModel.swift */; };
+		0416F16A299E92B300B90E68 /* Trails.json in Resources */ = {isa = PBXBuildFile; fileRef = 0416F169299E92B300B90E68 /* Trails.json */; };
+		0416F16C299E930400B90E68 /* Trail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0416F16B299E930400B90E68 /* Trail.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		0416F152299E91B000B90E68 /* Trails.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Trails.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0416F155299E91B000B90E68 /* TrailsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailsApp.swift; sourceTree = "<group>"; };
-		0416F157299E91B000B90E68 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		0416F159299E91B200B90E68 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		0416F15C299E91B200B90E68 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		0416F163299E91C300B90E68 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		0416F165299E920B00B90E68 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
+		0416F167299E921700B90E68 /* ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModel.swift; sourceTree = "<group>"; };
+		0416F169299E92B300B90E68 /* Trails.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Trails.json; sourceTree = "<group>"; };
+		0416F16B299E930400B90E68 /* Trail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Trail.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,19 +58,14 @@
 			isa = PBXGroup;
 			children = (
 				0416F155299E91B000B90E68 /* TrailsApp.swift */,
-				0416F157299E91B000B90E68 /* ContentView.swift */,
+				0416F163299E91C300B90E68 /* RootView.swift */,
+				0416F165299E920B00B90E68 /* MapView.swift */,
+				0416F167299E921700B90E68 /* ViewModel.swift */,
+				0416F16B299E930400B90E68 /* Trail.swift */,
+				0416F169299E92B300B90E68 /* Trails.json */,
 				0416F159299E91B200B90E68 /* Assets.xcassets */,
-				0416F15B299E91B200B90E68 /* Preview Content */,
 			);
 			path = Trails;
-			sourceTree = "<group>";
-		};
-		0416F15B299E91B200B90E68 /* Preview Content */ = {
-			isa = PBXGroup;
-			children = (
-				0416F15C299E91B200B90E68 /* Preview Assets.xcassets */,
-			);
-			path = "Preview Content";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -125,7 +126,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0416F15D299E91B200B90E68 /* Preview Assets.xcassets in Resources */,
+				0416F16A299E92B300B90E68 /* Trails.json in Resources */,
 				0416F15A299E91B200B90E68 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -137,7 +138,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0416F158299E91B000B90E68 /* ContentView.swift in Sources */,
+				0416F164299E91C300B90E68 /* RootView.swift in Sources */,
+				0416F16C299E930400B90E68 /* Trail.swift in Sources */,
+				0416F166299E920B00B90E68 /* MapView.swift in Sources */,
+				0416F168299E921700B90E68 /* ViewModel.swift in Sources */,
 				0416F156299E91B000B90E68 /* TrailsApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -266,7 +270,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Trails/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 4CQW4CFFYT;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -295,7 +299,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Trails/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 4CQW4CFFYT;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;

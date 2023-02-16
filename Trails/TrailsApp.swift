@@ -11,7 +11,7 @@ import SwiftUI
 struct TrailsApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            RootView()
         }
     }
 }
