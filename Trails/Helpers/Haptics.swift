@@ -1,0 +1,26 @@
+//
+//  Haptics.swift
+//  Paddle
+//
+//  Created by Jack Finnis on 12/09/2022.
+//
+
+import UIKit
+
+struct Haptics {
+    static func tap() {
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+    }
+    
+    static func impact() {
+        UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+    }
+    
+    static func success() {
+        UINotificationFeedbackGenerator().notificationOccurred(.success)
+    }
+    
+    static func error() {
+        UINotificationFeedbackGenerator().notificationOccurred(.error)
+    }
+}

@@ -8,43 +8,72 @@
 import Foundation
 import MapKit
 import CoreData
+import SwiftUI
 
-class Trail: NSObject, MKOverlay, Codable {
+class Trail: NSObject, Identifiable {
     let id: Int
     let name: String
-    let start: String
-    let end: String
-    let metres: Double
+    let headline: String
+    let url: URL
+    let photoUrl: URL
+    let km: Int
+    let miles: Int
+    let metres: Int
+    let days: Int
     let lines: [[[Double]]]
+    let colour: Int
     
-    var formattedDistance: String { Measurement(value: metres, unit: UnitLength.meters).formatted() }
+    var color: Color {
+        switch colour {
+        case 1: return Color(.link)
+        case 2: return .purple
+        case 3: return .indigo
+        default: return .pink
+        }
+    }
     
-    lazy var linesCoords: [[CLLocationCoordinate2D]] = {
-        lines.map { $0.map { CLLocationCoordinate2DMake($0[0], $0[1]) }}
-    }()
-    lazy var linesLocations: [[CLLocation]] = {
-        linesCoords.map { $0.map { $0.location } }
-    }()
-    lazy var multiPolyline: MKMultiPolyline = {
-        MKMultiPolyline(linesCoords.map { MKPolyline(coordinates: $0, count: $0.count) })
-    }()
+    let linesCoords: [[CLLocationCoordinate2D]]
+    let linesLocations: [[CLLocation]]
+    let multiPolyline: MKMultiPolyline
     
+    init(lines: TrailLines, metadata: TrailMetadata) {
+        self.lines = lines.lines
+        id = metadata.id
+        name = metadata.name
+        headline = metadata.description
+        url = metadata.url
+        photoUrl = metadata.photoUrl
+        km = metadata.km
+        miles = metadata.miles
+        metres = metadata.metres
+        days = metadata.days
+        colour = metadata.colour
+        
+        linesCoords = lines.lines.map { $0.map { CLLocationCoordinate2DMake($0[0], $0[1]) }}
+        linesLocations = linesCoords.map { $0.map { $0.location } }
+        multiPolyline = MKMultiPolyline(linesCoords.map { MKPolyline(coordinates: $0, count: $0.count) })
+    }
+}
+
+extension Trail: MKOverlay {
     var coordinate: CLLocationCoordinate2D { multiPolyline.coordinate }
     var boundingMapRect: MKMapRect { multiPolyline.boundingMapRect }
 }
 
-@objc(Trip)
-class Trip: NSManagedObject, MKOverlay {
-    @NSManaged var line: [[Double]]
-    @NSManaged var id: Int
-    
-    lazy var lineCoords: [CLLocationCoordinate2D] = {
-        line.map { CLLocationCoordinate2DMake($0[0], $0[1]) }
-    }()
-    lazy var polyline: MKPolyline = {
-        MKPolyline(coordinates: lineCoords, count: lineCoords.count)
-    }()
-    
-    var coordinate: CLLocationCoordinate2D { polyline.coordinate }
-    var boundingMapRect: MKMapRect { polyline.boundingMapRect }
+struct TrailLines: Codable {
+    let id: Int
+    let lines: [[[Double]]]
+}
+
+struct TrailMetadata: Codable {
+    let id: Int
+    let name: String
+    let description: String
+    let url: URL
+    let photoUrl: URL
+    let km: Int
+    let miles: Int
+    let metres: Int
+    let days: Int
+    let colour: Int
 }
