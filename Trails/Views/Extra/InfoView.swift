@@ -17,37 +17,32 @@ struct InfoView: View {
     var body: some View {
         NavigationView {
             VStack(alignment: .leading, spacing: 0) {
-                VStack(spacing: 0) {
+                VStack(spacing: 10) {
                     Image("logo")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 70, height: 70)
                         .cornerRadius(15)
                         .shadow(color: .black.opacity(0.2), radius: 5)
-                        .padding(.bottom)
                     Text((welcome ? "Welcome to\n" : "") + NAME)
                         .font(.largeTitle.bold())
                         .multilineTextAlignment(.center)
                         .padding(.bottom, 5)
-                    if !welcome {
-                        Text("Version " + (Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""))
-                            .foregroundColor(.secondary)
-                    }
                 }
                 .horizontallyCentred()
-                .padding(.bottom, 30)
+                .padding(.bottom)
                 
                 // 5665712 metres
                 VStack(alignment: .leading, spacing: 20) {
                     InfoRow(systemName: "map", title: "Browse the National Trails", description: "The National Trails are 16 long-distance footpaths covering over \(metric ? "5,600 km" : "3,500 miles") of the most picturesque British countryside.")
                     InfoRow(systemName: "magnifyingglass", title: "Search Maps", description: "Find B&Bs, cafés, shops & more along your route.")
-                    InfoRow(systemName: "checkmark.circle", title: "Track Your Progress", description: "Mark sections of a trail as complete and see how far you have left to finish.")
+                    InfoRow(systemName: "checkmark.circle", title: "Track Your Progress", description: "Mark sections of a trail as complete.")
                     HStack {
                         Image(systemName: "ruler")
                             .font(.title)
                             .foregroundColor(.accentColor)
                             .frame(width: 50, height: 50)
-                        VStack(alignment: .leading, spacing: 10) {
+                        VStack(alignment: .leading, spacing: 5) {
                             Text("Distance Unit")
                                 .font(.headline)
                             Picker("", selection: $metric) {

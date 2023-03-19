@@ -38,7 +38,6 @@ struct SelectionBar: View {
                 Text((vm.selectMetres / (speed / 3600)).formattedInterval())
                     .font(.headline)
             }
-            .animation(.none)
             
             Spacer()
             HStack(spacing: 15) {

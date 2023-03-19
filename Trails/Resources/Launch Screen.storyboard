@@ -18,10 +18,10 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo_white" translatesAutoresizingMaskIntoConstraints="NO" id="KRL-dI-Fsj">
-                                <rect key="frame" x="136.66666666666666" y="366" width="119.99999999999997" height="120"/>
+                                <rect key="frame" x="96.666666666666686" y="326" width="200" height="200"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="120" id="MNH-ia-hvl"/>
-                                    <constraint firstAttribute="height" constant="120" id="zGy-Cr-njr"/>
+                                    <constraint firstAttribute="width" constant="200" id="MNH-ia-hvl"/>
+                                    <constraint firstAttribute="height" constant="200" id="zGy-Cr-njr"/>
                                 </constraints>
                             </imageView>
                         </subviews>
@@ -41,7 +41,7 @@
     <resources>
         <image name="logo_white" width="1024" height="1024"/>
         <namedColor name="LogoIndigo">
-            <color red="0.22745098039215686" green="0.29019607843137252" blue="0.50980392156862742" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.22699999809265137" green="0.28999999165534973" blue="0.50999999046325684" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>

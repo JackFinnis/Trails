@@ -50,6 +50,7 @@ struct WebUIView: UIViewRepresentable {
     func makeUIView(context: Context) -> WKWebView {
         let webView = WKWebView()
         webView.navigationDelegate = webVM
+        webView.isOpaque = false
         webVM.webView = webView
         return webView
     }

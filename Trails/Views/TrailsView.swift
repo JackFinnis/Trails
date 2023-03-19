@@ -21,9 +21,10 @@ struct TrailsView: View {
             List(filteredTrails) { trail in
                 Section {
                     TrailRow(showTrailsView: $showTrailsView, trail: trail, list: true)
+                        .background(Color.background)
                 }
             }
-            .navigationTitle("The Trails")
+            .navigationTitle("National Trails")
             .navigationBarTitleDisplayMode(.inline)
             .searchable(text: $text.animation(), placement: .navigationBarDrawer(displayMode: .always))
             .toolbar {

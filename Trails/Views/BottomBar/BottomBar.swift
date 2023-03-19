@@ -10,12 +10,15 @@ import MapKit
 
 struct BottomBar: View {
     @EnvironmentObject var vm: ViewModel
-    @State var offset = 0.0
     
     var body: some View {
         VStack(spacing: 10) {
             if let trail = vm.selectedTrail {
                 TrailRow(showTrailsView: .constant(false), trail: trail, list: false)
+                    .materialBackground()
+                    .dismissable(edge: .top) {
+                        vm.deselectTrail()
+                    }
             }
             Spacer()
             if vm.isSelecting || vm.isSearching {
@@ -32,26 +35,10 @@ struct BottomBar: View {
                 .frame(maxWidth: 500)
                 .transition(.move(edge: .bottom).combined(with: .opacity))
                 .offset(x: vm.noResults ? 20 : 0, y: 0)
-                .offset(x: 0, y: offset)
-                .opacity((100 - offset)/100)
-                .gesture(DragGesture()
-                    .onChanged { value in
-                        if value.translation.height > 0 {
-                            offset = value.translation.height
-                        }
-                    }
-                    .onEnded { value in
-                        if value.predictedEndTranslation.height > 50 {
-                            vm.stopSelecting()
-                            vm.stopSearching()
-                            offset = 0
-                        } else {
-                            withAnimation(.spring()) {
-                                offset = 0
-                            }
-                        }
-                    }
-                )
+                .dismissable(edge: .bottom) {
+                    vm.stopSelecting()
+                    vm.stopSearching()
+                }
             } else {
                 ActionButtons()
             }

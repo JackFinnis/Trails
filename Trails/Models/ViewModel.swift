@@ -27,7 +27,6 @@ class ViewModel: NSObject, ObservableObject {
             mapView?.addOverlays(trails, level: .aboveRoads)
         }
     }}
-    @Published var selectedAnnotation: Annotation?
     
     // Search Bar
     var searchBar: UISearchBar?
@@ -190,6 +189,7 @@ extension ViewModel {
                 let annotation = Annotation(type: .select, placemark: placemark, coord: coord)
                 self.annotations.append(annotation)
                 self.mapView?.addAnnotation(annotation)
+                self.mapView?.deselectAnnotation(annotation, animated: false)
                 
                 if self.annotations.count == 2 {
                     let coords = self.calculateLine(between: self.annotations[0].coordinate, and: self.annotations[1].coordinate)
@@ -200,6 +200,11 @@ extension ViewModel {
                 }
             }
         }
+    }
+    
+    func deselectTrail() {
+        selectedTrail = nil
+        stopSelecting()
     }
     
     func stopSelecting() {
@@ -266,8 +271,8 @@ extension ViewModel {
     }
     
     @objc
-    func handlePress(_ press: UIGestureRecognizer) {
-        guard selectedAnnotation == nil, let coord = getCoord(from: press) else { return }
+    func handlePress(_ press: UILongPressGestureRecognizer) {
+        guard press.state == .began, let coord = getCoord(from: press) else { return }
         reverseGeocode(coord: coord) { placemark in
             guard let placemark else { return }
             Haptics.tap()
@@ -278,12 +283,12 @@ extension ViewModel {
     }
     
     @objc
-    func handleTap(_ tap: UIGestureRecognizer) {
+    func handleTap(_ tap: UITapGestureRecognizer) {
         guard let coord = getCoord(from: tap) else { return }
         
         if isSelecting {
             newSelectCoord(coord)
-        } else if selectedAnnotation == nil {
+        } else if selectedTrail == nil {
             selectClosestTrail(to: coord)
         }
     }
@@ -340,13 +345,14 @@ extension ViewModel: MKMapViewDelegate {
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         if let annotation = annotation as? Annotation {
             let openButton = getButton(systemName: "arrow.triangle.turn.up.right.circle")
+            let removeButton = getButton(systemName: "xmark")
             switch annotation.type {
             case .select:
                 let pin = mapView.dequeueReusableAnnotationView(withIdentifier: MKPinAnnotationView.id, for: annotation) as? MKPinAnnotationView
                 pin?.displayPriority = .required
                 pin?.animatesDrop = true
                 pin?.rightCalloutAccessoryView = openButton
-                pin?.leftCalloutAccessoryView = getButton(systemName: "xmark")
+                pin?.leftCalloutAccessoryView = removeButton
                 pin?.canShowCallout = true
                 return pin
             case .search, .drop:
@@ -354,23 +360,14 @@ extension ViewModel: MKMapViewDelegate {
                 marker?.displayPriority = .required
                 marker?.animatesWhenAdded = true
                 marker?.rightCalloutAccessoryView = openButton
+                if annotation.type == .drop {
+                    marker?.leftCalloutAccessoryView = removeButton
+                }
                 marker?.canShowCallout = true
                 return marker
             }
         }
         return nil
-    }
-    
-    func mapView(_ mapView: MKMapView, didSelect annotation: MKAnnotation) {
-        selectedAnnotation = annotation as? Annotation
-    }
-    
-    func mapView(_ mapView: MKMapView, didDeselect annotation: MKAnnotation) {
-        guard let selectedAnnotation else { return }
-        if selectedAnnotation.type == .drop {
-            mapView.removeAnnotation(selectedAnnotation)
-        }
-        self.selectedAnnotation = nil
     }
     
     func mapView(_ mapView: MKMapView, didChange mode: MKUserTrackingMode, animated: Bool) {
@@ -382,9 +379,14 @@ extension ViewModel: MKMapViewDelegate {
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
         guard let annotation = view.annotation as? Annotation else { return }
         if control == view.leftCalloutAccessoryView {
-            annotations.removeAll { $0 == annotation }
-            mapView.removeAnnotation(annotation)
-            removeSelectPolyline()
+            if annotation.type == .drop {
+                mapView.deselectAnnotation(annotation, animated: true)
+                mapView.removeAnnotation(annotation)
+            } else {
+                annotations.removeAll { $0 == annotation }
+                mapView.removeAnnotation(annotation)
+                removeSelectPolyline()
+            }
         } else {
             annotation.openInMaps()
         }
