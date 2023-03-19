@@ -46,6 +46,7 @@ struct BottomBar: View {
         .animation(.default, value: vm.isSearching)
         .animation(.default, value: vm.isSelecting)
         .animation(.default, value: vm.selectedTrail)
+        .animation(.default, value: vm.selectPolyline)
         .padding(10)
     }
 }

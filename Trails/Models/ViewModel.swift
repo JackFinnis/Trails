@@ -27,6 +27,7 @@ class ViewModel: NSObject, ObservableObject {
             mapView?.addOverlays(selectedTrips, level: .aboveRoads)
             calculateCompletedMetres()
         } else {
+            mapView?.removeOverlays(trips)
             mapView?.addOverlays(trails, level: .aboveRoads)
         }
         updateLayoutMargins()
@@ -44,8 +45,8 @@ class ViewModel: NSObject, ObservableObject {
     @Published var selectPolyline: MKPolyline?
     @Published var selectMetres = 0.0
     @Published var selectError = false
+    @Published var canUncomplete = false
     @Published var selectPins = [Annotation]()
-    @Published var showCompletedAlert = false
     @Published var isSelecting = false { didSet {
         updateLayoutMargins()
     }}
@@ -56,6 +57,10 @@ class ViewModel: NSObject, ObservableObject {
     @Published var scale = 1.0
     
     // Defaults
+    @Published var showCompletedAlert = false
+    @Defaults("completedTrails") var completedTrails = [Int16]() { didSet {
+        objectWillChange.send()
+    }}
     @Defaults("expand") var expand = false { didSet {
         updateLayoutMargins()
         objectWillChange.send()
@@ -84,6 +89,7 @@ class ViewModel: NSObject, ObservableObject {
         super.init()
         manager.delegate = self
         loadData()
+        completedTrails = []
     }
     
     func loadJSON<T: Decodable>(from file: String) -> T {
@@ -104,8 +110,12 @@ class ViewModel: NSObject, ObservableObject {
         
         container.loadPersistentStores { description, error in
             self.deleteAll(entityName: "Trip")
-            self.trips = (try? self.container.viewContext.fetch(Trip.fetchRequest()) as? [Trip]) ?? []
+            self.loadTrips()
         }
+    }
+    
+    func loadTrips() {
+        self.trips = (try? self.container.viewContext.fetch(Trip.fetchRequest()) as? [Trip]) ?? []
     }
     
     func deleteAll(entityName: String) {
@@ -266,12 +276,20 @@ extension ViewModel {
                 
                 if self.selectPins.count == 2 {
                     let coords = self.calculateLine(between: self.selectPins[0].coordinate, and: self.selectPins[1].coordinate)
-                    self.selectError = coords.isEmpty
+                    
+                    self.selectError = coords.count < 2
                     guard !self.selectError else { self.shakeError(); return }
+                    
+                    guard let start = coords.first, let end = coords.last else { return }
+                    let tripCoords = self.selectedTrips.flatMap(\.lineCoords)
+                    self.canUncomplete = tripCoords.contains(start) || tripCoords.contains(end)
+                    print(self.canUncomplete)
+                    
                     self.selectPolyline = MKPolyline(coordinates: coords, count: coords.count)
                     self.mapView?.addOverlay(self.selectPolyline!, level: .aboveRoads)
                     self.selectMetres = coords.getDistance()
                     self.zoomTo(self.selectPolyline, extraPadding: true)
+                    Haptics.tap()
                 }
             }
         }
@@ -338,12 +356,25 @@ extension ViewModel {
         stopSelecting()
         calculateCompletedMetres()
         
-        if Int(completedMetres/1000) == Int(selectedTrail.metres/1000) {
+        if Int(completedMetres/1000) == Int(selectedTrail.metres/1000) && !completedTrails.contains(selectedTrail.id) {
             Haptics.success()
+            completedTrails.append(selectedTrail.id)
             showCompletedAlert = true
         } else {
             Haptics.tap()
         }
+    }
+    
+    func uncompleteSelectPolyline() {
+//        let line = selectPolyline?.coordinates ?? []
+//        for trip in selectedTrips {
+//            trip.line.removeAll { line.contains(CLLocationCoordinate2DMake($0[0], $0[1])) }
+//        }
+//        save()
+//        loadTrips()
+//        refreshOverlays()
+//        calculateCompletedMetres()
+        stopSelecting()
     }
 }
 
@@ -393,9 +424,16 @@ extension ViewModel: CLLocationManagerDelegate {
         showAuthError = authStatus == .denied
         return !showAuthError
     }
+}
+
+// MARK: - MKMapViewDelegate
+extension ViewModel: MKMapViewDelegate {
+    var darkMode: Bool {
+        UITraitCollection.current.userInterfaceStyle == .dark || mapView?.mapType == .hybrid
+    }
     
-    func getColor(trail: Trail, mapView: MKMapView) -> Color {
-        if UITraitCollection.current.userInterfaceStyle == .dark || mapView.mapType == .hybrid {
+    func getColor(of trail: Trail) -> Color {
+        if darkMode {
             switch trail.colour {
             case 1: return Color(.link)
             case 2: return .cyan
@@ -411,21 +449,17 @@ extension ViewModel: CLLocationManagerDelegate {
             }
         }
     }
-}
-
-// MARK: - MKMapViewDelegate
-extension ViewModel: MKMapViewDelegate {
+    
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
         if let trail = overlay as? Trail {
             let renderer = MKMultiPolylineRenderer(multiPolyline: trail.multiPolyline)
             renderer.lineWidth = 2
-            renderer.strokeColor = UIColor(getColor(trail: trail, mapView: mapView))
+            renderer.strokeColor = UIColor(getColor(of: trail))
             return renderer
         } else if let trip = overlay as? Trip {
-            guard let trail = trails.first(where: { $0.id == trip.trailID }) else { return MKOverlayRenderer(overlay: overlay) }
             let renderer = MKPolylineRenderer(polyline: trip.polyline)
-            renderer.lineWidth = 2
-            renderer.strokeColor = UIColor(getColor(trail: trail, mapView: mapView)).darker() ?? .black
+            renderer.lineWidth = 2.1
+            renderer.strokeColor = darkMode ? .white : .black
             return renderer
         } else if let polyline = overlay as? MKPolyline {
             let renderer = MKPolylineRenderer(polyline: polyline)
@@ -519,13 +553,13 @@ extension ViewModel: UISearchBarDelegate {
             if success {
                 searchBar.resignFirstResponder()
             } else {
-                Haptics.error()
                 self.shakeError()
             }
         }
     }
     
     func shakeError() {
+        Haptics.error()
         self.shake = true
         withAnimation(.spring(response: 0.2, dampingFraction: 0.2, blendDuration: 0.2)) {
             self.shake = false

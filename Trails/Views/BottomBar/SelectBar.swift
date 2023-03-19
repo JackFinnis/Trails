@@ -15,7 +15,7 @@ struct SelectBar: View {
             VStack(alignment: .leading) {
                 Text("Select a Section")
                     .font(.headline)
-                Text(vm.selectError ? "Unable to select section. Please try again." : ("Tap on the \(vm.selectPins.isEmpty ? "start" : "end") location"))
+                Text(vm.selectError ? "Unable to select section. Please try again." : ("Tap on the \(vm.selectPins.isEmpty ? "start" : "end") point"))
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             }

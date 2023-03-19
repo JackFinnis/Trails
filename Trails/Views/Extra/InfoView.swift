@@ -34,7 +34,7 @@ struct InfoView: View {
                 
                 // 5665712 metres
                 VStack(alignment: .leading, spacing: 20) {
-                    InfoRow(systemName: "map", title: "Browse the National Trails", description: "The National Trails are 16 long-distance footpaths covering over \(metric ? "5,600 km" : "3,500 miles") of the most picturesque British countryside.")
+                    InfoRow(systemName: "map", title: "Browse the National Trails", description: "The National Trails are 16 long-distance footpaths covering over \(vm.metric ? "5,600 km" : "3,500 miles") of the most picturesque British countryside.")
                     InfoRow(systemName: "magnifyingglass", title: "Search Maps", description: "Find B&Bs, cafés, shops & more along your route.")
                     InfoRow(systemName: "checkmark.circle", title: "Track Your Progress", description: "Mark sections of a trail as complete.")
                     HStack {

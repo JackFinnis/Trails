@@ -64,6 +64,13 @@ struct SelectionBar: View {
                     } label: {
                         Label("Mark as Completed", systemImage: "checkmark.circle")
                     }
+                    if vm.canUncomplete {
+                        Button(role: .destructive) {
+                            vm.uncompleteSelectPolyline()
+                        } label: {
+                            Label("Mark as Uncompleted", systemImage: "xmark")
+                        }
+                    }
                 } label: {
                     Image(systemName: "ellipsis.circle")
                         .iconFont()
