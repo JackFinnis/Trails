@@ -10,30 +10,40 @@ import MapKit
 
 struct ActionButtons: View {
     @EnvironmentObject var vm: ViewModel
-    @AppStorage("launchedBefore") var launchedBefore = false
     @State var showInfoView = false
-    @State var welcome = false
+    @State var showTrailsView = false
     
     var body: some View {
         HStack {
             HStack(spacing: 0) {
                 Button {
+                    showInfoView = true
+                } label: {
+                    Image(systemName: "info.circle")
+                        .squareButton()
+                }
+                .popover(isPresented: $showInfoView) {
+                    InfoView(welcome: false)
+                        .frame(idealWidth: 400, idealHeight: 700)
+                }
+                
+                Divider().frame(height: SIZE)
+                Button {
                     updateMapType()
                 } label: {
                     Image(systemName: mapTypeImage)
-                        .frame(width: SIZE, height: SIZE)
+                        .squareButton()
                         .rotation3DEffect(.degrees(vm.mapType == .standard ? 0 : 180), axis: (x: 0, y: 1, z: 0))
                         .rotation3DEffect(.degrees(vm.degrees), axis: (x: 0, y: 1, z: 0))
                 }
                 
                 Divider().frame(height: SIZE)
-                
                 Button {
                     updateTrackingMode()
                 } label: {
                     Image(systemName: trackingModeImage)
-                        .frame(width: SIZE, height: SIZE)
                         .scaleEffect(vm.scale)
+                        .squareButton()
                 }
             }
             .materialBackground()
@@ -44,39 +54,18 @@ struct ActionButtons: View {
                     vm.isSearching = true
                 } label: {
                     Image(systemName: "magnifyingglass")
-                        .frame(width: SIZE, height: SIZE)
+                        .squareButton()
                 }
                 
                 Divider().frame(height: SIZE)
-                
-                Menu {
-                    Button {
-                        showInfoView = true
-                    } label: {
-                        Image(systemName: "info.circle")
-                            .frame(width: SIZE, height: SIZE)
-                    }
-                    .onAppear {
-                        if !launchedBefore {
-                            launchedBefore = true
-                            welcome = true
-                            showInfoView = true
-                        }
-                    }
-                    .popover(isPresented: $showInfoView) {
-                        InfoView(welcome: welcome)
-                            .frame(idealWidth: 400, idealHeight: 700)
-                            .font(nil)
-                    }
-                    
-                    Button {
-                        vm.isSelecting = true
-                    } label: {
-                        Label("Select section", systemImage: "cursor")
-                    }
+                Button {
+                    showTrailsView = true
                 } label: {
-                    Image(systemName: "ellipsis.circle")
-                        .frame(width: SIZE, height: SIZE)
+                    Image(systemName: "list.bullet")
+                        .squareButton()
+                }
+                .sheet(isPresented: $showTrailsView) {
+                    TrailsView(showTrailsView: $showTrailsView)
                 }
             }
             .materialBackground()

@@ -8,9 +8,16 @@
 import SwiftUI
 
 struct DistanceLabel: View {
+    @AppStorage("metric") var metric = true
+    
     let metres: Double
     
+    var formattedDistance: String {
+        let value = metres / (metric ? 1000 : 1609.34)
+        return String(format: "%.1f", value) + (metric ? " km" : " miles")
+    }
+    
     var body: some View {
-        Text(Measurement(value: metres, unit: UnitLength.meters).formatted())
+        Text(formattedDistance)
     }
 }

@@ -11,21 +11,25 @@ struct SelectBar: View {
     @EnvironmentObject var vm: ViewModel
     
     var body: some View {
-        HStack(spacing: 0) {
-            Text(vm.showSelectError ? "Tap on a pin to reposition it" : "Tap on the start and end locations")
-                .font(.subheadline)
-                .padding(.horizontal)
+        HStack {
+            VStack(alignment: .leading) {
+                Text("Select a Trip")
+                    .font(.headline)
+                Text("Tap on the \(vm.annotations.isEmpty ? "start" : "end") location")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            }
             
             Spacer()
-            
-            Divider().frame(height: SIZE)
             Button {
                 vm.stopSelecting()
             } label: {
                 Image(systemName: "xmark")
-                    .frame(width: SIZE, height: SIZE)
+                    .font(.title2)
             }
         }
+        .padding(10)
+        .padding(.trailing, 5)
     }
 }
 

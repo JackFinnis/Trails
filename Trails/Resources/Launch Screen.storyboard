@@ -26,7 +26,7 @@
                             </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Bcu-3y-fUS"/>
-                        <color key="backgroundColor" name="OakGreen"/>
+                        <color key="backgroundColor" name="LogoIndigo"/>
                         <constraints>
                             <constraint firstItem="KRL-dI-Fsj" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="Cjo-7G-jhm"/>
                             <constraint firstItem="KRL-dI-Fsj" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="S96-cX-iX0"/>
@@ -40,8 +40,8 @@
     </scenes>
     <resources>
         <image name="logo_white" width="1024" height="1024"/>
-        <namedColor name="OakGreen">
-            <color red="0.36470588235294116" green="0.54509803921568623" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        <namedColor name="LogoIndigo">
+            <color red="0.22745098039215686" green="0.29019607843137252" blue="0.50980392156862742" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>

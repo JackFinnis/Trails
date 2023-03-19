@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct InfoView: View {
+    @AppStorage("metric") var metric = true
     @Environment(\.dismiss) var dismiss
     @State var showShareSheet = false
     
@@ -22,6 +23,7 @@ struct InfoView: View {
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 70, height: 70)
                         .cornerRadius(15)
+                        .shadow(color: .black.opacity(0.2), radius: 5)
                         .padding(.bottom)
                     Text((welcome ? "Welcome to\n" : "") + NAME)
                         .font(.largeTitle.bold())
@@ -35,10 +37,31 @@ struct InfoView: View {
                 .horizontallyCentred()
                 .padding(.bottom, 30)
                 
-                InfoRow(systemName: "map", title: "Browse all your Routes", description: "See all your routes stored in the Health App on one map.")
-                InfoRow(systemName: "record.circle", title: "Record Workouts", description: "Record runs, walks and cycles and see your route update live.")
-                InfoRow(systemName: "line.3.horizontal.decrease.circle", title: "Filter Workouts", description: "Filter the workouts shown on the map by date and type.")
-                Spacer()
+                // 5665712 metres
+                VStack(alignment: .leading, spacing: 20) {
+                    InfoRow(systemName: "map", title: "Browse the National Trails", description: "The National Trails are 16 long-distance footpaths covering over \(metric ? "5,600 km" : "3,500 miles") of the most picturesque British countryside.")
+                    InfoRow(systemName: "magnifyingglass", title: "Search Maps", description: "Find B&Bs, cafés, shops & more along your route.")
+                    InfoRow(systemName: "checkmark.circle", title: "Track Your Progress", description: "Mark sections of a trail as complete and see how far you have left to finish.")
+                    HStack {
+                        Image(systemName: "ruler")
+                            .font(.title)
+                            .foregroundColor(.accentColor)
+                            .frame(width: 50, height: 50)
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("Distance Unit")
+                                .font(.headline)
+                            Picker("", selection: $metric) {
+                                Text("Kilometres")
+                                    .tag(true)
+                                Text("Miles")
+                                    .tag(false)
+                            }
+                            .pickerStyle(.segmented)
+                            .labelsHidden()
+                        }
+                    }
+                }
+                Spacer(minLength: 0)
                 
                 if welcome {
                     Button {
@@ -106,7 +129,7 @@ struct InfoView_Previews: PreviewProvider {
     static var previews: some View {
         Text("")
             .sheet(isPresented: .constant(true)) {
-                InfoView(welcome: true)
+                InfoView(welcome: false)
             }
     }
 }
@@ -128,7 +151,7 @@ struct InfoRow: View {
                 Text(description)
                     .foregroundColor(.secondary)
             }
+            Spacer(minLength: 0)
         }
-        .padding(.vertical)
     }
 }
