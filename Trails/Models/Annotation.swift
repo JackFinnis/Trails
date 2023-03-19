@@ -14,7 +14,7 @@ class Annotation: NSObject, MKAnnotation {
     let placemark: CLPlacemark
     
     var title: String? { placemark.name }
-    var subtitle: String?  { placemark.locality }
+    var subtitle: String?  { placemark.subLocality }
     var coordinate: CLLocationCoordinate2D { coord }
     
     init(type: AnnotationType, placemark: CLPlacemark, coord: CLLocationCoordinate2D) {

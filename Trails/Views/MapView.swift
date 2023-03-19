@@ -14,8 +14,10 @@ struct MapView: UIViewRepresentable {
     func makeUIView(context: Context) -> MKMapView {
         let mapView = MKMapView()
         mapView.delegate = vm
-        mapView.addOverlays(vm.trails, level: .aboveRoads)
         vm.mapView = mapView
+        mapView.addOverlays(vm.trails, level: .aboveRoads)
+        vm.zoomTo(MKMultiPolyline(vm.trails.flatMap(\.multiPolyline.polylines)))
+        vm.updateLayoutMargins()
         
         mapView.showsUserLocation = true
         mapView.showsScale = true
@@ -24,6 +26,7 @@ struct MapView: UIViewRepresentable {
         
         mapView.register(MKPinAnnotationView.self, forAnnotationViewWithReuseIdentifier: MKPinAnnotationView.id)
         mapView.register(MKMarkerAnnotationView.self, forAnnotationViewWithReuseIdentifier: MKMarkerAnnotationView.id)
+        mapView.register(MKUserLocationView.self, forAnnotationViewWithReuseIdentifier: MKUserLocationView.id)
         
         let tapRecognizer = UITapGestureRecognizer(target: vm, action: #selector(ViewModel.handleTap))
         let pressRecognizer = UILongPressGestureRecognizer(target: vm, action: #selector(ViewModel.handlePress))

@@ -10,9 +10,10 @@ import CoreData
 import MapKit
 
 @objc(Trip)
-class Trip: NSManagedObject, MKOverlay {
+class Trip: NSManagedObject {
+    @NSManaged var id: UUID
+    @NSManaged var trailID: Int16
     @NSManaged var line: [[Double]]
-    @NSManaged var id: Int
     
     lazy var lineCoords: [CLLocationCoordinate2D] = {
         line.map { CLLocationCoordinate2DMake($0[0], $0[1]) }
@@ -20,7 +21,9 @@ class Trip: NSManagedObject, MKOverlay {
     lazy var polyline: MKPolyline = {
         MKPolyline(coordinates: lineCoords, count: lineCoords.count)
     }()
-    
+}
+
+extension Trip: MKOverlay {
     var coordinate: CLLocationCoordinate2D { polyline.coordinate }
     var boundingMapRect: MKMapRect { polyline.boundingMapRect }
 }

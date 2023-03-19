@@ -11,26 +11,15 @@ import CoreData
 import SwiftUI
 
 class Trail: NSObject, Identifiable {
-    let id: Int
+    let id: Int16
     let name: String
     let headline: String
     let url: URL
     let photoUrl: URL
-    let km: Int
-    let miles: Int
-    let metres: Int
+    let metres: Double
     let days: Int
     let lines: [[[Double]]]
     let colour: Int
-    
-    var color: Color {
-        switch colour {
-        case 1: return Color(.link)
-        case 2: return .purple
-        case 3: return .indigo
-        default: return .pink
-        }
-    }
     
     let linesCoords: [[CLLocationCoordinate2D]]
     let linesLocations: [[CLLocation]]
@@ -43,8 +32,6 @@ class Trail: NSObject, Identifiable {
         headline = metadata.description
         url = metadata.url
         photoUrl = metadata.photoUrl
-        km = metadata.km
-        miles = metadata.miles
         metres = metadata.metres
         days = metadata.days
         colour = metadata.colour
@@ -66,14 +53,14 @@ struct TrailLines: Codable {
 }
 
 struct TrailMetadata: Codable {
-    let id: Int
+    let id: Int16
     let name: String
     let description: String
     let url: URL
     let photoUrl: URL
     let km: Int
     let miles: Int
-    let metres: Int
+    let metres: Double
     let days: Int
     let colour: Int
 }

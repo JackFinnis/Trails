@@ -27,6 +27,7 @@
 		0416F1B6299F02AA00B90E68 /* Trails.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0416F1B4299F02AA00B90E68 /* Trails.xcdatamodeld */; };
 		0416F1BD29A1692100B90E68 /* NSObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0416F1BC29A1692100B90E68 /* NSObject.swift */; };
 		0455AFFB29C6BD380096C8B6 /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0455AFFA29C6BD380096C8B6 /* Color.swift */; };
+		0455AFFD29C78C030096C8B6 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0455AFFC29C78C030096C8B6 /* UIColor.swift */; };
 		04626BF529C1E086004880E3 /* Metadata.json in Resources */ = {isa = PBXBuildFile; fileRef = 04626BF329C1E085004880E3 /* Metadata.json */; };
 		04626BF829C1E183004880E3 /* Trip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04626BF729C1E183004880E3 /* Trip.swift */; };
 		04626BFA29C24297004880E3 /* Annotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04626BF929C24297004880E3 /* Annotation.swift */; };
@@ -42,7 +43,6 @@
 		04CEDFCD29A2E50700810005 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04CEDFCA29A2E50700810005 /* Store.swift */; };
 		04CEDFDB29A2E60400810005 /* InfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04CEDFDA29A2E60400810005 /* InfoView.swift */; };
 		04CEDFDD29A2E66200810005 /* DismissCross.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04CEDFDC29A2E66200810005 /* DismissCross.swift */; };
-		04CEDFDF29A2E67400810005 /* DistanceLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04CEDFDE29A2E67400810005 /* DistanceLabel.swift */; };
 		04CEDFE129A2EADB00810005 /* SelectionBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04CEDFE029A2EADB00810005 /* SelectionBar.swift */; };
 		04CEDFE329A2EB6900810005 /* SelectBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04CEDFE229A2EB6900810005 /* SelectBar.swift */; };
 		04CEDFE529A2EC3500810005 /* ActionButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04CEDFE429A2EC3500810005 /* ActionButtons.swift */; };
@@ -70,6 +70,7 @@
 		0416F1B5299F02AA00B90E68 /* Trails.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Trails.xcdatamodel; sourceTree = "<group>"; };
 		0416F1BC29A1692100B90E68 /* NSObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSObject.swift; sourceTree = "<group>"; };
 		0455AFFA29C6BD380096C8B6 /* Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Color.swift; sourceTree = "<group>"; };
+		0455AFFC29C78C030096C8B6 /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		04626BF329C1E085004880E3 /* Metadata.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Metadata.json; sourceTree = "<group>"; };
 		04626BF729C1E183004880E3 /* Trip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Trip.swift; sourceTree = "<group>"; };
 		04626BF929C24297004880E3 /* Annotation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Annotation.swift; sourceTree = "<group>"; };
@@ -85,7 +86,6 @@
 		04CEDFCA29A2E50700810005 /* Store.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
 		04CEDFDA29A2E60400810005 /* InfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoView.swift; sourceTree = "<group>"; };
 		04CEDFDC29A2E66200810005 /* DismissCross.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DismissCross.swift; sourceTree = "<group>"; };
-		04CEDFDE29A2E67400810005 /* DistanceLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DistanceLabel.swift; sourceTree = "<group>"; };
 		04CEDFE029A2EADB00810005 /* SelectionBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionBar.swift; sourceTree = "<group>"; };
 		04CEDFE229A2EB6900810005 /* SelectBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectBar.swift; sourceTree = "<group>"; };
 		04CEDFE429A2EC3500810005 /* ActionButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionButtons.swift; sourceTree = "<group>"; };
@@ -151,6 +151,7 @@
 				0416F174299EF9FC00B90E68 /* CLLocationCoordinate2D.swift */,
 				0416F175299EF9FC00B90E68 /* Double.swift */,
 				0416F1BC29A1692100B90E68 /* NSObject.swift */,
+				0455AFFC29C78C030096C8B6 /* UIColor.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -184,7 +185,6 @@
 			isa = PBXGroup;
 			children = (
 				04CEDFDA29A2E60400810005 /* InfoView.swift */,
-				04CEDFDE29A2E67400810005 /* DistanceLabel.swift */,
 				04CEDFC329A2E4DA00810005 /* DraggableBar.swift */,
 				04CEDFDC29A2E66200810005 /* DismissCross.swift */,
 				0416F195299EFB9C00B90E68 /* ShareView.swift */,
@@ -306,6 +306,7 @@
 				0416F1A7299EFB9D00B90E68 /* SearchBar.swift in Sources */,
 				0416F1A9299EFB9D00B90E68 /* Blur.swift in Sources */,
 				0416F1A3299EFB9D00B90E68 /* RootView.swift in Sources */,
+				0455AFFD29C78C030096C8B6 /* UIColor.swift in Sources */,
 				04CEDFCB29A2E50700810005 /* Defaults.swift in Sources */,
 				0416F17A299EF9FC00B90E68 /* CLLocationCoordinate2D.swift in Sources */,
 				04626BF829C1E183004880E3 /* Trip.swift in Sources */,
@@ -322,7 +323,6 @@
 				0416F179299EF9FC00B90E68 /* MKMultiPoint.swift in Sources */,
 				0416F17B299EF9FC00B90E68 /* Double.swift in Sources */,
 				04CEDFE529A2EC3500810005 /* ActionButtons.swift in Sources */,
-				04CEDFDF29A2E67400810005 /* DistanceLabel.swift in Sources */,
 				04CEDFE329A2EB6900810005 /* SelectBar.swift in Sources */,
 				0416F1A2299EFB9D00B90E68 /* MapView.swift in Sources */,
 				0416F1A1299EFB9D00B90E68 /* BottomBar.swift in Sources */,

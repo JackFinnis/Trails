@@ -7,59 +7,81 @@
 
 import SwiftUI
 import MapKit
+import CoreLocation
 
 struct SelectionBar: View {
     @EnvironmentObject var vm: ViewModel
-    @AppStorage("metric") var metric = true
     @AppStorage("speed") var speed = 4000.0
+    @State var tappedMenu = Date.now
     
     let polyline: MKPolyline
     
+    var description: String {
+        guard vm.selectPins.count == 2 else { return "" }
+        let start = vm.selectPins[0]
+        let end = vm.selectPins[1]
+        return (start.placemark.subLocality ?? start.placemark.name ?? "") + " to " + (end.placemark.subLocality ?? end.placemark.name ?? "")
+    }
+    
     var body: some View {
-        HStack(spacing: 0) {
-            DistanceLabel(metres: vm.selectMetres)
-                .font(.headline)
-            Text(" • ")
-            Menu {
-                Picker("Speed", selection: $speed) {
-                    if metric {
-                        ForEach([3.0, 3.5, 4.0, 4.5, 5.0], id: \.self) { kmh in
-                            Text(String(format: "%.1f", kmh) + " kmh")
-                                .tag(kmh * 1000)
+        HStack {
+            VStack(alignment: .leading, spacing: 3) {
+                HStack(spacing: 0) {
+                    Text(vm.formatDistance(vm.selectMetres, showUnit: true, round: false) + " • ")
+                    Menu {
+                        Picker("Speed", selection: $speed) {
+                            if vm.metric {
+                                ForEach([3.0, 3.5, 4.0, 4.5, 5.0], id: \.self) { kmh in
+                                    Text(String(format: "%.1f", kmh) + " kmh")
+                                        .tag(kmh * 1000)
+                                }
+                            } else {
+                                ForEach([1.9, 2.2, 2.5, 2.8, 3.1], id: \.self) { mph in
+                                    Text(String(format: "%.1f", mph) + " mph")
+                                        .tag(mph * 1609.34)
+                                }
+                            }
                         }
-                    } else {
-                        ForEach([1.9, 2.2, 2.5, 2.8, 3.1], id: \.self) { mph in
-                            Text(String(format: "%.1f", mph) + " mph")
-                                .tag(mph * 1609.34)
-                        }
+                    } label: {
+                        Text((vm.selectMetres / (speed / 3600)).formattedInterval())
+                    }
+                    .animation(.none)
+                    .onTapGesture {
+                        tappedMenu = .now
                     }
                 }
-            } label: {
-                Text((vm.selectMetres / (speed / 3600)).formattedInterval())
-                    .font(.headline)
+                .font(.headline)
+                Text(description)
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
             }
             
             Spacer()
             HStack(spacing: 15) {
-                Button {
-                    vm.completeSelectPolyline()
+                Menu {
+                    Button {
+                        vm.completeSelectPolyline()
+                    } label: {
+                        Label("Mark as Completed", systemImage: "checkmark.circle")
+                    }
                 } label: {
-                    Image(systemName: "checkmark.circle")
-                        .font(.title2)
+                    Image(systemName: "ellipsis.circle")
+                        .iconFont()
                 }
                 Button {
                     vm.stopSelecting()
                 } label: {
                     Image(systemName: "xmark")
-                        .font(.title2)
+                        .iconFont()
                 }
             }
         }
         .padding(10)
         .padding(.trailing, 5)
-        .frame(height: SIZE)
+        .contentShape(Rectangle())
         .onTapGesture {
-            vm.zoomTo(polyline)
+            guard tappedMenu.distance(to: .now) > 1 else { return }
+            vm.zoomTo(polyline, extraPadding: true)
         }
     }
 }

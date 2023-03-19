@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct InfoView: View {
-    @AppStorage("metric") var metric = true
+    @EnvironmentObject var vm: ViewModel
     @Environment(\.dismiss) var dismiss
     @State var showShareSheet = false
     
@@ -45,7 +45,7 @@ struct InfoView: View {
                         VStack(alignment: .leading, spacing: 5) {
                             Text("Distance Unit")
                                 .font(.headline)
-                            Picker("", selection: $metric) {
+                            Picker("", selection: $vm.metric) {
                                 Text("Kilometres")
                                     .tag(true)
                                 Text("Miles")
@@ -125,6 +125,7 @@ struct InfoView_Previews: PreviewProvider {
         Text("")
             .sheet(isPresented: .constant(true)) {
                 InfoView(welcome: false)
+                    .environmentObject(ViewModel())
             }
     }
 }

@@ -13,9 +13,9 @@ struct SelectBar: View {
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
-                Text("Select a Trip")
+                Text("Select a Section")
                     .font(.headline)
-                Text("Tap on the \(vm.annotations.isEmpty ? "start" : "end") location")
+                Text(vm.selectError ? "Unable to select section. Please try again." : ("Tap on the \(vm.selectPins.isEmpty ? "start" : "end") location"))
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             }
@@ -30,6 +30,7 @@ struct SelectBar: View {
         }
         .padding(10)
         .padding(.trailing, 5)
+        
     }
 }
 

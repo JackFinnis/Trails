@@ -20,7 +20,7 @@ struct Background: ViewModifier {
     }
 }
 
-struct Dismissable: ViewModifier {
+struct Dismissible: ViewModifier {
     @State var offset = 0.0
     let edge: VerticalEdge
     let onDismiss: () -> Void
@@ -70,6 +70,10 @@ extension View {
         }
     }
     
+    func iconFont() -> some View {
+        self.font(.system(size: SIZE/2))
+    }
+    
     func horizontallyCentred() -> some View {
         HStack {
             Spacer(minLength: 0)
@@ -88,13 +92,13 @@ extension View {
             .cornerRadius(15)
     }
     
-    func dismissable(edge: VerticalEdge, onDismiss: @escaping () -> Void) -> some View {
-        self.modifier(Dismissable(edge: edge, onDismiss: onDismiss))
+    func dismissible(edge: VerticalEdge, onDismiss: @escaping () -> Void) -> some View {
+        self.modifier(Dismissible(edge: edge, onDismiss: onDismiss))
     }
     
     func squareButton() -> some View {
         self
-            .font(.system(size: SIZE/2))
+            .iconFont()
             .frame(width: SIZE, height: SIZE)
     }
 }

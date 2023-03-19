@@ -8,17 +8,17 @@
 import SwiftUI
 
 struct TrailRow: View {
-    @AppStorage("metric") var metric = true
-    @AppStorage("expand") var expand = false
     @Binding var showTrailsView: Bool
     @EnvironmentObject var vm: ViewModel
     @State var showWebView = false
+    @State var tappedMenu = Date.now
     
     let trail: Trail
     let list: Bool
     
     var body: some View {
         Button {
+            guard tappedMenu.distance(to: .now) > 1 else { return }
             if list {
                 showTrailsView = false
                 vm.selectedTrail = trail
@@ -28,7 +28,7 @@ struct TrailRow: View {
             }
         } label: {
             VStack(spacing: 0) {
-                if expand || list {
+                if vm.expand || list {
                     GeometryReader { geo in
                         AsyncImage(url: trail.photoUrl) { image in
                             image
@@ -50,9 +50,14 @@ struct TrailRow: View {
                             Text(trail.name)
                                 .fixedSize(horizontal: false, vertical: true)
                                 .font(.headline)
-                            Text("\(metric ? "\(trail.km) km" : "\(trail.miles) miles") • \(trail.days) days")
-                                .font(.subheadline.bold())
-                                .foregroundColor(.secondary)
+                            HStack(spacing: 0) {
+                                if vm.completedMetres != 0 {
+                                    Text(vm.formatDistance(vm.completedMetres, showUnit: false, round: true) + "/")
+                                }
+                                Text(vm.formatDistance(trail.metres, showUnit: true, round: true) + " • \(trail.days) days")
+                            }
+                            .font(.subheadline.bold())
+                            .foregroundColor(.secondary)
                         }
                         Spacer(minLength: 0)
                         if list {
@@ -60,31 +65,31 @@ struct TrailRow: View {
                                 showWebView = true
                             } label: {
                                 Image(systemName: "info.circle")
-                                    .font(.title2)
+                                    .iconFont()
                             }
                         } else {
                             Menu {
                                 Button {
-                                    expand.toggle()
+                                    vm.expand.toggle()
                                 } label: {
-                                    Label(expand ? "Shrink" : "Expand", systemImage: expand ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right")
-                                        .font(.title2)
+                                    Label(vm.expand ? "Shrink" : "Expand", systemImage: vm.expand ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right")
                                 }
                                 Button {
                                     vm.isSelecting = true
                                 } label: {
                                     Label("Select a Section", systemImage: "point.topleft.down.curvedto.point.bottomright.up")
-                                        .font(.title2)
                                 }
                                 Button {
                                     showWebView = true
                                 } label: {
                                     Label("Learn More", systemImage: "info.circle")
-                                        .font(.title2)
                                 }
                             } label: {
                                 Image(systemName: "ellipsis.circle")
-                                    .font(.title2)
+                                    .iconFont()
+                            }
+                            .onTapGesture {
+                                tappedMenu = .now
                             }
                         }
                         if !list {
@@ -92,13 +97,13 @@ struct TrailRow: View {
                                 vm.deselectTrail()
                             } label: {
                                 Image(systemName: "xmark")
-                                    .font(.title2)
+                                    .iconFont()
                             }
                         }
                     }
                     .padding(.trailing, 5)
                     
-                    if expand || list {
+                    if vm.expand || list {
                         Text(trail.headline)
                             .font(.subheadline)
                             .foregroundColor(.secondary)
@@ -112,7 +117,7 @@ struct TrailRow: View {
         }
         .buttonStyle(.plain)
         .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
-        .animation(.default, value: expand)
+        .animation(.default, value: vm.expand)
         .transition(.move(edge: .top).combined(with: .opacity))
         .background {
             NavigationLink("", isActive: $showWebView) {

@@ -16,7 +16,7 @@ struct BottomBar: View {
             if let trail = vm.selectedTrail {
                 TrailRow(showTrailsView: .constant(false), trail: trail, list: false)
                     .materialBackground()
-                    .dismissable(edge: .top) {
+                    .dismissible(edge: .top) {
                         vm.deselectTrail()
                     }
             }
@@ -34,8 +34,8 @@ struct BottomBar: View {
                 .materialBackground()
                 .frame(maxWidth: 500)
                 .transition(.move(edge: .bottom).combined(with: .opacity))
-                .offset(x: vm.noResults ? 20 : 0, y: 0)
-                .dismissable(edge: .bottom) {
+                .offset(x: vm.shake ? 20 : 0, y: 0)
+                .dismissible(edge: .bottom) {
                     vm.stopSelecting()
                     vm.stopSearching()
                 }

@@ -18,34 +18,55 @@ class ViewModel: NSObject, ObservableObject {
     // MARK: - Properties
     var trails = [Trail]()
     var trips = [Trip]()
-    @Published var annotations = [Annotation]()
+    var selectedTrips: [Trip] { trips.filter { $0.trailID == selectedTrail?.id ?? -1 } }
+    @Published var completedMetres = 0.0
     @Published var selectedTrail: Trail? { didSet {
         if let selectedTrail {
             mapView?.removeOverlays(trails)
             mapView?.addOverlay(selectedTrail, level: .aboveRoads)
+            mapView?.addOverlays(selectedTrips, level: .aboveRoads)
+            calculateCompletedMetres()
         } else {
             mapView?.addOverlays(trails, level: .aboveRoads)
         }
+        updateLayoutMargins()
     }}
     
     // Search Bar
     var searchBar: UISearchBar?
     var search: MKLocalSearch?
-    @Published var noResults = false
-    @Published var isSearching = false
+    @Published var searchResults = [Annotation]()
+    @Published var isSearching = false { didSet {
+        updateLayoutMargins()
+    }}
     
     // Select line
     @Published var selectPolyline: MKPolyline?
     @Published var selectMetres = 0.0
-    @Published var isSelecting = false
+    @Published var selectError = false
+    @Published var selectPins = [Annotation]()
+    @Published var showCompletedAlert = false
+    @Published var isSelecting = false { didSet {
+        updateLayoutMargins()
+    }}
     
     // Animations
+    @Published var shake = false
     @Published var degrees = 0.0
     @Published var scale = 1.0
     
+    // Defaults
+    @Defaults("expand") var expand = false { didSet {
+        updateLayoutMargins()
+        objectWillChange.send()
+    }}
+    @Defaults("metric") var metric = false { didSet {
+        objectWillChange.send()
+    }}
+    
     // Map View
     var mapView: MKMapView?
-    @Published var trackingMode = MKUserTrackingMode.follow
+    @Published var trackingMode = MKUserTrackingMode.none
     @Published var mapType = MKMapType.standard
     
     // CLLocationManager
@@ -82,8 +103,15 @@ class ViewModel: NSObject, ObservableObject {
         trails.sort { $0.name < $1.name }
         
         container.loadPersistentStores { description, error in
+            self.deleteAll(entityName: "Trip")
             self.trips = (try? self.container.viewContext.fetch(Trip.fetchRequest()) as? [Trip]) ?? []
         }
+    }
+    
+    func deleteAll(entityName: String) {
+        let fetchRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: entityName)
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+        _ = try? container.viewContext.execute(deleteRequest)
     }
     
     func openSettings() {
@@ -121,6 +149,7 @@ extension ViewModel {
     
     func updateMapType(_ newType: MKMapType) {
         mapView?.mapType = newType
+        refreshOverlays()
         withAnimation(.easeInOut(duration: 0.25)) {
             degrees += 90
         }
@@ -132,31 +161,76 @@ extension ViewModel {
         }
     }
     
-    func setRect(_ rect: MKMapRect) {
-        let padding = UIEdgeInsets(top: 80, left: 20, bottom: 80, right: 20)
-        mapView?.setVisibleMapRect(rect, edgePadding: padding, animated: true)
+    func formatDistance(_ metres: Double, showUnit: Bool, round: Bool) -> String {
+        let value = metres / (metric ? 1000 : 1609.34)
+        return String(format: "%.\(round ? 0 : 1)f", value) + (showUnit ? (metric ? " km" : " miles") : "")
     }
     
-    func zoomTo(_ overlay: MKOverlay?) {
-        if let overlay {
-            setRect(overlay.boundingMapRect)
+    func calculateCompletedMetres() {
+        let trips = selectedTrips
+        var coords = [(CLLocationCoordinate2D, UUID)]()
+        for trip in trips {
+            for coord in trip.lineCoords {
+                if !coords.contains(where: { $0.0 == coord }) {
+                    coords.append((coord, trip.id))
+                }
+            }
+        }
+        var metres = 0.0
+        let dict = Dictionary(grouping: coords) { $0.1 }
+        dict.forEach { _, coords in
+            metres += coords.map(\.0).getDistance()
+        }
+        completedMetres = metres
+    }
+    
+    func refreshOverlays() {
+        let overlays = mapView?.overlays(in: .aboveRoads) ?? []
+        mapView?.removeOverlays(overlays)
+        mapView?.addOverlays(overlays, level: .aboveRoads)
+    }
+    
+    func updateLayoutMargins() {
+        UIView.animate(withDuration: 0.35) {
+            var top = CGFloat.zero
+            if let selectedTrail = self.selectedTrail {
+                top = self.expand ? 270 : 80
+                if selectedTrail.name.count > 30 {
+                    top += 30
+                }
+            }
+            let bottom: CGFloat = (self.isSearching ? 70 : (self.isSelecting ? 75 : 60))
+            let padding = UIEdgeInsets(top: top, left: 0, bottom: bottom, right: 0)
+            self.mapView?.layoutMargins = padding
         }
     }
     
-    func reverseGeocode(coord: CLLocationCoordinate2D, completion: @escaping (CLPlacemark?) -> Void) {
+    func setRect(_ rect: MKMapRect, extraPadding: Bool = false) {
+        let padding: CGFloat = extraPadding ? 40 : 20
+        let insets = UIEdgeInsets(top: padding, left: padding, bottom: padding, right: padding)
+        mapView?.setVisibleMapRect(rect, edgePadding: insets, animated: true)
+    }
+    
+    func zoomTo(_ overlay: MKOverlay?, extraPadding: Bool = false) {
+        if let overlay {
+            setRect(overlay.boundingMapRect, extraPadding: extraPadding)
+        }
+    }
+    
+    func reverseGeocode(coord: CLLocationCoordinate2D, completion: @escaping (CLPlacemark) -> Void) {
         CLGeocoder().reverseGeocodeLocation(coord.location) { placemarks, error in
-            completion(placemarks?.first)
+            guard let placemark = placemarks?.first else { return }
+            completion(placemark)
         }
     }
     
     func selectClosestTrail(to coord: CLLocationCoordinate2D) {
-        (_, _, selectedTrail) = getClosestTrail(to: coord, trails: trails)
+        (_, _, selectedTrail) = getClosestTrail(to: coord, trails: trails, maxDelta: tapDelta)
         zoomTo(selectedTrail)
     }
     
-    func getClosestTrail(to targetCoord: CLLocationCoordinate2D, trails: [Trail]) -> (CLLocationCoordinate2D?, [CLLocation]?, Trail?) {
+    func getClosestTrail(to targetCoord: CLLocationCoordinate2D, trails: [Trail], maxDelta: Double) -> (CLLocationCoordinate2D?, [CLLocation]?, Trail?) {
         let targetLocation = targetCoord.location
-        let maxDelta = tapDelta
         var shortestDistance = Double.infinity
         var closestCoord: CLLocationCoordinate2D?
         var closestLine: [CLLocation]?
@@ -183,20 +257,21 @@ extension ViewModel {
 // MARK: - Select
 extension ViewModel {
     func newSelectCoord(_ coord: CLLocationCoordinate2D) {
-        if annotations.count < 2 {
+        if selectPins.count < 2 {
             reverseGeocode(coord: coord) { placemark in
-                guard let placemark else { return }
                 let annotation = Annotation(type: .select, placemark: placemark, coord: coord)
-                self.annotations.append(annotation)
+                self.selectPins.append(annotation)
                 self.mapView?.addAnnotation(annotation)
                 self.mapView?.deselectAnnotation(annotation, animated: false)
                 
-                if self.annotations.count == 2 {
-                    let coords = self.calculateLine(between: self.annotations[0].coordinate, and: self.annotations[1].coordinate)
+                if self.selectPins.count == 2 {
+                    let coords = self.calculateLine(between: self.selectPins[0].coordinate, and: self.selectPins[1].coordinate)
+                    self.selectError = coords.isEmpty
+                    guard !self.selectError else { self.shakeError(); return }
                     self.selectPolyline = MKPolyline(coordinates: coords, count: coords.count)
-                    self.mapView?.addOverlay(self.selectPolyline!)
+                    self.mapView?.addOverlay(self.selectPolyline!, level: .aboveRoads)
                     self.selectMetres = coords.getDistance()
-                    self.zoomTo(self.selectPolyline)
+                    self.zoomTo(self.selectPolyline, extraPadding: true)
                 }
             }
         }
@@ -209,8 +284,9 @@ extension ViewModel {
     
     func stopSelecting() {
         isSelecting = false
-        mapView?.removeAnnotations(annotations)
-        annotations = []
+        selectError = false
+        mapView?.removeAnnotations(selectPins)
+        selectPins = []
         removeSelectPolyline()
     }
     
@@ -239,7 +315,7 @@ extension ViewModel {
     
     func calculateLine(between coord1: CLLocationCoordinate2D, and coord2: CLLocationCoordinate2D) -> [CLLocationCoordinate2D] {
         guard let selectedTrail else { return [] }
-        let (startCoord, line, _) = getClosestTrail(to: coord1, trails: [selectedTrail])
+        let (startCoord, line, _) = getClosestTrail(to: coord1, trails: [selectedTrail], maxDelta: .greatestFiniteMagnitude)
         guard let startCoord, let line, let endCoord = getClosestCoord(to: coord2, along: line) else { return [] }
         
         let coords = line.map(\.coordinate)
@@ -251,14 +327,23 @@ extension ViewModel {
     }
     
     func completeSelectPolyline() {
+        guard let selectedTrail, let selectPolyline else { return }
         let trip = Trip(context: container.viewContext)
-        trip.id = selectedTrail?.id ?? 0
-        trip.line = (selectPolyline?.coordinates ?? []).map { [$0.latitude, $0.longitude] }
+        trip.id = UUID()
+        trip.trailID = selectedTrail.id
+        trip.line = selectPolyline.coordinates.map { [$0.latitude, $0.longitude] }
         save()
         trips.append(trip)
-        mapView?.addOverlay(trip)
+        mapView?.addOverlay(trip, level: .aboveRoads)
         stopSelecting()
-        Haptics.success()
+        calculateCompletedMetres()
+        
+        if Int(completedMetres/1000) == Int(selectedTrail.metres/1000) {
+            Haptics.success()
+            showCompletedAlert = true
+        } else {
+            Haptics.tap()
+        }
     }
 }
 
@@ -272,9 +357,8 @@ extension ViewModel {
     
     @objc
     func handlePress(_ press: UILongPressGestureRecognizer) {
-        guard press.state == .began, let coord = getCoord(from: press) else { return }
+        guard !(isSelecting && selectPins.count < 2), press.state == .began, let coord = getCoord(from: press) else { return }
         reverseGeocode(coord: coord) { placemark in
-            guard let placemark else { return }
             Haptics.tap()
             let annotation = Annotation(type: .drop, placemark: placemark, coord: coord)
             self.mapView?.addAnnotation(annotation)
@@ -309,6 +393,24 @@ extension ViewModel: CLLocationManagerDelegate {
         showAuthError = authStatus == .denied
         return !showAuthError
     }
+    
+    func getColor(trail: Trail, mapView: MKMapView) -> Color {
+        if UITraitCollection.current.userInterfaceStyle == .dark || mapView.mapType == .hybrid {
+            switch trail.colour {
+            case 1: return Color(.link)
+            case 2: return .cyan
+            case 3: return .mint
+            default: return .pink
+            }
+        } else {
+            switch trail.colour {
+            case 1: return Color(.link)
+            case 2: return .purple
+            case 3: return .indigo
+            default: return .pink
+            }
+        }
+    }
 }
 
 // MARK: - MKMapViewDelegate
@@ -317,12 +419,13 @@ extension ViewModel: MKMapViewDelegate {
         if let trail = overlay as? Trail {
             let renderer = MKMultiPolylineRenderer(multiPolyline: trail.multiPolyline)
             renderer.lineWidth = 2
-            renderer.strokeColor = UIColor(trail.color)
+            renderer.strokeColor = UIColor(getColor(trail: trail, mapView: mapView))
             return renderer
         } else if let trip = overlay as? Trip {
+            guard let trail = trails.first(where: { $0.id == trip.trailID }) else { return MKOverlayRenderer(overlay: overlay) }
             let renderer = MKPolylineRenderer(polyline: trip.polyline)
             renderer.lineWidth = 2
-            renderer.strokeColor = UIColor(.accentColor)
+            renderer.strokeColor = UIColor(getColor(trail: trail, mapView: mapView)).darker() ?? .black
             return renderer
         } else if let polyline = overlay as? MKPolyline {
             let renderer = MKPolylineRenderer(polyline: polyline)
@@ -343,9 +446,10 @@ extension ViewModel: MKMapViewDelegate {
     }
     
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        let openButton = getButton(systemName: "arrow.triangle.turn.up.right.circle")
+        let removeButton = getButton(systemName: "xmark")
+        let shareButton = getButton(systemName: "square.and.arrow.up")
         if let annotation = annotation as? Annotation {
-            let openButton = getButton(systemName: "arrow.triangle.turn.up.right.circle")
-            let removeButton = getButton(systemName: "xmark")
             switch annotation.type {
             case .select:
                 let pin = mapView.dequeueReusableAnnotationView(withIdentifier: MKPinAnnotationView.id, for: annotation) as? MKPinAnnotationView
@@ -366,13 +470,27 @@ extension ViewModel: MKMapViewDelegate {
                 marker?.canShowCallout = true
                 return marker
             }
+        } else if let user = annotation as? MKUserLocation {
+            let view = mapView.dequeueReusableAnnotationView(withIdentifier: MKUserLocationView.id, for: user) as? MKUserLocationView
+            view?.rightCalloutAccessoryView = openButton
+            view?.leftCalloutAccessoryView = shareButton
+            return view
         }
         return nil
     }
     
     func mapView(_ mapView: MKMapView, didChange mode: MKUserTrackingMode, animated: Bool) {
         if !animated {
-            trackingMode = .none
+            updateTrackingMode(.none)
+        }
+    }
+    
+    func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+        guard let annotation = view.annotation else { return }
+        if annotation is MKUserLocation {
+            mapView.deselectAnnotation(annotation, animated: false)
+        } else if isSelecting && selectPins.count < 2 {
+            mapView.deselectAnnotation(annotation, animated: false)
         }
     }
     
@@ -383,7 +501,7 @@ extension ViewModel: MKMapViewDelegate {
                 mapView.deselectAnnotation(annotation, animated: true)
                 mapView.removeAnnotation(annotation)
             } else {
-                annotations.removeAll { $0 == annotation }
+                selectPins.removeAll { $0 == annotation }
                 mapView.removeAnnotation(annotation)
                 removeSelectPolyline()
             }
@@ -402,11 +520,15 @@ extension ViewModel: UISearchBarDelegate {
                 searchBar.resignFirstResponder()
             } else {
                 Haptics.error()
-                self.noResults = true
-                withAnimation(.spring(response: 0.2, dampingFraction: 0.2, blendDuration: 0.2)) {
-                    self.noResults = false
-                }
+                self.shakeError()
             }
+        }
+    }
+    
+    func shakeError() {
+        self.shake = true
+        withAnimation(.spring(response: 0.2, dampingFraction: 0.2, blendDuration: 0.2)) {
+            self.shake = false
         }
     }
     
@@ -416,8 +538,8 @@ extension ViewModel: UISearchBarDelegate {
     }
     
     func resetSearching() {
-        mapView?.removeAnnotations(annotations)
-        annotations = []
+        mapView?.removeAnnotations(searchResults)
+        searchResults = []
     }
     
     func search(text: String, completion: @escaping (Bool) -> Void) {
@@ -436,10 +558,10 @@ extension ViewModel: UISearchBarDelegate {
             guard filteredResults.isNotEmpty else { completion(false); return }
             
             DispatchQueue.main.async {
-                self.annotations = filteredResults.map { item in
+                self.searchResults = filteredResults.map { item in
                     Annotation(type: .search, placemark: item.placemark, coord: item.placemark.coordinate)
                 }
-                self.mapView?.addAnnotations(self.annotations)
+                self.mapView?.addAnnotations(self.searchResults)
                 self.mapView?.setRegion(response.boundingRegion, animated: true)
                 completion(true)
             }
