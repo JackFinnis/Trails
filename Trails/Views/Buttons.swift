@@ -8,7 +8,7 @@
 import SwiftUI
 import MapKit
 
-struct BottomBar: View {
+struct Buttons: View {
     @EnvironmentObject var vm: ViewModel
     
     var body: some View {
@@ -16,6 +16,7 @@ struct BottomBar: View {
             if let trail = vm.selectedTrail {
                 TrailRow(showTrailsView: .constant(false), trail: trail, list: false)
                     .materialBackground()
+                    .frame(maxWidth: 500)
                     .dismissible(edge: .top) {
                         vm.deselectTrail()
                     }
@@ -51,9 +52,9 @@ struct BottomBar: View {
     }
 }
 
-struct BottomBar_Previews: PreviewProvider {
+struct Buttons_Previews: PreviewProvider {
     static var previews: some View {
-        BottomBar()
+        Buttons()
             .environmentObject(ViewModel())
     }
 }

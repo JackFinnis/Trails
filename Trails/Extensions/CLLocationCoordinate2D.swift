@@ -18,19 +18,6 @@ extension CLLocationCoordinate2D: Equatable {
     }
 }
 
-extension Double {
-    func equalTo(_ other: Double, to decimalPlaces: Int) -> Bool {
-        rounded(to: decimalPlaces) == other.rounded(to: decimalPlaces)
-    }
-    
-    func rounded(to decimalPlaces: Int) -> Decimal {
-        var initialDecimal = Decimal(self)
-        var roundedDecimal = Decimal()
-        NSDecimalRound(&roundedDecimal, &initialDecimal, decimalPlaces, .plain)
-        return roundedDecimal
-    }
-}
-
 extension Array where Element == CLLocationCoordinate2D {
     func getDistance() -> Double {
         guard count >= 2 else { return 0 }

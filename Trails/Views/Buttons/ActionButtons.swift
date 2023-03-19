@@ -10,24 +10,11 @@ import MapKit
 
 struct ActionButtons: View {
     @EnvironmentObject var vm: ViewModel
-    @State var showInfoView = false
     @State var showTrailsView = false
     
     var body: some View {
         HStack {
             HStack(spacing: 0) {
-                Button {
-                    showInfoView = true
-                } label: {
-                    Image(systemName: "info.circle")
-                        .squareButton()
-                }
-                .popover(isPresented: $showInfoView) {
-                    InfoView(welcome: false)
-                        .frame(idealWidth: 400, idealHeight: 700)
-                }
-                
-                Divider().frame(height: SIZE)
                 Button {
                     updateMapType()
                 } label: {

@@ -8,9 +8,11 @@
 import SwiftUI
 
 struct TrailsView: View {
-    @Binding var showTrailsView: Bool
     @EnvironmentObject var vm: ViewModel
+    @State var showInfoView = false
     @State var text = ""
+    
+    @Binding var showTrailsView: Bool
     
     var filteredTrails: [Trail] {
         vm.trails.filter { text.isEmpty || $0.name.localizedCaseInsensitiveContains(text) }
@@ -28,6 +30,13 @@ struct TrailsView: View {
             .navigationBarTitleDisplayMode(.inline)
             .searchable(text: $text.animation(), placement: .navigationBarDrawer(displayMode: .always))
             .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button {
+                        showInfoView = true
+                    } label: {
+                        Image(systemName: "info.circle")
+                    }
+                }
                 ToolbarItem(placement: .primaryAction) {
                     Button {
                         showTrailsView = false
@@ -39,6 +48,9 @@ struct TrailsView: View {
             }
         }
         .navigationViewStyle(.stack)
+        .sheet(isPresented: $showInfoView) {
+            InfoView(welcome: false)
+        }
     }
 }
 

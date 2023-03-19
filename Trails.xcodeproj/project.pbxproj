@@ -18,7 +18,7 @@
 		0416F17D299EFA0B00B90E68 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0416F17C299EFA0B00B90E68 /* Launch Screen.storyboard */; };
 		0416F18A299EFB9100B90E68 /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0416F182299EFB9100B90E68 /* ViewModel.swift */; };
 		0416F18B299EFB9100B90E68 /* Haptics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0416F183299EFB9100B90E68 /* Haptics.swift */; };
-		0416F1A1299EFB9D00B90E68 /* BottomBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0416F190299EFB9C00B90E68 /* BottomBar.swift */; };
+		0416F1A1299EFB9D00B90E68 /* Buttons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0416F190299EFB9C00B90E68 /* Buttons.swift */; };
 		0416F1A2299EFB9D00B90E68 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0416F191299EFB9C00B90E68 /* MapView.swift */; };
 		0416F1A3299EFB9D00B90E68 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0416F192299EFB9C00B90E68 /* RootView.swift */; };
 		0416F1A5299EFB9D00B90E68 /* ShareView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0416F195299EFB9C00B90E68 /* ShareView.swift */; };
@@ -46,6 +46,7 @@
 		04CEDFE329A2EB6900810005 /* SelectBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04CEDFE229A2EB6900810005 /* SelectBar.swift */; };
 		04CEDFE529A2EC3500810005 /* ActionButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04CEDFE429A2EC3500810005 /* ActionButtons.swift */; };
 		04E7185129C79E6C00876116 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E7185029C79E6C00876116 /* UIColor.swift */; };
+		04E7185329C7CC0400876116 /* MKCoordinateRegion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E7185229C7CC0400876116 /* MKCoordinateRegion.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -61,7 +62,7 @@
 		0416F17C299EFA0B00B90E68 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		0416F182299EFB9100B90E68 /* ViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewModel.swift; sourceTree = "<group>"; };
 		0416F183299EFB9100B90E68 /* Haptics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Haptics.swift; sourceTree = "<group>"; };
-		0416F190299EFB9C00B90E68 /* BottomBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BottomBar.swift; sourceTree = "<group>"; };
+		0416F190299EFB9C00B90E68 /* Buttons.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Buttons.swift; sourceTree = "<group>"; };
 		0416F191299EFB9C00B90E68 /* MapView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 		0416F192299EFB9C00B90E68 /* RootView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		0416F195299EFB9C00B90E68 /* ShareView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShareView.swift; sourceTree = "<group>"; };
@@ -89,6 +90,7 @@
 		04CEDFE229A2EB6900810005 /* SelectBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectBar.swift; sourceTree = "<group>"; };
 		04CEDFE429A2EC3500810005 /* ActionButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionButtons.swift; sourceTree = "<group>"; };
 		04E7185029C79E6C00876116 /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
+		04E7185229C7CC0400876116 /* MKCoordinateRegion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MKCoordinateRegion.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -148,6 +150,7 @@
 			children = (
 				0416F171299EF9FC00B90E68 /* Collection.swift */,
 				0416F173299EF9FC00B90E68 /* MKMultiPoint.swift */,
+				04E7185229C7CC0400876116 /* MKCoordinateRegion.swift */,
 				0416F174299EF9FC00B90E68 /* CLLocationCoordinate2D.swift */,
 				0416F175299EF9FC00B90E68 /* Double.swift */,
 				0416F1BC29A1692100B90E68 /* NSObject.swift */,
@@ -175,7 +178,8 @@
 				0416F191299EFB9C00B90E68 /* MapView.swift */,
 				04626BFD29C24EE7004880E3 /* TrailsView.swift */,
 				04626BFF29C25714004880E3 /* TrailRow.swift */,
-				04CEDFE629A2EC6300810005 /* BottomBar */,
+				0416F190299EFB9C00B90E68 /* Buttons.swift */,
+				04CEDFE629A2EC6300810005 /* Buttons */,
 				0416F196299EFB9C00B90E68 /* Extra */,
 			);
 			path = Views;
@@ -209,16 +213,15 @@
 			path = Helpers;
 			sourceTree = "<group>";
 		};
-		04CEDFE629A2EC6300810005 /* BottomBar */ = {
+		04CEDFE629A2EC6300810005 /* Buttons */ = {
 			isa = PBXGroup;
 			children = (
-				0416F190299EFB9C00B90E68 /* BottomBar.swift */,
 				04CEDFE429A2EC3500810005 /* ActionButtons.swift */,
+				04CEDFE229A2EB6900810005 /* SelectBar.swift */,
 				04CEDFE029A2EADB00810005 /* SelectionBar.swift */,
 				0416F198299EFB9C00B90E68 /* SearchBar.swift */,
-				04CEDFE229A2EB6900810005 /* SelectBar.swift */,
 			);
-			path = BottomBar;
+			path = Buttons;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -298,6 +301,7 @@
 				04CEDFC629A2E4DA00810005 /* DraggableBar.swift in Sources */,
 				04CEDFE129A2EADB00810005 /* SelectionBar.swift in Sources */,
 				04CEDFDD29A2E66200810005 /* DismissCross.swift in Sources */,
+				04E7185329C7CC0400876116 /* MKCoordinateRegion.swift in Sources */,
 				04CEDFCC29A2E50700810005 /* Emails.swift in Sources */,
 				0416F1A5299EFB9D00B90E68 /* ShareView.swift in Sources */,
 				04626C0029C25714004880E3 /* TrailRow.swift in Sources */,
@@ -325,7 +329,7 @@
 				04E7185129C79E6C00876116 /* UIColor.swift in Sources */,
 				04CEDFE329A2EB6900810005 /* SelectBar.swift in Sources */,
 				0416F1A2299EFB9D00B90E68 /* MapView.swift in Sources */,
-				0416F1A1299EFB9D00B90E68 /* BottomBar.swift in Sources */,
+				0416F1A1299EFB9D00B90E68 /* Buttons.swift in Sources */,
 				0416F156299E91B000B90E68 /* TrailsApp.swift in Sources */,
 				048E5F2229C38A930080355B /* WebVM.swift in Sources */,
 			);
@@ -464,8 +468,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen.storyboard";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -496,8 +499,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen.storyboard";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

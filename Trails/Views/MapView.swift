@@ -16,8 +16,8 @@ struct MapView: UIViewRepresentable {
         mapView.delegate = vm
         vm.mapView = mapView
         mapView.addOverlays(vm.trails, level: .aboveRoads)
-        vm.zoomTo(MKMultiPolyline(vm.trails.flatMap(\.multiPolyline.polylines)))
         vm.updateLayoutMargins()
+        vm.zoomTo(MKMultiPolyline(vm.trails.flatMap(\.multiPolyline.polylines)))
         
         mapView.showsUserLocation = true
         mapView.showsScale = true

@@ -24,7 +24,7 @@ struct InfoView: View {
                         .frame(width: 70, height: 70)
                         .cornerRadius(15)
                         .shadow(color: .black.opacity(0.2), radius: 5)
-                    Text((welcome ? "Welcome to\n" : "") + NAME)
+                    Text(NAME)
                         .font(.largeTitle.bold())
                         .multilineTextAlignment(.center)
                         .padding(.bottom, 5)
@@ -51,6 +51,7 @@ struct InfoView: View {
                                 Text("Miles")
                                     .tag(false)
                             }
+                            .frame(width: 250)
                             .pickerStyle(.segmented)
                             .labelsHidden()
                         }

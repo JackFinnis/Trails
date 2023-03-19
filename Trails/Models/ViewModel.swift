@@ -65,7 +65,7 @@ class ViewModel: NSObject, ObservableObject {
         updateLayoutMargins()
         objectWillChange.send()
     }}
-    @Defaults("metric") var metric = false { didSet {
+    @Defaults("metric") var metric = true { didSet {
         objectWillChange.send()
     }}
     
@@ -89,7 +89,7 @@ class ViewModel: NSObject, ObservableObject {
         super.init()
         manager.delegate = self
         loadData()
-        completedTrails = []
+//        completedTrails = []
     }
     
     func loadJSON<T: Decodable>(from file: String) -> T {
@@ -109,7 +109,7 @@ class ViewModel: NSObject, ObservableObject {
         trails.sort { $0.name < $1.name }
         
         container.loadPersistentStores { description, error in
-            self.deleteAll(entityName: "Trip")
+//            self.deleteAll(entityName: "Trip")
             self.loadTrips()
         }
     }
@@ -283,7 +283,6 @@ extension ViewModel {
                     guard let start = coords.first, let end = coords.last else { return }
                     let tripCoords = self.selectedTrips.flatMap(\.lineCoords)
                     self.canUncomplete = tripCoords.contains(start) || tripCoords.contains(end)
-                    print(self.canUncomplete)
                     
                     self.selectPolyline = MKPolyline(coordinates: coords, count: coords.count)
                     self.mapView?.addOverlay(self.selectPolyline!, level: .aboveRoads)
@@ -293,6 +292,11 @@ extension ViewModel {
                 }
             }
         }
+    }
+    
+    func startSelecting() {
+        stopSelecting()
+        isSelecting = true
     }
     
     func deselectTrail() {
@@ -596,7 +600,7 @@ extension ViewModel: UISearchBarDelegate {
                     Annotation(type: .search, placemark: item.placemark, coord: item.placemark.coordinate)
                 }
                 self.mapView?.addAnnotations(self.searchResults)
-                self.mapView?.setRegion(response.boundingRegion, animated: true)
+                self.setRect(response.boundingRegion.rect, extraPadding: true)
                 completion(true)
             }
         }

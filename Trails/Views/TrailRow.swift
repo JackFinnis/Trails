@@ -8,10 +8,11 @@
 import SwiftUI
 
 struct TrailRow: View {
-    @Binding var showTrailsView: Bool
     @EnvironmentObject var vm: ViewModel
     @State var showWebView = false
     @State var tappedMenu = Date.now
+    
+    @Binding var showTrailsView: Bool
     
     let trail: Trail
     let list: Bool
@@ -79,7 +80,7 @@ struct TrailRow: View {
                                     Label(vm.expand ? "Shrink" : "Expand", systemImage: vm.expand ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right")
                                 }
                                 Button {
-                                    vm.isSelecting = true
+                                    vm.startSelecting()
                                 } label: {
                                     Label("Select a Section", systemImage: "point.topleft.down.curvedto.point.bottomright.up")
                                 }

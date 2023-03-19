@@ -34,7 +34,7 @@ struct RootView: View {
                         .layoutPriority(1)
                 }
                 
-                BottomBar()
+                Buttons()
                     .alert("Congratulations!", isPresented: $vm.showCompletedAlert) {
                         Button("Maybe Later", role: .cancel) {}
                         Button("Leave a Review") {
@@ -55,12 +55,19 @@ struct RootView: View {
                 }
             }
         }
+        .navigationViewStyle(.stack)
         .sheet(isPresented: $showWelcomeView) {
             InfoView(welcome: true)
         }
         .environmentObject(vm)
         .onChange(of: colorScheme) { _ in
             vm.refreshOverlays()
+        }
+        .task {
+            if !launchedBefore {
+                launchedBefore = true
+                showWelcomeView = true
+            }
         }
     }
 }
