@@ -43,7 +43,7 @@ struct SelectionBar: View {
                             }
                         }
                     } label: {
-                        Text((vm.selectMetres / (speed / 3600)).formattedInterval())
+                        Text((vm.selectMetres / (speed / 3600)).formattedInterval)
                     }
                     .animation(.none)
                     .onTapGesture {

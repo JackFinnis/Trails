@@ -8,7 +8,7 @@
 import Foundation
 
 extension Double {
-    func formattedInterval() -> String {
+    var formattedInterval: String {
         let formatter = DateComponentsFormatter()
         formatter.allowedUnits = [.hour, .minute]
         formatter.unitsStyle = .abbreviated

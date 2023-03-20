@@ -52,12 +52,12 @@ struct TrailRow: View {
                                 .fixedSize(horizontal: false, vertical: true)
                                 .font(.headline)
                             HStack(spacing: 0) {
-                                if vm.completedTrails.contains(trail.id) {
+                                if vm.completedTrailIDs.contains(trail.id) {
                                     Image(systemName: "checkmark.circle.fill")
                                         .foregroundColor(.accentColor)
                                         .padding(.trailing, 5)
-                                } else if vm.completedMetres != 0 {
-                                    Text(vm.formatDistance(vm.completedMetres, showUnit: false, round: true) + "/")
+                                } else if let metres = vm.selectedTrips?.metres, metres > 0 {
+                                    Text(vm.formatDistance(metres, showUnit: false, round: true) + "/")
                                 }
                                 Text(vm.formatDistance(trail.metres, showUnit: true, round: true) + " • \(trail.days) days")
                             }

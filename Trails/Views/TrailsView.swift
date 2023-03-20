@@ -7,15 +7,38 @@
 
 import SwiftUI
 
+enum SortBy: String, CaseIterable {
+    case name = "Name"
+    case distance = "Distance"
+    
+    var image: String {
+        switch self {
+        case .name:
+            return "character"
+        case .distance:
+            return "ruler"
+        }
+    }
+}
+
 struct TrailsView: View {
     @EnvironmentObject var vm: ViewModel
     @State var showInfoView = false
     @State var text = ""
+    @AppStorage("sortBy") var sortBy = SortBy.name
     
     @Binding var showTrailsView: Bool
     
     var filteredTrails: [Trail] {
         vm.trails.filter { text.isEmpty || $0.name.localizedCaseInsensitiveContains(text) }
+            .sorted {
+                switch sortBy {
+                case .name:
+                    return $0.name < $1.name
+                case .distance:
+                    return $0.metres < $1.metres
+                }
+            }
     }
     
     var body: some View {
@@ -38,10 +61,21 @@ struct TrailsView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button {
-                        showInfoView = true
-                    } label: {
-                        Image(systemName: "info.circle")
+                    HStack {
+                        Button {
+                            showInfoView = true
+                        } label: {
+                            Image(systemName: "info.circle")
+                        }
+                        Menu {
+                            Picker("", selection: $sortBy.animation()) {
+                                ForEach(SortBy.allCases, id: \.self) { sortBy in
+                                    Label(sortBy.rawValue, systemImage: sortBy.image)
+                                }
+                            }
+                        } label: {
+                            Image(systemName: "arrow.up.arrow.down")
+                        }
                     }
                 }
                 ToolbarItem(placement: .primaryAction) {

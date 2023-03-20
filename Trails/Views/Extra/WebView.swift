@@ -18,15 +18,22 @@ struct WebView: View {
     var body: some View {
         WebUIView(webVM: webVM)
             .ignoresSafeArea()
-            .overlay {
+            .overlay(alignment: .bottom) {
                 if webVM.error {
-                    VStack {
-                        BigLabel(systemName: "wifi.slash", title: "No Internet Connection", message: "")
-                        Button("Open Settings") {
-                            vm.openSettings()
-                        }
-                        .font(.headline)
+                    Button {
+                        vm.openSettings()
+                    } label: {
+                        Label("No Internet Connection", systemImage: "wifi.slash")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 10)
+                            .background(Color.black)
+                            .cornerRadius(12)
                     }
+                    .buttonStyle(.plain)
+                    .padding()
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
             }
             .background {
@@ -37,6 +44,7 @@ struct WebView: View {
             .onAppear {
                 webVM.load(url: trail.url)
             }
+            .animation(.default, value: webVM.error)
             .navigationTitle(trail.name)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

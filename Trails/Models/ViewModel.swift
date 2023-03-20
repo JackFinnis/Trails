@@ -17,20 +17,20 @@ class ViewModel: NSObject, ObservableObject {
     
     // MARK: - Properties
     var trails = [Trail]()
-    var trips = [Trip]()
-    var selectedTrips: [Trip] { trips.filter { $0.trailID == selectedTrail?.id ?? -1 } }
-    @Published var completedMetres = 0.0
+    var trailsTrips = [TrailTrips]()
+    var selectedTrips: TrailTrips? { trailsTrips.first { $0.id == selectedTrail?.id } }
     @Published var selectedTrail: Trail? { didSet {
         if let selectedTrail {
             mapView?.removeOverlays(trails)
             mapView?.addOverlay(selectedTrail, level: .aboveRoads)
-            mapView?.addOverlays(selectedTrips, level: .aboveRoads)
-            calculateCompletedMetres()
+            if let selectedTrips {
+                mapView?.addOverlay(selectedTrips, level: .aboveRoads)
+            }
         } else {
-            mapView?.removeOverlays(trips)
+            mapView?.removeOverlays(trailsTrips)
             mapView?.addOverlays(trails, level: .aboveRoads)
         }
-        updateLayoutMargins()
+        updateLayoutMargins(animate: selectedTrail == nil)
     }}
     
     // Search Bar
@@ -58,7 +58,7 @@ class ViewModel: NSObject, ObservableObject {
     
     // Defaults
     @Published var showCompletedAlert = false
-    @Defaults("completedTrails") var completedTrails = [Int16]() { didSet {
+    @Defaults("completedTrailIDs") var completedTrailIDs = [Int16]() { didSet {
         objectWillChange.send()
     }}
     @Defaults("expand") var expand = false { didSet {
@@ -89,7 +89,7 @@ class ViewModel: NSObject, ObservableObject {
         super.init()
         manager.delegate = self
         loadData()
-//        completedTrails = []
+        completedTrailIDs = []
     }
     
     func loadJSON<T: Decodable>(from file: String) -> T {
@@ -109,13 +109,13 @@ class ViewModel: NSObject, ObservableObject {
         trails.sort { $0.name < $1.name }
         
         container.loadPersistentStores { description, error in
-//            self.deleteAll(entityName: "Trip")
+            self.deleteAll(entityName: "TrailTrips")
             self.loadTrips()
         }
     }
     
     func loadTrips() {
-        self.trips = (try? self.container.viewContext.fetch(Trip.fetchRequest()) as? [Trip]) ?? []
+        trailsTrips = (try? container.viewContext.fetch(TrailTrips.fetchRequest()) as? [TrailTrips]) ?? []
     }
     
     func deleteAll(entityName: String) {
@@ -176,48 +176,29 @@ extension ViewModel {
         return String(format: "%.\(round ? 0 : 1)f", value) + (showUnit ? (metric ? " km" : " miles") : "")
     }
     
-    func calculateCompletedMetres() {
-        let trips = selectedTrips
-        var coords = [(CLLocationCoordinate2D, UUID)]()
-        for trip in trips {
-            for coord in trip.lineCoords {
-                if !coords.contains(where: { $0.0 == coord }) {
-                    coords.append((coord, trip.id))
-                }
-            }
-        }
-        var metres = 0.0
-        let dict = Dictionary(grouping: coords) { $0.1 }
-        dict.forEach { _, coords in
-            metres += coords.map(\.0).getDistance()
-        }
-        completedMetres = metres
-    }
-    
     func refreshOverlays() {
         let overlays = mapView?.overlays(in: .aboveRoads) ?? []
         mapView?.removeOverlays(overlays)
         mapView?.addOverlays(overlays, level: .aboveRoads)
     }
     
-    func updateLayoutMargins() {
-        UIView.animate(withDuration: 0.35) {
-            var top = CGFloat.zero
-            if let selectedTrail = self.selectedTrail {
-                top = self.expand ? 270 : 80
-                if selectedTrail.name.count > 30 {
-                    top += 30
-                }
+    func updateLayoutMargins(animate: Bool = true) {
+        var top = CGFloat.zero
+        if let selectedTrail {
+            top = expand ? 275 : 80
+            if selectedTrail.name.count > 30 {
+                top += 25
             }
-            let bottom: CGFloat = (self.isSearching ? 70 : (self.isSelecting ? 75 : 60))
-            let padding = UIEdgeInsets(top: top, left: 0, bottom: bottom, right: 0)
+        }
+        let padding = UIEdgeInsets(top: top, left: 0, bottom: 30, right: 0)
+        UIView.animate(withDuration: animate ? 0.35 : 0) {
             self.mapView?.layoutMargins = padding
         }
     }
     
     func setRect(_ rect: MKMapRect, extraPadding: Bool = false) {
         let padding: CGFloat = extraPadding ? 40 : 20
-        let insets = UIEdgeInsets(top: padding, left: padding, bottom: padding, right: padding)
+        let insets = UIEdgeInsets(top: padding, left: padding, bottom: padding + 30, right: padding)
         mapView?.setVisibleMapRect(rect, edgePadding: insets, animated: true)
     }
     
@@ -281,12 +262,12 @@ extension ViewModel {
                     guard !self.selectError else { self.shakeError(); return }
                     
                     guard let start = coords.first, let end = coords.last else { return }
-                    let tripCoords = self.selectedTrips.flatMap(\.lineCoords)
+                    let tripCoords = self.selectedTrips?.linesCoords.flatMap { $0 } ?? []
                     self.canUncomplete = tripCoords.contains(start) || tripCoords.contains(end)
                     
                     self.selectPolyline = MKPolyline(coordinates: coords, count: coords.count)
                     self.mapView?.addOverlay(self.selectPolyline!, level: .aboveRoads)
-                    self.selectMetres = coords.getDistance()
+                    self.selectMetres = coords.metres
                     self.zoomTo(self.selectPolyline, extraPadding: true)
                     Haptics.tap()
                 }
@@ -349,20 +330,43 @@ extension ViewModel {
     }
     
     func completeSelectPolyline() {
-        guard let selectedTrail, let selectPolyline else { return }
-        let trip = Trip(context: container.viewContext)
-        trip.id = UUID()
-        trip.trailID = selectedTrail.id
-        trip.line = selectPolyline.coordinates.map { [$0.latitude, $0.longitude] }
-        save()
-        trips.append(trip)
-        mapView?.addOverlay(trip, level: .aboveRoads)
-        stopSelecting()
-        calculateCompletedMetres()
+        guard let selectedTrail, let selectedCoords = selectPolyline?.coordinates else { return }
+        let trips: TrailTrips
         
-        if Int(completedMetres/1000) == Int(selectedTrail.metres/1000) && !completedTrails.contains(selectedTrail.id) {
+        if let selectedTrips {
+            trips = selectedTrips
+            let existingCoords = selectedTrips.linesCoords.flatMap { $0 }
+            var newLines = [[CLLocationCoordinate2D]]()
+            
+            for coords in selectedTrail.linesCoords {
+                var newLine = [CLLocationCoordinate2D]()
+                for coord in coords {
+                    if selectedCoords.contains(coord) || existingCoords.contains(coord) {
+                        newLine.append(coord)
+                    } else {
+                        newLines.append(newLine)
+                        newLine = []
+                    }
+                }
+                if newLine.isNotEmpty {
+                    newLines.append(newLine)
+                }
+            }
+            trips.lines = newLines.map { $0.map { [$0.latitude, $0.longitude] } }
+        } else {
+            trips = TrailTrips(context: container.viewContext)
+            trips.id = selectedTrail.id
+            trips.lines = [selectedCoords.map { [$0.latitude, $0.longitude] }]
+            trailsTrips.append(trips)
+        }
+        save()
+        mapView?.removeOverlay(trips)
+        mapView?.addOverlay(trips, level: .aboveRoads)
+        stopSelecting()
+        
+        if Int(trips.metres/1000) == Int(selectedTrail.metres/1000) && !completedTrailIDs.contains(selectedTrail.id) {
             Haptics.success()
-            completedTrails.append(selectedTrail.id)
+            completedTrailIDs.append(selectedTrail.id)
             showCompletedAlert = true
         } else {
             Haptics.tap()
@@ -370,15 +374,34 @@ extension ViewModel {
     }
     
     func uncompleteSelectPolyline() {
-//        let line = selectPolyline?.coordinates ?? []
-//        for trip in selectedTrips {
-//            trip.line.removeAll { line.contains(CLLocationCoordinate2DMake($0[0], $0[1])) }
-//        }
-//        save()
-//        loadTrips()
-//        refreshOverlays()
-//        calculateCompletedMetres()
+        guard let selectedTrail, let selectedTrips, let selectedCoords = selectPolyline?.coordinates else { return }
+
+        let existingCoords = selectedTrips.linesCoords.flatMap { $0 }
+        var newLines = [[CLLocationCoordinate2D]]()
+        
+        for coords in selectedTrail.linesCoords {
+            var newLine = [CLLocationCoordinate2D]()
+            for coord in coords {
+                if existingCoords.contains(coord) && !selectedCoords.contains(coord) {
+                    newLine.append(coord)
+                } else {
+                    newLines.append(newLine)
+                    newLine = []
+                }
+            }
+            if newLine.isNotEmpty {
+                newLines.append(newLine)
+            }
+        }
+        selectedTrips.lines = newLines.map { $0.map { [$0.latitude, $0.longitude] } }
+        save()
+        mapView?.removeOverlay(selectedTrips)
+        mapView?.addOverlay(selectedTrips, level: .aboveRoads)
         stopSelecting()
+        
+        if Int(selectedTrips.metres/1000) < Int(selectedTrail.metres/1000) {
+            completedTrailIDs.removeAll(selectedTrail.id)
+        }
     }
 }
 
@@ -460,9 +483,9 @@ extension ViewModel: MKMapViewDelegate {
             renderer.lineWidth = 2
             renderer.strokeColor = UIColor(getColor(of: trail))
             return renderer
-        } else if let trip = overlay as? Trip {
-            let renderer = MKPolylineRenderer(polyline: trip.polyline)
-            renderer.lineWidth = 2.1
+        } else if let trips = overlay as? TrailTrips {
+            let renderer = MKMultiPolylineRenderer(multiPolyline: trips.multiPolyline)
+            renderer.lineWidth = 2
             renderer.strokeColor = darkMode ? .white : .black
             return renderer
         } else if let polyline = overlay as? MKPolyline {

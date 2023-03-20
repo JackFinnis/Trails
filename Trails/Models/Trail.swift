@@ -64,3 +64,27 @@ struct TrailMetadata: Codable {
     let days: Int
     let colour: Int
 }
+
+@objc(TrailTrips)
+class TrailTrips: NSManagedObject {
+    @NSManaged var id: Int16
+    @NSManaged var lines: [[[Double]]]
+    
+    var linesCoords: [[CLLocationCoordinate2D]] {
+        lines.map { $0.map { CLLocationCoordinate2DMake($0[0], $0[1]) } }
+    }
+    var linesLocations: [[CLLocation]] {
+        linesCoords.map { $0.map { $0.location } }
+    }
+    var multiPolyline: MKMultiPolyline {
+        MKMultiPolyline(linesCoords.map { MKPolyline(coordinates: $0, count: $0.count) })
+    }
+    var metres: Double {
+        linesCoords.map(\.metres).sum
+    }
+}
+
+extension TrailTrips: MKOverlay {
+    var coordinate: CLLocationCoordinate2D { multiPolyline.coordinate }
+    var boundingMapRect: MKMapRect { multiPolyline.boundingMapRect }
+}
