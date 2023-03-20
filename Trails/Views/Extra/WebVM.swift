@@ -28,12 +28,10 @@ extension WebVM: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
         loading = false
         self.error = true
-        Haptics.error()
     }
     
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
         loading = false
         self.error = true
-        Haptics.error()
     }
 }

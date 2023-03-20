@@ -29,6 +29,13 @@ struct TrailsView: View {
             .navigationTitle("National Trails")
             .navigationBarTitleDisplayMode(.inline)
             .searchable(text: $text.animation(), placement: .navigationBarDrawer(displayMode: .always))
+            .overlay {
+                if filteredTrails.isEmpty {
+                    Text("No Results Found")
+                        .font(.title3)
+                        .foregroundColor(.secondary)
+                }
+            }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button {

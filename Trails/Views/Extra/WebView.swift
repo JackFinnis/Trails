@@ -9,6 +9,7 @@ import SwiftUI
 import WebKit
 
 struct WebView: View {
+    @EnvironmentObject var vm: ViewModel
     @Environment(\.openURL) var openURL
     @StateObject var webVM = WebVM()
     
@@ -19,7 +20,18 @@ struct WebView: View {
             .ignoresSafeArea()
             .overlay {
                 if webVM.error {
-                    BigLabel(systemName: "wifi.slash", title: "No Connection", message: "The \(NAME) app isn't connected to the internet. To view the news, check your internet connection, then try again.")
+                    VStack {
+                        BigLabel(systemName: "wifi.slash", title: "No Internet Connection", message: "")
+                        Button("Open Settings") {
+                            vm.openSettings()
+                        }
+                        .font(.headline)
+                    }
+                }
+            }
+            .background {
+                if webVM.loading {
+                    ProgressView()
                 }
             }
             .onAppear {
@@ -29,15 +41,10 @@ struct WebView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
-                    HStack(spacing: 10) {
-                        if webVM.loading {
-                            ProgressView()
-                        }
-                        Button {
-                            openURL(trail.url)
-                        } label: {
-                            Image(systemName: "safari")
-                        }
+                    Button {
+                        openURL(trail.url)
+                    } label: {
+                        Image(systemName: "safari")
                     }
                 }
             }

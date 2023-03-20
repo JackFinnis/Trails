@@ -563,7 +563,6 @@ extension ViewModel: UISearchBarDelegate {
     }
     
     func shakeError() {
-        Haptics.error()
         self.shake = true
         withAnimation(.spring(response: 0.2, dampingFraction: 0.2, blendDuration: 0.2)) {
             self.shake = false
