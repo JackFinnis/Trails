@@ -11,6 +11,7 @@ struct TrailsView: View {
     @EnvironmentObject var vm: ViewModel
     @State var showInfoView = false
     @State var text = ""
+    @State var angle = Angle.radians(0)
     @AppStorage("sortBy") var sortBy = TrailSort.name
     @AppStorage("country") var country: Country?
     @AppStorage("cycle") var cycle = false
@@ -80,6 +81,12 @@ struct TrailsView: View {
                             }
                         } label: {
                             Image(systemName: "arrow.up.arrow.down")
+                                .rotation3DEffect(angle, axis: (1, 0, 0))
+                        }
+                        .onChange(of: sortBy) { _ in
+                            withAnimation {
+                                angle += .radians(.pi)
+                            }
                         }
                     }
                     .font(.body.weight(.medium))

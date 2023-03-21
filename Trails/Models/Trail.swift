@@ -18,7 +18,6 @@ class Trail: NSObject, Identifiable {
     let photoUrl: URL
     let metres: Double
     let days: Int
-    let lines: [[[Double]]]
     let colour: Int
     let cycle: Bool
     let ascent: Int?
@@ -29,7 +28,10 @@ class Trail: NSObject, Identifiable {
     let multiPolyline: MKMultiPolyline
     
     init(lines: TrailLines, metadata: TrailMetadata) {
-        self.lines = lines.lines
+        multiPolyline = lines.multiPolyline
+        linesCoords = multiPolyline.polylines.map(\.coordinates)
+        linesLocations = linesCoords.map { $0.map { $0.location } }
+        
         id = metadata.id
         name = metadata.name
         headline = metadata.description
@@ -41,30 +43,27 @@ class Trail: NSObject, Identifiable {
         cycle = metadata.cycle
         ascent = metadata.ascent
         country = metadata.country
-        
-        linesCoords = lines.lines.map { $0.map { CLLocationCoordinate2DMake($0[0], $0[1]) }}
-        linesLocations = linesCoords.map { $0.map { $0.location } }
-        multiPolyline = MKMultiPolyline(linesCoords.map { MKPolyline(coordinates: $0, count: $0.count) })
     }
     
-    func color(darkMode: Bool) -> Color {
-        return darkMode ? .cyan : Color(.link)
-        if darkMode {
-            switch colour {
-            case 1: return Color(.link)
-            case 2: return .cyan
-            case 3: return .mint
-            default: return .pink
-            }
-        } else {
-            switch colour {
-            case 1: return Color(.link)
-            case 2: return .purple
-            case 3: return .indigo
-            default: return .pink
-            }
-        }
-    }
+    static let example = Trail(lines: .init(id: 0, multiPolyline: .init()), metadata: .init(id: 0, name: "Cleveland Way", description: "Experience the varied landscape of the North York Moors National Park on a journey across breathtaking heather moorland and dramatic coastline.", url: URL(string: "https://www.nationaltrail.co.uk/trails/cleveland-way/")!, photoUrl: URL(string: "https://nationaltrails.s3.eu-west-2.amazonaws.com/uploads/Cleveland-Way-Home-2000x600.jpg")!, metres: 170813, days: 9, colour: 1, cycle: true, ascent: 5031, country: .england))
+    
+//    func color(darkMode: Bool) -> Color {
+//        if darkMode {
+//            switch colour {
+//            case 1: return Color(.link)
+//            case 2: return .cyan
+//            case 3: return .mint
+//            default: return .pink
+//            }
+//        } else {
+//            switch colour {
+//            case 1: return Color(.link)
+//            case 2: return .purple
+//            case 3: return .indigo
+//            default: return .pink
+//            }
+//        }
+//    }
 }
 
 extension Trail: MKOverlay {
@@ -72,9 +71,13 @@ extension Trail: MKOverlay {
     var boundingMapRect: MKMapRect { multiPolyline.boundingMapRect }
 }
 
-struct TrailLines: Codable {
+struct TrailLines {
     let id: Int
-    let lines: [[[Double]]]
+    let multiPolyline: MKMultiPolyline
+}
+
+struct TrailProperties: Codable {
+    let id: Int
 }
 
 struct TrailMetadata: Codable {

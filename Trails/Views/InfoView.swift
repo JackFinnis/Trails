@@ -6,11 +6,13 @@
 //
 
 import SwiftUI
+import MessageUI
 
 struct InfoView: View {
     @EnvironmentObject var vm: ViewModel
     @Environment(\.dismiss) var dismiss
     @State var showShareSheet = false
+    @State var showEmailSheet = false
     
     let welcome: Bool
     
@@ -31,7 +33,7 @@ struct InfoView: View {
                 .padding(.bottom, 30)
                 
                 VStack(alignment: .leading, spacing: 15) {
-                    InfoRow(systemName: "map", title: "The Trails", description: "Browse 45 of the most spectacular long-distance trails in the UK.")
+                    InfoRow(systemName: "map", title: "The Trails", description: "Browse 45 of the most spectacular long-distance UK trails.")
                     InfoRow(systemName: "magnifyingglass", title: "Search Maps", description: "Find B&Bs, cafés, shops & more along your route.")
                     InfoRow(systemName: "checkmark.circle", title: "Track Your Progress", description: "Mark sections of a trail as complete.")
                     InfoRow(systemName: "point.topleft.down.curvedto.point.bottomright.up", title: "Select a Trail Section", description: "Measure the length of your next trip.")
@@ -66,10 +68,12 @@ struct InfoView: View {
                     }
                 } else {
                     Menu {
-                        Button {
-                            Emails.compose(subject: "\(NAME) Feedback")
-                        } label: {
-                            Label("Send us Feedback", systemImage: "envelope")
+                        if MFMailComposeViewController.canSendMail() {
+                            Button {
+                                showEmailSheet = true
+                            } label: {
+                                Label("Send us Feedback", systemImage: "envelope")
+                            }
                         }
                         Button {
                             Store.writeReview()
@@ -113,6 +117,7 @@ struct InfoView: View {
             }
         }
         .shareSheet(url: APP_URL, isPresented: $showShareSheet)
+        .emailSheet(recipient: EMAIL, subject: "\(NAME) Feedback", isPresented: $showEmailSheet)
         .interactiveDismissDisabled(welcome)
     }
 }

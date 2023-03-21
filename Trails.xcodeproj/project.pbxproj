@@ -37,10 +37,8 @@
 		04626C0029C25714004880E3 /* TrailRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04626BFF29C25714004880E3 /* TrailRow.swift */; };
 		048E5F2029C38A0A0080355B /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048E5F1F29C38A0A0080355B /* WebView.swift */; };
 		048E5F2229C38A930080355B /* WebVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048E5F2129C38A930080355B /* WebVM.swift */; };
-		0498A03829C962E600731E5C /* Coords.json in Resources */ = {isa = PBXBuildFile; fileRef = 0498A03729C962E600731E5C /* Coords.json */; };
 		04CEDFC629A2E4DA00810005 /* DraggableBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04CEDFC329A2E4DA00810005 /* DraggableBar.swift */; };
 		04CEDFCB29A2E50700810005 /* Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04CEDFC829A2E50700810005 /* Defaults.swift */; };
-		04CEDFCC29A2E50700810005 /* Emails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04CEDFC929A2E50700810005 /* Emails.swift */; };
 		04CEDFCD29A2E50700810005 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04CEDFCA29A2E50700810005 /* Store.swift */; };
 		04CEDFDB29A2E60400810005 /* InfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04CEDFDA29A2E60400810005 /* InfoView.swift */; };
 		04CEDFDD29A2E66200810005 /* DismissCross.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04CEDFDC29A2E66200810005 /* DismissCross.swift */; };
@@ -50,6 +48,8 @@
 		04E7185129C79E6C00876116 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E7185029C79E6C00876116 /* UIColor.swift */; };
 		04E7185329C7CC0400876116 /* MKCoordinateRegion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E7185229C7CC0400876116 /* MKCoordinateRegion.swift */; };
 		04E7185529C89D0400876116 /* Number.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E7185429C89D0400876116 /* Number.swift */; };
+		04FFC98929CA679500BF77FD /* Coords.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04FFC98829CA679500BF77FD /* Coords.geojson */; };
+		04FFC98B29CA6A4900BF77FD /* EmailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04FFC98A29CA6A4900BF77FD /* EmailView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -84,10 +84,8 @@
 		04626BFF29C25714004880E3 /* TrailRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailRow.swift; sourceTree = "<group>"; };
 		048E5F1F29C38A0A0080355B /* WebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebView.swift; sourceTree = "<group>"; };
 		048E5F2129C38A930080355B /* WebVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebVM.swift; sourceTree = "<group>"; };
-		0498A03729C962E600731E5C /* Coords.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Coords.json; sourceTree = "<group>"; };
 		04CEDFC329A2E4DA00810005 /* DraggableBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DraggableBar.swift; sourceTree = "<group>"; };
 		04CEDFC829A2E50700810005 /* Defaults.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Defaults.swift; sourceTree = "<group>"; };
-		04CEDFC929A2E50700810005 /* Emails.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Emails.swift; sourceTree = "<group>"; };
 		04CEDFCA29A2E50700810005 /* Store.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
 		04CEDFDA29A2E60400810005 /* InfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoView.swift; sourceTree = "<group>"; };
 		04CEDFDC29A2E66200810005 /* DismissCross.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DismissCross.swift; sourceTree = "<group>"; };
@@ -97,6 +95,8 @@
 		04E7185029C79E6C00876116 /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		04E7185229C7CC0400876116 /* MKCoordinateRegion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MKCoordinateRegion.swift; sourceTree = "<group>"; };
 		04E7185429C89D0400876116 /* Number.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Number.swift; sourceTree = "<group>"; };
+		04FFC98829CA679500BF77FD /* Coords.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Coords.geojson; sourceTree = "<group>"; };
+		04FFC98A29CA6A4900BF77FD /* EmailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -143,8 +143,8 @@
 			isa = PBXGroup;
 			children = (
 				0416F17C299EFA0B00B90E68 /* Launch Screen.storyboard */,
+				04FFC98829CA679500BF77FD /* Coords.geojson */,
 				04626BF329C1E085004880E3 /* Metadata.json */,
-				0498A03729C962E600731E5C /* Coords.json */,
 				0416F159299E91B200B90E68 /* Assets.xcassets */,
 				0416F1B4299F02AA00B90E68 /* Trails.xcdatamodeld */,
 			);
@@ -200,6 +200,7 @@
 				04CEDFC329A2E4DA00810005 /* DraggableBar.swift */,
 				04CEDFDC29A2E66200810005 /* DismissCross.swift */,
 				0416F195299EFB9C00B90E68 /* ShareView.swift */,
+				04FFC98A29CA6A4900BF77FD /* EmailView.swift */,
 				0416F19A299EFB9C00B90E68 /* Blur.swift */,
 				0455AFFA29C6BD380096C8B6 /* Color.swift */,
 				0416F170299EF9FC00B90E68 /* View.swift */,
@@ -211,7 +212,6 @@
 			isa = PBXGroup;
 			children = (
 				04CEDFC829A2E50700810005 /* Defaults.swift */,
-				04CEDFC929A2E50700810005 /* Emails.swift */,
 				04CEDFCA29A2E50700810005 /* Store.swift */,
 				0416F183299EFB9100B90E68 /* Haptics.swift */,
 			);
@@ -300,9 +300,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				04626BF529C1E086004880E3 /* Metadata.json in Resources */,
-				0498A03829C962E600731E5C /* Coords.json in Resources */,
 				0416F17D299EFA0B00B90E68 /* Launch Screen.storyboard in Resources */,
 				0416F15A299E91B200B90E68 /* Assets.xcassets in Resources */,
+				04FFC98929CA679500BF77FD /* Coords.geojson in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -320,7 +320,6 @@
 				04CEDFE129A2EADB00810005 /* SelectionBar.swift in Sources */,
 				04CEDFDD29A2E66200810005 /* DismissCross.swift in Sources */,
 				04E7185329C7CC0400876116 /* MKCoordinateRegion.swift in Sources */,
-				04CEDFCC29A2E50700810005 /* Emails.swift in Sources */,
 				0416F1A5299EFB9D00B90E68 /* ShareView.swift in Sources */,
 				04626C0029C25714004880E3 /* TrailRow.swift in Sources */,
 				0416F16C299E930400B90E68 /* Trail.swift in Sources */,
@@ -342,6 +341,7 @@
 				0455AFFB29C6BD380096C8B6 /* Color.swift in Sources */,
 				0421202B29C929C1003DE52F /* CLLocation.swift in Sources */,
 				04626BFE29C24EE7004880E3 /* TrailsView.swift in Sources */,
+				04FFC98B29CA6A4900BF77FD /* EmailView.swift in Sources */,
 				0416F177299EF9FC00B90E68 /* Collection.swift in Sources */,
 				0416F179299EF9FC00B90E68 /* MKMultiPoint.swift in Sources */,
 				0416F17B299EF9FC00B90E68 /* Double.swift in Sources */,

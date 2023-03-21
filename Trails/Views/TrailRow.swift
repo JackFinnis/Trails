@@ -44,6 +44,15 @@ struct TrailRow: View {
                     }
                     .frame(height: 120)
                     .transition(.opacity)
+                    .overlay(alignment: .bottomTrailing) {
+                        if trail.cycle {
+                            Image(systemName: "bicycle")
+                                .padding(5)
+                                .background(.regularMaterial)
+                                .cornerRadius(5)
+                                .padding(5)
+                        }
+                    }
                 }
                 VStack(alignment: .leading, spacing: 10) {
                     HStack(spacing: 15) {
@@ -67,10 +76,6 @@ struct TrailRow: View {
                                         .padding(.trailing, 2)
                                         .font(.caption2.weight(.bold))
                                     Text("\(vm.formatFeet(ascent))")
-                                }
-                                if trail.cycle {
-                                    Text(" • ")
-                                    Image(systemName: "bicycle")
                                 }
                             }
                             .font(.subheadline.bold())
@@ -143,5 +148,12 @@ struct TrailRow: View {
             }
             .hidden()
         }
+    }
+}
+
+struct TrailRow_Previews: PreviewProvider {
+    static var previews: some View {
+        TrailRow(showTrailsView: .constant(true), trail: .example, list: true)
+            .environmentObject(ViewModel())
     }
 }

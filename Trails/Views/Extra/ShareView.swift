@@ -19,13 +19,13 @@ struct ShareView: UIViewControllerRepresentable {
 
 extension View {
     func shareSheet(url: URL, isPresented: Binding<Bool>) -> some View {
-        self.sheet(isPresented: isPresented) {
+        sheet(isPresented: isPresented) {
+            let view = ShareView(url: url).ignoresSafeArea()
             if #available(iOS 16, *) {
-                ShareView(url: url)
-                    .ignoresSafeArea()
-                    .presentationDetents([.medium, .large])
+                view.presentationDetents([.medium, .large])
+                    .presentationDragIndicator(.visible)
             } else {
-                ShareView(url: url)
+                view
             }
         }
     }

@@ -93,31 +93,36 @@ class ViewModel: NSObject, ObservableObject {
     }
     
     // MARK: - Load Data
-    func loadJSON<T: Decodable>(from file: String) -> T {
-        let url = Bundle.main.url(forResource: file, withExtension: "json")!
-        let data = try! Data(contentsOf: url)
-        return try! JSONDecoder().decode(T.self, from: data)
+    func loadData(from file: String) -> Data {
+        let url = Bundle.main.url(forResource: file, withExtension: "")!
+        return try! Data(contentsOf: url)
     }
     
+    func decodeJSON<T: Decodable>(data: Data) -> T {
+        try! JSONDecoder().decode(T.self, from: data)
+    }
+
     func loadData() {
-        let trailsLines: [TrailLines] = loadJSON(from: "Coords")
-        let trailsMetadata: [TrailMetadata] = loadJSON(from: "Metadata")
+        let linesData = loadData(from: "Coords.geojson")
+        let features = try! MKGeoJSONDecoder().decode(linesData) as! [MKGeoJSONFeature]
+        let trailsLines = features.map { feature in
+            let properties: TrailProperties = decodeJSON(data: feature.properties!)
+            return TrailLines(id: properties.id, multiPolyline: feature.geometry.first as! MKMultiPolyline)
+        }
+        let metadataData = loadData(from: "Metadata.json")
+        let trailsMetadata: [TrailMetadata] = decodeJSON(data: metadataData)
+        
         for id in 0...44 {
             let lines = trailsLines.first { $0.id == id }!
             let metadata = trailsMetadata.first { $0.id == id }!
             trails.append(Trail(lines: lines, metadata: metadata))
         }
-        trails.sort { $0.name < $1.name }
         
         container.loadPersistentStores { description, error in
-            self.deleteAll(entityName: "TrailTrips")
-            self.completedTrailIDs = []
-            self.loadTrips()
+//            self.deleteAll(entityName: "TrailTrips")
+//            self.completedTrailIDs = []
+            self.trailsTrips = (try? self.container.viewContext.fetch(TrailTrips.fetchRequest()) as? [TrailTrips]) ?? []
         }
-    }
-    
-    func loadTrips() {
-        trailsTrips = (try? container.viewContext.fetch(TrailTrips.fetchRequest()) as? [TrailTrips]) ?? []
     }
     
     func deleteAll(entityName: String) {
@@ -146,9 +151,9 @@ class ViewModel: NSObject, ObservableObject {
     }
     
     func shakeError() {
-        self.shake = true
+        shake = true
         withAnimation(.spring(response: 0.2, dampingFraction: 0.2, blendDuration: 0.2)) {
-            self.shake = false
+            shake = false
         }
     }
     
@@ -487,7 +492,7 @@ extension ViewModel: MKMapViewDelegate {
         if let trail = overlay as? Trail {
             let renderer = MKMultiPolylineRenderer(multiPolyline: trail.multiPolyline)
             renderer.lineWidth = trail == selectedTrail ? 3 : 2
-            renderer.strokeColor = UIColor(trail.color(darkMode: darkMode))
+            renderer.strokeColor = darkMode ? UIColor(.cyan) : .link
             return renderer
         } else if let trips = overlay as? TrailTrips {
             let renderer = MKMultiPolylineRenderer(multiPolyline: trips.multiPolyline)

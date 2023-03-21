@@ -16,7 +16,7 @@ struct WebView: View {
     
     var body: some View {
         WebUIView(webVM: webVM)
-            .ignoresSafeArea()
+            .ignoresSafeArea(edges: .bottom)
             .overlay {
                 if webVM.error && !webVM.loaded {
                     WiFiError(compact: false)
@@ -32,13 +32,6 @@ struct WebView: View {
                     ProgressView()
                 }
             }
-            .if { view in
-                if #available(iOS 16, *) {
-                    view.toolbarBackground(.visible, for: .navigationBar)
-                } else {
-                    view
-                }
-            }
             .animation(.default, value: webVM.error)
             .navigationTitle(trail.name)
             .navigationBarTitleDisplayMode(.inline)
@@ -49,6 +42,13 @@ struct WebView: View {
                     } label: {
                         Image(systemName: "safari")
                     }
+                }
+            }
+            .if { view in
+                if #available(iOS 16, *) {
+                    view.toolbarBackground(.visible, for: .navigationBar)
+                } else {
+                    view
                 }
             }
     }
