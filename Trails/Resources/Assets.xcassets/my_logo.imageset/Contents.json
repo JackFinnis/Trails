@@ -1,10 +1,7 @@
 {
-  "colors" : [
+  "images" : [
     {
-      "color" : {
-        "platform" : "ios",
-        "reference" : "linkColor"
-      },
+      "filename" : "appstore1024.png",
       "idiom" : "universal"
     }
   ],

@@ -44,7 +44,7 @@ struct RootView: View {
                         }
                         Button("Maybe Later") {}
                     } message: {
-                        Text("You have walked the entire length of \(vm.selectedTrail?.name ?? ""); that's over \(vm.formatDistance(vm.selectMetres, showUnit: true, round: true))! Please consider leaving a review or rating \(NAME) if the app helped you navigate.")
+                        Text("You have walked the entire length of \(vm.selectedTrail?.name ?? ""); that's over \(vm.formatMiles(vm.selectMetres, showUnit: true, round: true))! Please consider leaving a review or rating \(NAME) if the app helped you navigate.")
                     }
             }
             .navigationTitle("Map")

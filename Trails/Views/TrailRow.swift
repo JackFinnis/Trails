@@ -57,9 +57,21 @@ struct TrailRow: View {
                                         .foregroundColor(.accentColor)
                                         .padding(.trailing, 5)
                                 } else if let metres = vm.selectedTrips?.metres, metres > 0 {
-                                    Text(vm.formatDistance(metres, showUnit: false, round: true) + "/")
+                                    Text("\(vm.formatMiles(metres, showUnit: false, round: true))/")
                                 }
-                                Text(vm.formatDistance(trail.metres, showUnit: true, round: true) + " • \(trail.days) days")
+                                Text("\(vm.formatMiles(trail.metres, showUnit: true, round: true)) • \(trail.days) days")
+                                
+                                if let ascent = trail.ascent {
+                                    Text(" • ")
+                                    Image(systemName: "arrow.up")
+                                        .padding(.trailing, 2)
+                                        .font(.caption2.weight(.bold))
+                                    Text("\(vm.formatFeet(ascent))")
+                                }
+                                if trail.cycle {
+                                    Text(" • ")
+                                    Image(systemName: "bicycle")
+                                }
                             }
                             .font(.subheadline.bold())
                             .foregroundColor(.secondary)
@@ -70,7 +82,7 @@ struct TrailRow: View {
                                 showWebView = true
                             } label: {
                                 Image(systemName: "info.circle")
-                                    .iconFont()
+                                    .font(.title2)
                             }
                         } else {
                             Menu {
@@ -87,12 +99,13 @@ struct TrailRow: View {
                                 Button {
                                     showWebView = true
                                 } label: {
-                                    Label("Learn More", systemImage: "info.circle")
+                                    Label("Website", systemImage: "info.circle")
                                 }
                             } label: {
                                 Image(systemName: "ellipsis.circle")
                                     .iconFont()
                             }
+                            .frame(width: 30, height: 30)
                             .onTapGesture {
                                 tappedMenu = .now
                             }

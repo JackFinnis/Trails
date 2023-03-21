@@ -133,9 +133,16 @@ class ViewModel: NSObject, ObservableObject {
     }
     
     // MARK: - General
-    func formatDistance(_ metres: Double, showUnit: Bool, round: Bool) -> String {
+    func formatMiles(_ metres: Double, showUnit: Bool, round: Bool) -> String {
         let value = metres / (metric ? 1000 : 1609.34)
         return String(format: "%.\(round ? 0 : 1)f", value) + (showUnit ? (metric ? " km" : " miles") : "")
+    }
+    
+    func formatFeet(_ metres: Int) -> String {
+        let value = Double(metres) * (metric ? 2 : 3.28084)
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        return (formatter.string(from: NSNumber(value: Int(value))) ?? "") + (metric ? " m" : " feet")
     }
     
     func shakeError() {

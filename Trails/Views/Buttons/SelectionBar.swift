@@ -27,7 +27,7 @@ struct SelectionBar: View {
         HStack {
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 0) {
-                    Text(vm.formatDistance(vm.selectMetres, showUnit: true, round: false) + " • ")
+                    Text(vm.formatMiles(vm.selectMetres, showUnit: true, round: false) + " • ")
                     Menu {
                         Picker("Speed", selection: $speed) {
                             if vm.metric {

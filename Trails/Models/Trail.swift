@@ -20,6 +20,9 @@ class Trail: NSObject, Identifiable {
     let days: Int
     let lines: [[[Double]]]
     let colour: Int
+    let cycle: Bool
+    let ascent: Int?
+    let country: Country
     
     let linesCoords: [[CLLocationCoordinate2D]]
     let linesLocations: [[CLLocation]]
@@ -35,6 +38,9 @@ class Trail: NSObject, Identifiable {
         metres = metadata.metres
         days = metadata.days
         colour = metadata.colour
+        cycle = metadata.cycle
+        ascent = metadata.ascent
+        country = metadata.country
         
         linesCoords = lines.lines.map { $0.map { CLLocationCoordinate2DMake($0[0], $0[1]) }}
         linesLocations = linesCoords.map { $0.map { $0.location } }
@@ -44,14 +50,14 @@ class Trail: NSObject, Identifiable {
     func color(darkMode: Bool) -> Color {
         if darkMode {
             switch colour {
-            case 1: return .accentColor
+            case 1: return Color(.link)
             case 2: return .cyan
             case 3: return .mint
             default: return .pink
             }
         } else {
             switch colour {
-            case 1: return .accentColor
+            case 1: return Color(.link)
             case 2: return .purple
             case 3: return .indigo
             default: return .pink
@@ -79,6 +85,9 @@ struct TrailMetadata: Codable {
     let metres: Double
     let days: Int
     let colour: Int
+    let cycle: Bool
+    let ascent: Int?
+    let country: Country
 }
 
 @objc(TrailTrips)
@@ -102,4 +111,28 @@ class TrailTrips: NSManagedObject {
 extension TrailTrips: MKOverlay {
     var coordinate: CLLocationCoordinate2D { multiPolyline.coordinate }
     var boundingMapRect: MKMapRect { multiPolyline.boundingMapRect }
+}
+
+enum Country: String, Codable, CaseIterable {
+    case england = "England"
+    case scotland = "Scotland"
+    case wales = "Wales"
+    case ni = "Northern Ireland"
+}
+
+enum TrailSort: String, CaseIterable {
+    case name = "Name"
+    case ascent = "Ascent"
+    case distance = "Distance"
+    
+    var image: String {
+        switch self {
+        case .name:
+            return "character"
+        case .ascent:
+            return "arrow.up"
+        case .distance:
+            return "ruler"
+        }
+    }
 }

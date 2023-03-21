@@ -18,25 +18,23 @@ struct InfoView: View {
         NavigationView {
             VStack(alignment: .leading, spacing: 0) {
                 VStack(spacing: 10) {
-                    Image("logo")
+                    Image("my_logo")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 70, height: 70)
                         .cornerRadius(15)
-                        .shadow(color: .black.opacity(0.2), radius: 5)
                     Text(NAME)
                         .font(.largeTitle.bold())
                         .multilineTextAlignment(.center)
-                        .padding(.bottom, 5)
                 }
                 .horizontallyCentred()
-                .padding(.bottom)
+                .padding(.bottom, 30)
                 
-                // 5665712 metres
-                VStack(alignment: .leading, spacing: 20) {
-                    InfoRow(systemName: "map", title: "Browse the National Trails", description: "The National Trails are 16 long-distance footpaths covering over \(vm.metric ? "5,600 km" : "3,500 miles") of the most picturesque British countryside.")
+                VStack(alignment: .leading, spacing: 15) {
+                    InfoRow(systemName: "map", title: "The Trails", description: "Browse 45 of the most spectacular long-distance trails in the United Kingdom.")
                     InfoRow(systemName: "magnifyingglass", title: "Search Maps", description: "Find B&Bs, cafés, shops & more along your route.")
                     InfoRow(systemName: "checkmark.circle", title: "Track Your Progress", description: "Mark sections of a trail as complete.")
+                    InfoRow(systemName: "point.topleft.down.curvedto.point.bottomright.up", title: "Select a Trail Section", description: "Measure the length of your next trip.")
                     HStack {
                         Image(systemName: "ruler")
                             .font(.title)
@@ -57,8 +55,8 @@ struct InfoView: View {
                         }
                     }
                 }
-                Spacer(minLength: 0)
                 
+                Spacer()
                 if welcome {
                     Button {
                         dismiss()
@@ -108,9 +106,7 @@ struct InfoView: View {
                     }
                 }
                 ToolbarItem(placement: .principal) {
-                    if welcome {
-                        Text("")
-                    } else {
+                    if !welcome {
                         DraggableBar()
                     }
                 }

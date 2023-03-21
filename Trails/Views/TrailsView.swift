@@ -7,34 +7,29 @@
 
 import SwiftUI
 
-enum SortBy: String, CaseIterable {
-    case name = "Name"
-    case distance = "Distance"
-    
-    var image: String {
-        switch self {
-        case .name:
-            return "character"
-        case .distance:
-            return "ruler"
-        }
-    }
-}
-
 struct TrailsView: View {
     @EnvironmentObject var vm: ViewModel
     @State var showInfoView = false
     @State var text = ""
-    @AppStorage("sortBy") var sortBy = SortBy.name
+    @AppStorage("sortBy") var sortBy = TrailSort.name
+    @AppStorage("country") var country: Country?
+    @AppStorage("cycle") var cycle = false
     
     @Binding var showTrailsView: Bool
     
     var filteredTrails: [Trail] {
-        vm.trails.filter { text.isEmpty || $0.name.localizedCaseInsensitiveContains(text) }
+        vm.trails
+            .filter { trail in
+                (text.isEmpty || trail.name.localizedCaseInsensitiveContains(text)) &&
+                (country == nil || country == trail.country) &&
+                (!cycle || trail.cycle)
+            }
             .sorted {
                 switch sortBy {
                 case .name:
                     return $0.name < $1.name
+                case .ascent:
+                    return $0.ascent ?? .max < $1.ascent ?? .max
                 case .distance:
                     return $0.metres < $1.metres
                 }
@@ -49,7 +44,7 @@ struct TrailsView: View {
                         .background(Color.background)
                 }
             }
-            .navigationTitle("National Trails")
+            .navigationTitle("The Trails")
             .navigationBarTitleDisplayMode(.inline)
             .searchable(text: $text.animation(), placement: .navigationBarDrawer(displayMode: .always))
             .overlay {
@@ -62,14 +57,22 @@ struct TrailsView: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     HStack {
-                        Button {
-                            showInfoView = true
+                        Menu {
+                            Picker("", selection: $country.animation()) {
+                                Text("UK")
+                                    .tag(nil as Country?)
+                                ForEach(Country.allCases, id: \.self) { country in
+                                    Text(country.rawValue)
+                                        .tag(country as Country?)
+                                }
+                            }
+                            Toggle("Cycleways", isOn: $cycle.animation())
                         } label: {
-                            Image(systemName: "info.circle")
+                            Image(systemName: "line.3.horizontal.decrease.circle" + ((cycle || country != nil) ? ".fill" : ""))
                         }
                         Menu {
                             Picker("", selection: $sortBy.animation()) {
-                                ForEach(SortBy.allCases, id: \.self) { sortBy in
+                                ForEach(TrailSort.allCases, id: \.self) { sortBy in
                                     Label(sortBy.rawValue, systemImage: sortBy.image)
                                 }
                             }
@@ -78,13 +81,23 @@ struct TrailsView: View {
                         }
                     }
                 }
+                ToolbarItem(placement: .principal) {
+                    DraggableBar("The Trails")
+                }
                 ToolbarItem(placement: .primaryAction) {
-                    Button {
-                        showTrailsView = false
-                    } label: {
-                        DismissCross()
+                    HStack(spacing: 15) {
+                        Button {
+                            showInfoView = true
+                        } label: {
+                            Image(systemName: "info.circle")
+                        }
+                        Button {
+                            showTrailsView = false
+                        } label: {
+                            DismissCross()
+                        }
+                        .buttonStyle(.plain)
                     }
-                    .buttonStyle(.plain)
                 }
             }
         }
