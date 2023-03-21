@@ -75,6 +75,10 @@ struct SelectionBar: View {
                     Image(systemName: "ellipsis.circle")
                         .iconFont()
                 }
+                .onTapGesture {
+                    tappedMenu = .now
+                }
+                
                 Button {
                     vm.stopSelecting()
                 } label: {

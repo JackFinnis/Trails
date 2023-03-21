@@ -48,6 +48,7 @@ class Trail: NSObject, Identifiable {
     }
     
     func color(darkMode: Bool) -> Color {
+        return darkMode ? .cyan : Color(.link)
         if darkMode {
             switch colour {
             case 1: return Color(.link)

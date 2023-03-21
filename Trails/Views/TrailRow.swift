@@ -99,13 +99,12 @@ struct TrailRow: View {
                                 Button {
                                     showWebView = true
                                 } label: {
-                                    Label("Website", systemImage: "info.circle")
+                                    Label("More Info", systemImage: "info.circle")
                                 }
                             } label: {
                                 Image(systemName: "ellipsis.circle")
                                     .iconFont()
                             }
-                            .frame(width: 30, height: 30)
                             .onTapGesture {
                                 tappedMenu = .now
                             }

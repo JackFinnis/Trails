@@ -36,13 +36,6 @@ struct WebView: View {
             .navigationTitle(trail.name)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .principal) {
-                    Button {
-                        openURL(trail.url)
-                    } label: {
-                        Image(systemName: "safari")
-                    }
-                }
                 ToolbarItem(placement: .primaryAction) {
                     Button {
                         openURL(trail.url)

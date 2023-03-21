@@ -215,7 +215,7 @@
         "url": "https://www.scotlandsgreattrails.com/trail/annandale-way/",
         "days": 4,
         "photoUrl": "https://www.scotlandsgreattrails.com/wp-content/uploads/2017/07/ANN-AnnanBridge-768x320.jpg",
-        "colour": 3,
+        "colour": 1,
         "cycle": false,
         "country": "Scotland"
     },
@@ -228,7 +228,7 @@
         "url": "https://www.scotlandsgreattrails.com/trail/arran-coastal-way/",
         "days": 7,
         "photoUrl": "https://www.scotlandsgreattrails.com/wp-content/uploads/2017/07/ACW-MachrieBay-768x320.jpg",
-        "colour": 3,
+        "colour": 2,
         "cycle": false,
         "country": "Scotland"
     },
@@ -254,7 +254,7 @@
         "url": "https://www.scotlandsgreattrails.com/trail/berwickshire-coastal-path/",
         "days": 3,
         "photoUrl": "https://www.scotlandsgreattrails.com/wp-content/uploads/2017/02/Coldingham-BayCrop-e1497445222314-768x320.jpg",
-        "colour": 3,
+        "colour": 1,
         "cycle": false,
         "country": "Scotland"
     },
@@ -267,7 +267,7 @@
         "url": "https://www.scotlandsgreattrails.com/trail/borders-abbeys-way/",
         "days": 5,
         "photoUrl": "https://www.scotlandsgreattrails.com/wp-content/uploads/2017/08/SCW-MELROSE-ABBEY-JOHN-BARKER-Abbey3-768x320.jpg",
-        "colour": 3,
+        "colour": 2,
         "cycle": false,
         "country": "Scotland"
     },
@@ -293,7 +293,7 @@
         "url": "https://www.scotlandsgreattrails.com/trail/clyde-walkway/",
         "days": 4,
         "photoUrl": "https://www.scotlandsgreattrails.com/wp-content/uploads/2017/05/018-IMG_39121-e1495624371312-768x320.jpg",
-        "colour": 3,
+        "colour": 1,
         "cycle": true,
         "country": "Scotland"
     },
@@ -306,7 +306,7 @@
         "url": "https://www.scotlandsgreattrails.com/trail/loch-lomond-cowal-way/",
         "days": 5,
         "photoUrl": "https://www.scotlandsgreattrails.com/wp-content/uploads/2017/05/CW-4-Curra-Lochain-1-768x320.jpg",
-        "colour": 3,
+        "colour": 2,
         "cycle": false,
         "country": "Scotland"
     },
@@ -332,7 +332,7 @@
         "url": "https://www.scotlandsgreattrails.com/trail/dava-way/",
         "days": 2,
         "photoUrl": "https://www.scotlandsgreattrails.com/wp-content/uploads/2017/06/DWay4crop-2000x836.jpg",
-        "colour": 3,
+        "colour": 1,
         "cycle": true,
         "country": "Scotland"
     },
@@ -345,7 +345,7 @@
         "url": "https://www.scotlandsgreattrails.com/trail/fife-coastal-path/",
         "days": 9,
         "photoUrl": "https://www.scotlandsgreattrails.com/wp-content/uploads/2017/05/dykes-768x320.jpg",
-        "colour": 3,
+        "colour": 2,
         "cycle": false,
         "country": "Scotland"
     },
@@ -371,7 +371,7 @@
         "url": "https://www.scotlandsgreattrails.com/trail/great-glen-way/",
         "days": 6,
         "photoUrl": "https://www.scotlandsgreattrails.com/wp-content/uploads/2017/02/P1070039c-1-768x320.jpg",
-        "colour": 3,
+        "colour": 1,
         "cycle": true,
         "country": "Scotland"
     },
@@ -384,7 +384,7 @@
         "url": "https://www.scotlandsgreattrails.com/trail/great-trossachs-path/",
         "days": 2,
         "photoUrl": "https://www.scotlandsgreattrails.com/wp-content/uploads/2017/08/IMG_7877-e1498236271776-768x320.jpg",
-        "colour": 3,
+        "colour": 2,
         "cycle": true,
         "country": "Scotland"
     },
@@ -410,7 +410,7 @@
         "url": "https://www.scotlandsgreattrails.com/trail/kintyre-way/",
         "days": 8,
         "photoUrl": "https://www.scotlandsgreattrails.com/wp-content/uploads/2017/07/KTW-JuraFromRonachan-768x320.jpg",
-        "colour": 3,
+        "colour": 1,
         "cycle": true,
         "country": "Scotland"
     },
@@ -423,7 +423,7 @@
         "url": "https://www.scotlandsgreattrails.com/trail/moray-coast-trail/",
         "days": 4,
         "photoUrl": "https://www.scotlandsgreattrails.com/wp-content/uploads/2021/03/BowFiddle-e1615026672341.jpg",
-        "colour": 3,
+        "colour": 2,
         "cycle": false,
         "country": "Scotland"
     },
@@ -449,7 +449,7 @@
         "url": "https://www.scotlandsgreattrails.com/trail/river-ayr-way/",
         "days": 3,
         "photoUrl": "https://www.walkhighlands.co.uk/glasgow/7_3/7_3_2l.JPG",
-        "colour": 3,
+        "colour": 1,
         "cycle": false,
         "country": "Scotland"
     },
@@ -462,7 +462,7 @@
         "url": "https://www.scotlandsgreattrails.com/trail/rob-roy-way/",
         "days": 6,
         "photoUrl": "https://www.scotlandsgreattrails.com/wp-content/uploads/2017/05/Lubnaigdreamstimeextralarge_51156300-768x320.jpg",
-        "colour": 3,
+        "colour": 2,
         "cycle": true,
         "country": "Scotland"
     },
@@ -488,7 +488,7 @@
         "url": "https://www.scotlandsgreattrails.com/trail/southern-upland-way/",
         "days": 17,
         "photoUrl": "https://www.scotlandsgreattrails.com/wp-content/uploads/2017/08/SUW-CraigmichenScar-EttrickHilsC-e1503415619135-768x320.jpg",
-        "colour": 3,
+        "colour": 1,
         "cycle": false,
         "country": "Scotland"
     },
@@ -501,7 +501,7 @@
         "url": "https://www.scotlandsgreattrails.com/trail/speyside-way/",
         "days": 7,
         "photoUrl": "https://www.scotlandsgreattrails.com/wp-content/uploads/2017/05/P9110083crs-768x320.jpg",
-        "colour": 3,
+        "colour": 2,
         "cycle": false,
         "country": "Scotland"
     },
@@ -527,7 +527,7 @@
         "url": "https://www.scotlandsgreattrails.com/trail/three-lochs-way/",
         "days": 3,
         "photoUrl": "https://www.scotlandsgreattrails.com/wp-content/uploads/2017/05/L-Lomond-from-Goukhill-1-768x320.jpg",
-        "colour": 3,
+        "colour": 1,
         "cycle": false,
         "country": "Scotland"
     },
@@ -540,7 +540,7 @@
         "url": "https://www.scotlandsgreattrails.com/trail/forth-clydeunion-canal-towpath/",
         "days": 5,
         "photoUrl": "https://www.scotlandsgreattrails.com/wp-content/uploads/2017/07/FCU-waterplayCrop-768x320.jpg",
-        "colour": 3,
+        "colour": 2,
         "cycle": true,
         "country": "Scotland"
     },
@@ -566,7 +566,7 @@
         "url": "https://www.scotlandsgreattrails.com/trail/west-island-way/",
         "days": 3,
         "photoUrl": "https://www.scotlandsgreattrails.com/wp-content/uploads/2017/05/IMG_1219-2000x833.jpg",
-        "colour": 3,
+        "colour": 1,
         "cycle": false,
         "country": "Scotland"
     },
@@ -579,7 +579,7 @@
         "url": "https://walkni.com/ulster-way/",
         "days": 46,
         "photoUrl": "https://i.guim.co.uk/img/media/7ceefdf7577a199e8942fd827a6b978443a0ff83/0_0_3822_2293/master/3822.jpg?width=445&quality=85&dpr=1&s=none",
-        "colour": 3,
+        "colour": 1,
         "cycle": false,
         "country": "Northern Ireland"
     }
