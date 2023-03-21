@@ -102,7 +102,7 @@ class ViewModel: NSObject, ObservableObject {
     func loadData() {
         let trailsLines: [TrailLines] = loadJSON(from: "Coords")
         let trailsMetadata: [TrailMetadata] = loadJSON(from: "Metadata")
-        for id in 0...15 {
+        for id in 0...44 {
             let lines = trailsLines.first { $0.id == id }!
             let metadata = trailsMetadata.first { $0.id == id }!
             trails.append(Trail(lines: lines, metadata: metadata))

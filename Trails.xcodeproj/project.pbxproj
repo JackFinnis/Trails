@@ -37,7 +37,7 @@
 		04626C0029C25714004880E3 /* TrailRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04626BFF29C25714004880E3 /* TrailRow.swift */; };
 		048E5F2029C38A0A0080355B /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048E5F1F29C38A0A0080355B /* WebView.swift */; };
 		048E5F2229C38A930080355B /* WebVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048E5F2129C38A930080355B /* WebVM.swift */; };
-		0498A03229C9473E00731E5C /* Coords.json in Resources */ = {isa = PBXBuildFile; fileRef = 0498A03129C9473E00731E5C /* Coords.json */; };
+		0498A03829C962E600731E5C /* Coords.json in Resources */ = {isa = PBXBuildFile; fileRef = 0498A03729C962E600731E5C /* Coords.json */; };
 		04CEDFC629A2E4DA00810005 /* DraggableBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04CEDFC329A2E4DA00810005 /* DraggableBar.swift */; };
 		04CEDFCB29A2E50700810005 /* Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04CEDFC829A2E50700810005 /* Defaults.swift */; };
 		04CEDFCC29A2E50700810005 /* Emails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04CEDFC929A2E50700810005 /* Emails.swift */; };
@@ -84,7 +84,7 @@
 		04626BFF29C25714004880E3 /* TrailRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailRow.swift; sourceTree = "<group>"; };
 		048E5F1F29C38A0A0080355B /* WebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebView.swift; sourceTree = "<group>"; };
 		048E5F2129C38A930080355B /* WebVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebVM.swift; sourceTree = "<group>"; };
-		0498A03129C9473E00731E5C /* Coords.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Coords.json; sourceTree = "<group>"; };
+		0498A03729C962E600731E5C /* Coords.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Coords.json; sourceTree = "<group>"; };
 		04CEDFC329A2E4DA00810005 /* DraggableBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DraggableBar.swift; sourceTree = "<group>"; };
 		04CEDFC829A2E50700810005 /* Defaults.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Defaults.swift; sourceTree = "<group>"; };
 		04CEDFC929A2E50700810005 /* Emails.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Emails.swift; sourceTree = "<group>"; };
@@ -144,7 +144,7 @@
 			children = (
 				0416F17C299EFA0B00B90E68 /* Launch Screen.storyboard */,
 				04626BF329C1E085004880E3 /* Metadata.json */,
-				0498A03129C9473E00731E5C /* Coords.json */,
+				0498A03729C962E600731E5C /* Coords.json */,
 				0416F159299E91B200B90E68 /* Assets.xcassets */,
 				0416F1B4299F02AA00B90E68 /* Trails.xcdatamodeld */,
 			);
@@ -300,9 +300,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				04626BF529C1E086004880E3 /* Metadata.json in Resources */,
+				0498A03829C962E600731E5C /* Coords.json in Resources */,
 				0416F17D299EFA0B00B90E68 /* Launch Screen.storyboard in Resources */,
 				0416F15A299E91B200B90E68 /* Assets.xcassets in Resources */,
-				0498A03229C9473E00731E5C /* Coords.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
