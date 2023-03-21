@@ -85,13 +85,14 @@ class ViewModel: NSObject, ObservableObject {
         try? container.viewContext.save()
     }
     
+    // MARK: - Initialiser
     override init() {
         super.init()
         manager.delegate = self
         loadData()
-        completedTrailIDs = []
     }
     
+    // MARK: - Load Data
     func loadJSON<T: Decodable>(from file: String) -> T {
         let url = Bundle.main.url(forResource: file, withExtension: "json")!
         let data = try! Data(contentsOf: url)
@@ -101,7 +102,7 @@ class ViewModel: NSObject, ObservableObject {
     func loadData() {
         let trailsLines: [TrailLines] = loadJSON(from: "Coords")
         let trailsMetadata: [TrailMetadata] = loadJSON(from: "Metadata")
-        for id in 0...14 {
+        for id in 0...15 {
             let lines = trailsLines.first { $0.id == id }!
             let metadata = trailsMetadata.first { $0.id == id }!
             trails.append(Trail(lines: lines, metadata: metadata))
@@ -110,6 +111,7 @@ class ViewModel: NSObject, ObservableObject {
         
         container.loadPersistentStores { description, error in
             self.deleteAll(entityName: "TrailTrips")
+            self.completedTrailIDs = []
             self.loadTrips()
         }
     }
@@ -128,6 +130,23 @@ class ViewModel: NSObject, ObservableObject {
         if let url = URL(string: UIApplication.openSettingsURLString) {
             UIApplication.shared.open(url)
         }
+    }
+    
+    // MARK: - General
+    func formatDistance(_ metres: Double, showUnit: Bool, round: Bool) -> String {
+        let value = metres / (metric ? 1000 : 1609.34)
+        return String(format: "%.\(round ? 0 : 1)f", value) + (showUnit ? (metric ? " km" : " miles") : "")
+    }
+    
+    func shakeError() {
+        self.shake = true
+        withAnimation(.spring(response: 0.2, dampingFraction: 0.2, blendDuration: 0.2)) {
+            self.shake = false
+        }
+    }
+    
+    var darkMode: Bool {
+        UITraitCollection.current.userInterfaceStyle == .dark || mapView?.mapType == .hybrid
     }
 }
 
@@ -169,11 +188,6 @@ extension ViewModel {
                 self.degrees += 90
             }
         }
-    }
-    
-    func formatDistance(_ metres: Double, showUnit: Bool, round: Bool) -> String {
-        let value = metres / (metric ? 1000 : 1609.34)
-        return String(format: "%.\(round ? 0 : 1)f", value) + (showUnit ? (metric ? " km" : " miles") : "")
     }
     
     func refreshOverlays() {
@@ -250,28 +264,32 @@ extension ViewModel {
     func newSelectCoord(_ coord: CLLocationCoordinate2D) {
         if selectPins.count < 2 {
             reverseGeocode(coord: coord) { placemark in
-                let annotation = Annotation(type: .select, placemark: placemark, coord: coord)
-                self.selectPins.append(annotation)
-                self.mapView?.addAnnotation(annotation)
-                self.mapView?.deselectAnnotation(annotation, animated: false)
-                
-                if self.selectPins.count == 2 {
-                    let coords = self.calculateLine(between: self.selectPins[0].coordinate, and: self.selectPins[1].coordinate)
-                    
-                    self.selectError = coords.count < 2
-                    guard !self.selectError else { self.shakeError(); return }
-                    
-                    guard let start = coords.first, let end = coords.last else { return }
-                    let tripCoords = self.selectedTrips?.linesCoords.flatMap { $0 } ?? []
-                    self.canUncomplete = tripCoords.contains(start) || tripCoords.contains(end)
-                    
-                    self.selectPolyline = MKPolyline(coordinates: coords, count: coords.count)
-                    self.mapView?.addOverlay(self.selectPolyline!, level: .aboveRoads)
-                    self.selectMetres = coords.metres
-                    self.zoomTo(self.selectPolyline, extraPadding: true)
-                    Haptics.tap()
-                }
+                self.newSelectPin(placemark: placemark, coord: coord)
             }
+        }
+    }
+    
+    func newSelectPin(placemark: CLPlacemark, coord: CLLocationCoordinate2D) {
+        let annotation = Annotation(type: .select, placemark: placemark, coord: coord)
+        selectPins.append(annotation)
+        mapView?.addAnnotation(annotation)
+        mapView?.deselectAnnotation(annotation, animated: false)
+        
+        if selectPins.count == 2 {
+            let coords = calculateLine(between: selectPins[0].coordinate, and: selectPins[1].coordinate)
+            
+            selectError = coords.count < 2
+            guard !selectError else { shakeError(); return }
+            
+            guard let start = coords.first, let end = coords.last else { return }
+            let tripCoords = selectedTrips?.linesCoords.flatMap { $0 } ?? []
+            canUncomplete = tripCoords.contains(start) || tripCoords.contains(end)
+            
+            selectPolyline = MKPolyline(coordinates: coords, count: coords.count)
+            mapView?.addOverlay(selectPolyline!, level: .aboveRoads)
+            selectMetres = coords.metres()
+            zoomTo(selectPolyline, extraPadding: true)
+            Haptics.tap()
         }
     }
     
@@ -360,11 +378,12 @@ extension ViewModel {
             trailsTrips.append(trips)
         }
         save()
+        trips.reload()
         mapView?.removeOverlay(trips)
         mapView?.addOverlay(trips, level: .aboveRoads)
         stopSelecting()
         
-        if Int(trips.metres/1000) == Int(selectedTrail.metres/1000) && !completedTrailIDs.contains(selectedTrail.id) {
+        if trips.metres.equalTo(selectedTrail.metres, to: -3) && !completedTrailIDs.contains(selectedTrail.id) {
             Haptics.success()
             completedTrailIDs.append(selectedTrail.id)
             showCompletedAlert = true
@@ -395,11 +414,12 @@ extension ViewModel {
         }
         selectedTrips.lines = newLines.map { $0.map { [$0.latitude, $0.longitude] } }
         save()
+        selectedTrips.reload()
         mapView?.removeOverlay(selectedTrips)
         mapView?.addOverlay(selectedTrips, level: .aboveRoads)
         stopSelecting()
         
-        if Int(selectedTrips.metres/1000) < Int(selectedTrail.metres/1000) {
+        if !selectedTrips.metres.equalTo(selectedTrail.metres, to: -3) {
             completedTrailIDs.removeAll(selectedTrail.id)
         }
     }
@@ -455,33 +475,11 @@ extension ViewModel: CLLocationManagerDelegate {
 
 // MARK: - MKMapViewDelegate
 extension ViewModel: MKMapViewDelegate {
-    var darkMode: Bool {
-        UITraitCollection.current.userInterfaceStyle == .dark || mapView?.mapType == .hybrid
-    }
-    
-    func getColor(of trail: Trail) -> Color {
-        if darkMode {
-            switch trail.colour {
-            case 1: return Color(.link)
-            case 2: return .cyan
-            case 3: return .mint
-            default: return .pink
-            }
-        } else {
-            switch trail.colour {
-            case 1: return Color(.link)
-            case 2: return .purple
-            case 3: return .indigo
-            default: return .pink
-            }
-        }
-    }
-    
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
         if let trail = overlay as? Trail {
             let renderer = MKMultiPolylineRenderer(multiPolyline: trail.multiPolyline)
             renderer.lineWidth = 2
-            renderer.strokeColor = UIColor(getColor(of: trail))
+            renderer.strokeColor = UIColor(trail.color(darkMode: darkMode))
             return renderer
         } else if let trips = overlay as? TrailTrips {
             let renderer = MKMultiPolylineRenderer(multiPolyline: trips.multiPolyline)
@@ -519,6 +517,7 @@ extension ViewModel: MKMapViewDelegate {
                 pin?.rightCalloutAccessoryView = openButton
                 pin?.leftCalloutAccessoryView = removeButton
                 pin?.canShowCallout = true
+                pin?.pinTintColor = UIColor(.orange)
                 return pin
             case .search, .drop:
                 let marker = mapView.dequeueReusableAnnotationView(withIdentifier: MKMarkerAnnotationView.id, for: annotation) as? MKMarkerAnnotationView
@@ -582,13 +581,6 @@ extension ViewModel: UISearchBarDelegate {
             } else {
                 self.shakeError()
             }
-        }
-    }
-    
-    func shakeError() {
-        self.shake = true
-        withAnimation(.spring(response: 0.2, dampingFraction: 0.2, blendDuration: 0.2)) {
-            self.shake = false
         }
     }
     

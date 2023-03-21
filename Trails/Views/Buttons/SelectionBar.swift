@@ -68,7 +68,7 @@ struct SelectionBar: View {
                         Button(role: .destructive) {
                             vm.uncompleteSelectPolyline()
                         } label: {
-                            Label("Mark as Uncompleted", systemImage: "xmark")
+                            Label("Remove from Completed", systemImage: "xmark")
                         }
                     }
                 } label: {

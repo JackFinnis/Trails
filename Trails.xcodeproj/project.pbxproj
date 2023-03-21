@@ -27,15 +27,17 @@
 		0416F1B6299F02AA00B90E68 /* Trails.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0416F1B4299F02AA00B90E68 /* Trails.xcdatamodeld */; };
 		0416F1BD29A1692100B90E68 /* NSObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0416F1BC29A1692100B90E68 /* NSObject.swift */; };
 		0421202429C90E08003DE52F /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0421202329C90E08003DE52F /* Array.swift */; };
+		0421202629C9184D003DE52F /* WiFiError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0421202529C9184D003DE52F /* WiFiError.swift */; };
+		0421202929C91E03003DE52F /* WebUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0421202829C91E03003DE52F /* WebUIView.swift */; };
+		0421202B29C929C1003DE52F /* CLLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0421202A29C929C1003DE52F /* CLLocation.swift */; };
 		0455AFFB29C6BD380096C8B6 /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0455AFFA29C6BD380096C8B6 /* Color.swift */; };
 		04626BF529C1E086004880E3 /* Metadata.json in Resources */ = {isa = PBXBuildFile; fileRef = 04626BF329C1E085004880E3 /* Metadata.json */; };
 		04626BFA29C24297004880E3 /* Annotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04626BF929C24297004880E3 /* Annotation.swift */; };
 		04626BFE29C24EE7004880E3 /* TrailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04626BFD29C24EE7004880E3 /* TrailsView.swift */; };
 		04626C0029C25714004880E3 /* TrailRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04626BFF29C25714004880E3 /* TrailRow.swift */; };
-		04626C0429C36F79004880E3 /* Coords.json in Resources */ = {isa = PBXBuildFile; fileRef = 04626C0329C36F79004880E3 /* Coords.json */; };
 		048E5F2029C38A0A0080355B /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048E5F1F29C38A0A0080355B /* WebView.swift */; };
 		048E5F2229C38A930080355B /* WebVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048E5F2129C38A930080355B /* WebVM.swift */; };
-		048E5F2429C38B300080355B /* BigLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048E5F2329C38B300080355B /* BigLabel.swift */; };
+		0498A03229C9473E00731E5C /* Coords.json in Resources */ = {isa = PBXBuildFile; fileRef = 0498A03129C9473E00731E5C /* Coords.json */; };
 		04CEDFC629A2E4DA00810005 /* DraggableBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04CEDFC329A2E4DA00810005 /* DraggableBar.swift */; };
 		04CEDFCB29A2E50700810005 /* Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04CEDFC829A2E50700810005 /* Defaults.swift */; };
 		04CEDFCC29A2E50700810005 /* Emails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04CEDFC929A2E50700810005 /* Emails.swift */; };
@@ -72,15 +74,17 @@
 		0416F1B5299F02AA00B90E68 /* Trails.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Trails.xcdatamodel; sourceTree = "<group>"; };
 		0416F1BC29A1692100B90E68 /* NSObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSObject.swift; sourceTree = "<group>"; };
 		0421202329C90E08003DE52F /* Array.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Array.swift; sourceTree = "<group>"; };
+		0421202529C9184D003DE52F /* WiFiError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WiFiError.swift; sourceTree = "<group>"; };
+		0421202829C91E03003DE52F /* WebUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebUIView.swift; sourceTree = "<group>"; };
+		0421202A29C929C1003DE52F /* CLLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CLLocation.swift; sourceTree = "<group>"; };
 		0455AFFA29C6BD380096C8B6 /* Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Color.swift; sourceTree = "<group>"; };
 		04626BF329C1E085004880E3 /* Metadata.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Metadata.json; sourceTree = "<group>"; };
 		04626BF929C24297004880E3 /* Annotation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Annotation.swift; sourceTree = "<group>"; };
 		04626BFD29C24EE7004880E3 /* TrailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailsView.swift; sourceTree = "<group>"; };
 		04626BFF29C25714004880E3 /* TrailRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailRow.swift; sourceTree = "<group>"; };
-		04626C0329C36F79004880E3 /* Coords.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Coords.json; sourceTree = "<group>"; };
 		048E5F1F29C38A0A0080355B /* WebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebView.swift; sourceTree = "<group>"; };
 		048E5F2129C38A930080355B /* WebVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebVM.swift; sourceTree = "<group>"; };
-		048E5F2329C38B300080355B /* BigLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BigLabel.swift; sourceTree = "<group>"; };
+		0498A03129C9473E00731E5C /* Coords.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Coords.json; sourceTree = "<group>"; };
 		04CEDFC329A2E4DA00810005 /* DraggableBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DraggableBar.swift; sourceTree = "<group>"; };
 		04CEDFC829A2E50700810005 /* Defaults.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Defaults.swift; sourceTree = "<group>"; };
 		04CEDFC929A2E50700810005 /* Emails.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Emails.swift; sourceTree = "<group>"; };
@@ -140,7 +144,7 @@
 			children = (
 				0416F17C299EFA0B00B90E68 /* Launch Screen.storyboard */,
 				04626BF329C1E085004880E3 /* Metadata.json */,
-				04626C0329C36F79004880E3 /* Coords.json */,
+				0498A03129C9473E00731E5C /* Coords.json */,
 				0416F159299E91B200B90E68 /* Assets.xcassets */,
 				0416F1B4299F02AA00B90E68 /* Trails.xcdatamodeld */,
 			);
@@ -154,6 +158,7 @@
 				0416F173299EF9FC00B90E68 /* MKMultiPoint.swift */,
 				04E7185229C7CC0400876116 /* MKCoordinateRegion.swift */,
 				0416F174299EF9FC00B90E68 /* CLLocationCoordinate2D.swift */,
+				0421202A29C929C1003DE52F /* CLLocation.swift */,
 				0416F175299EF9FC00B90E68 /* Double.swift */,
 				0416F1BC29A1692100B90E68 /* NSObject.swift */,
 				04E7185029C79E6C00876116 /* UIColor.swift */,
@@ -181,7 +186,9 @@
 				0416F191299EFB9C00B90E68 /* MapView.swift */,
 				04626BFD29C24EE7004880E3 /* TrailsView.swift */,
 				04626BFF29C25714004880E3 /* TrailRow.swift */,
+				04CEDFDA29A2E60400810005 /* InfoView.swift */,
 				04CEDFE629A2EC6300810005 /* Buttons */,
+				0421202729C91CDC003DE52F /* Web */,
 				0416F196299EFB9C00B90E68 /* Extra */,
 			);
 			path = Views;
@@ -190,13 +197,9 @@
 		0416F196299EFB9C00B90E68 /* Extra */ = {
 			isa = PBXGroup;
 			children = (
-				04CEDFDA29A2E60400810005 /* InfoView.swift */,
 				04CEDFC329A2E4DA00810005 /* DraggableBar.swift */,
 				04CEDFDC29A2E66200810005 /* DismissCross.swift */,
 				0416F195299EFB9C00B90E68 /* ShareView.swift */,
-				048E5F2129C38A930080355B /* WebVM.swift */,
-				048E5F1F29C38A0A0080355B /* WebView.swift */,
-				048E5F2329C38B300080355B /* BigLabel.swift */,
 				0416F19A299EFB9C00B90E68 /* Blur.swift */,
 				0455AFFA29C6BD380096C8B6 /* Color.swift */,
 				0416F170299EF9FC00B90E68 /* View.swift */,
@@ -213,6 +216,17 @@
 				0416F183299EFB9100B90E68 /* Haptics.swift */,
 			);
 			path = Helpers;
+			sourceTree = "<group>";
+		};
+		0421202729C91CDC003DE52F /* Web */ = {
+			isa = PBXGroup;
+			children = (
+				048E5F1F29C38A0A0080355B /* WebView.swift */,
+				0421202829C91E03003DE52F /* WebUIView.swift */,
+				048E5F2129C38A930080355B /* WebVM.swift */,
+				0421202529C9184D003DE52F /* WiFiError.swift */,
+			);
+			path = Web;
 			sourceTree = "<group>";
 		};
 		04CEDFE629A2EC6300810005 /* Buttons */ = {
@@ -286,9 +300,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				04626BF529C1E086004880E3 /* Metadata.json in Resources */,
-				04626C0429C36F79004880E3 /* Coords.json in Resources */,
 				0416F17D299EFA0B00B90E68 /* Launch Screen.storyboard in Resources */,
 				0416F15A299E91B200B90E68 /* Assets.xcassets in Resources */,
+				0498A03229C9473E00731E5C /* Coords.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -302,6 +316,7 @@
 				0416F18B299EFB9100B90E68 /* Haptics.swift in Sources */,
 				0416F1BD29A1692100B90E68 /* NSObject.swift in Sources */,
 				04CEDFC629A2E4DA00810005 /* DraggableBar.swift in Sources */,
+				0421202929C91E03003DE52F /* WebUIView.swift in Sources */,
 				04CEDFE129A2EADB00810005 /* SelectionBar.swift in Sources */,
 				04CEDFDD29A2E66200810005 /* DismissCross.swift in Sources */,
 				04E7185329C7CC0400876116 /* MKCoordinateRegion.swift in Sources */,
@@ -319,12 +334,13 @@
 				04626BFA29C24297004880E3 /* Annotation.swift in Sources */,
 				0416F1B6299F02AA00B90E68 /* Trails.xcdatamodeld in Sources */,
 				0421202429C90E08003DE52F /* Array.swift in Sources */,
-				048E5F2429C38B300080355B /* BigLabel.swift in Sources */,
+				0421202629C9184D003DE52F /* WiFiError.swift in Sources */,
 				04E7185529C89D0400876116 /* Number.swift in Sources */,
 				0416F18A299EFB9100B90E68 /* ViewModel.swift in Sources */,
 				048E5F2029C38A0A0080355B /* WebView.swift in Sources */,
 				04CEDFDB29A2E60400810005 /* InfoView.swift in Sources */,
 				0455AFFB29C6BD380096C8B6 /* Color.swift in Sources */,
+				0421202B29C929C1003DE52F /* CLLocation.swift in Sources */,
 				04626BFE29C24EE7004880E3 /* TrailsView.swift in Sources */,
 				0416F177299EF9FC00B90E68 /* Collection.swift in Sources */,
 				0416F179299EF9FC00B90E68 /* MKMultiPoint.swift in Sources */,

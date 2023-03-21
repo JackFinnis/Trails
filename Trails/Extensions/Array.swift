@@ -12,3 +12,9 @@ extension Array where Element: Comparable {
         removeAll { $0 == value }
     }
 }
+
+extension Array where Element: Sequence {
+    func concat() -> [Element.Element] where Element: Sequence {
+        flatMap { $0 }
+    }
+}

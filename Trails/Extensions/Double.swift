@@ -20,9 +20,9 @@ extension Double {
     }
     
     func rounded(to decimalPlaces: Int) -> Decimal {
-        var initialDecimal = Decimal(self)
-        var roundedDecimal = Decimal()
-        NSDecimalRound(&roundedDecimal, &initialDecimal, decimalPlaces, .plain)
-        return roundedDecimal
+        var original = Decimal(self)
+        var rounded = Decimal()
+        NSDecimalRound(&rounded, &original, decimalPlaces, .plain)
+        return rounded
     }
 }

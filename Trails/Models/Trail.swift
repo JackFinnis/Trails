@@ -40,6 +40,24 @@ class Trail: NSObject, Identifiable {
         linesLocations = linesCoords.map { $0.map { $0.location } }
         multiPolyline = MKMultiPolyline(linesCoords.map { MKPolyline(coordinates: $0, count: $0.count) })
     }
+    
+    func color(darkMode: Bool) -> Color {
+        if darkMode {
+            switch colour {
+            case 1: return .accentColor
+            case 2: return .cyan
+            case 3: return .mint
+            default: return .pink
+            }
+        } else {
+            switch colour {
+            case 1: return .accentColor
+            case 2: return .purple
+            case 3: return .indigo
+            default: return .pink
+            }
+        }
+    }
 }
 
 extension Trail: MKOverlay {
@@ -58,8 +76,6 @@ struct TrailMetadata: Codable {
     let description: String
     let url: URL
     let photoUrl: URL
-    let km: Int
-    let miles: Int
     let metres: Double
     let days: Int
     let colour: Int
@@ -70,17 +86,16 @@ class TrailTrips: NSManagedObject {
     @NSManaged var id: Int16
     @NSManaged var lines: [[[Double]]]
     
-    var linesCoords: [[CLLocationCoordinate2D]] {
-        lines.map { $0.map { CLLocationCoordinate2DMake($0[0], $0[1]) } }
-    }
-    var linesLocations: [[CLLocation]] {
-        linesCoords.map { $0.map { $0.location } }
-    }
-    var multiPolyline: MKMultiPolyline {
-        MKMultiPolyline(linesCoords.map { MKPolyline(coordinates: $0, count: $0.count) })
-    }
-    var metres: Double {
-        linesCoords.map(\.metres).sum
+    var linesCoords = [[CLLocationCoordinate2D]]()
+    var coords = [CLLocationCoordinate2D]()
+    var multiPolyline = MKMultiPolyline()
+    var metres = 0.0
+    
+    func reload() {
+        linesCoords = lines.map { $0.map { CLLocationCoordinate2DMake($0[0], $0[1]) } }
+        coords = linesCoords.concat()
+        multiPolyline = MKMultiPolyline(linesCoords.map { MKPolyline(coordinates: $0, count: $0.count) })
+        metres = linesCoords.map { $0.metres() }.sum()
     }
 }
 

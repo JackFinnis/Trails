@@ -19,7 +19,7 @@ extension Double: Number {}
 extension Int: Number {}
 
 extension Array where Element: Number {
-    var sum: Element {
+    func sum() -> Element {
         reduce(Element.init(0), +)
     }
 }

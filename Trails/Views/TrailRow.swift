@@ -126,7 +126,7 @@ struct TrailRow: View {
         .transition(.move(edge: .top).combined(with: .opacity))
         .background {
             NavigationLink("", isActive: $showWebView) {
-                WebView(trail: trail)
+                WebView(webVM: WebVM(url: trail.url), trail: trail)
                     .ignoresSafeArea()
             }
             .hidden()

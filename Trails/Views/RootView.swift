@@ -35,14 +35,14 @@ struct RootView: View {
                 }
                 
                 Buttons()
-                    .alert("Congratulations!", isPresented: $vm.showCompletedAlert) {
-                        Button("Maybe Later", role: .cancel) {}
-                        Button("Leave a Review") {
+                    .alert("🎉 Congratulations! 🎉", isPresented: $vm.showCompletedAlert) {
+                        Button("Review \(NAME)") {
                             Store.writeReview()
                         }
                         Button("Rate \(NAME)") {
                             Store.requestRating()
                         }
+                        Button("Maybe Later") {}
                     } message: {
                         Text("You have walked the entire length of \(vm.selectedTrail?.name ?? ""); that's over \(vm.formatDistance(vm.selectMetres, showUnit: true, round: true))! Please consider leaving a review or rating \(NAME) if the app helped you navigate.")
                     }

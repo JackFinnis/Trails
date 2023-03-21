@@ -19,14 +19,7 @@ extension CLLocationCoordinate2D: Equatable {
 }
 
 extension Array where Element == CLLocationCoordinate2D {
-    var metres: Double {
-        guard count >= 2 else { return 0 }
-        let locations = map(\.location)
-        var distance = Double.zero
-        
-        for i in 0..<locations.count-1 {
-            distance += locations[i+1].distance(from: locations[i])
-        }
-        return distance
+    func metres() -> Double {
+        map(\.location).metres()
     }
 }

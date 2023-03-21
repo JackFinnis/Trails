@@ -4,9 +4,7 @@
         "description": "Walk the backbone of England from the Peak District to the Scottish Borders on Britain's first National Trail.",
         "url": "https://www.nationaltrail.co.uk/trails/pennine-way/",
         "photoUrl": "https://nationaltrails.s3.eu-west-2.amazonaws.com/uploads/IL20190401140438-peak-district-derbyshire-uk-july-2018_28566112957_o-2000x600.jpg",
-        "miles": 268,
         "metres": 435490,
-        "km": 431,
         "id": 0,
         "days": 19,
         "colour": 1
@@ -16,8 +14,6 @@
         "description": "Experience the varied landscape of the North York Moors National Park on a journey across breathtaking heather moorland and dramatic coastline.",
         "url": "https://www.nationaltrail.co.uk/trails/cleveland-way/",
         "photoUrl": "https://nationaltrails.s3.eu-west-2.amazonaws.com/uploads/Cleveland-Way-Home-2000x600.jpg",
-        "miles": 109,
-        "km": 175,
         "metres": 170813,
         "id": 1,
         "days": 9,
@@ -30,8 +26,6 @@
         "description": "Be surrounded by history and wildlife beside the 8th Century ancient monument along the English-Welsh Border.",
         "url": "https://www.nationaltrail.co.uk/trails/offas-dyke-path/",
         "photoUrl": "https://nationaltrails.s3.eu-west-2.amazonaws.com/uploads/NH_ODP_3.jpg",
-        "miles": 177,
-        "km": 285,
         "days": 14,
         "colour": 2
     },
@@ -42,8 +36,6 @@
         "description": "Travel the length of the South Downs passing attractive wildlife, visible prehistory, fine pubs and pretty villages.",
         "url": "https://www.nationaltrail.co.uk/trails/south-downs-way/",
         "photoUrl": "https://nationaltrails.s3.eu-west-2.amazonaws.com/uploads/IL20220825142402-SDW_Header-2000x600.jpg",
-        "miles": 100,
-        "km": 160,
         "days": 9,
         "colour": 2
     },
@@ -54,8 +46,6 @@
         "description": "Take a route used since prehistoric times by travellers, herdsmen and soldiers through ancient landscapes.",
         "url": "https://www.nationaltrail.co.uk/trails/the-ridgeway/",
         "photoUrl": "https://nationaltrails.s3.eu-west-2.amazonaws.com/uploads/IL20190710144026-shutterstock_1404983168TRWa-2000x600.jpg",
-        "miles": 87,
-        "km": 140,
         "days": 6,
         "colour": 3
     },
@@ -66,8 +56,6 @@
         "description": "Walk hundreds of miles of superb coastline through Somerset, Devon, Cornwall and Dorset on England's longest National Trail.",
         "url": "https://www.nationaltrail.co.uk/trails/south-west-coast-path/",
         "photoUrl": "https://nationaltrails.s3.eu-west-2.amazonaws.com/uploads/IL20190329152828-DSC08298-2000x600.jpg",
-        "miles": 630,
-        "km": 1014,
         "days": 52,
         "colour": 3
     },
@@ -78,8 +66,6 @@
         "description": "Trace ancient routes on a modern-day pilgrimage through Surrey to the Kent Coast at Dover, along one of England's most accessible trails.",
         "url": "https://www.nationaltrail.co.uk/trails/north-downs-way/",
         "photoUrl": "https://nationaltrails.s3.eu-west-2.amazonaws.com/uploads/IL20190405101653-DSC4203-1-2000x600.jpg",
-        "miles": 153,
-        "km": 246,
         "days": 12,
         "colour": 1
     },
@@ -90,8 +76,6 @@
         "description": "Discover the Yorkshire Wolds dry valleys and wildflowers alongside vibrant market towns and ancient villages.",
         "url": "https://www.nationaltrail.co.uk/trails/yorkshire-wolds-way/",
         "photoUrl": "https://nationaltrails.s3.eu-west-2.amazonaws.com/uploads/NH_YWW.jpg",
-        "miles": 79,
-        "km": 127,
         "days": 6,
         "colour": 2
     },
@@ -102,8 +86,6 @@
         "description": "Lose yourself in a magical land of history, heathland, sand dunes, salt marshes and nature reserves.",
         "url": "https://www.nationaltrail.co.uk/trails/peddars-way-and-norfolk-coast-path/",
         "photoUrl": "https://nationaltrails.s3.eu-west-2.amazonaws.com/uploads/IL20190409145648-DSC06455-2000x600.jpg",
-        "miles": 49,
-        "km": 79,
         "days": 8,
         "colour": 3
     },
@@ -114,8 +96,6 @@
         "description": "Follow the greatest river in England past water meadows, unspoilt rural villages and historical towns and cities.",
         "url": "https://www.nationaltrail.co.uk/trails/thames-path/",
         "photoUrl": "https://nationaltrails.s3.eu-west-2.amazonaws.com/uploads/IL20210616162331-TP-open-field-towards-Henley-scaled-2000x600.jpg",
-        "miles": 185,
-        "km": 298,
         "days": 14,
         "colour": 2
     },
@@ -126,8 +106,6 @@
         "description": "Follow in the footsteps of Romans and trek alongside an ancient monument on a coast to coast walk across northern England.",
         "url": "https://www.nationaltrail.co.uk/trails/hadrians-wall-path/",
         "photoUrl": "https://nationaltrails.s3.eu-west-2.amazonaws.com/uploads/IL20220825130935-DSC1106-1-2000x600.jpg",
-        "miles": 84,
-        "km": 135,
         "days": 7,
         "colour": 3
     },
@@ -138,8 +116,6 @@
         "description": "Step back in time in scenic southern England on an idyllic walk through the Cotswolds to the Roman city of Bath",
         "url": "https://www.nationaltrail.co.uk/trails/cotswold-way/",
         "photoUrl": "https://nationaltrails.s3.eu-west-2.amazonaws.com/uploads/IL20190329143018-DSC2961-2000x600.jpg",
-        "miles": 102,
-        "km": 164,
         "days": 10,
         "colour": 1
     },
@@ -150,8 +126,6 @@
         "description": "Follow ancient packhorse routes, drovers roads and newly created bridleways through the magnificent Pennines.",
         "url": "https://www.nationaltrail.co.uk/trails/pennine-bridleway/",
         "photoUrl": "https://nationaltrails.s3.eu-west-2.amazonaws.com/uploads/PBW_Header.jpg",
-        "miles": 205,
-        "km": 330,
         "days": 17,
         "colour": 2
     },
@@ -162,8 +136,6 @@
         "description": "Follow the most breathtaking coastline in Britain past rugged cliffs, sheltered coves and stunning beaches.",
         "url": "https://www.nationaltrail.co.uk/trails/pembrokeshire-coast-path/",
         "photoUrl": "https://nationaltrails.s3.eu-west-2.amazonaws.com/uploads/IL20190710111831-IMGP5701PCP-2000x600.jpg",
-        "miles": 186,
-        "km": 299,
         "days": 12,
         "colour": 1
     },
@@ -174,9 +146,17 @@
         "description": "Celebrate Welsh cultural and natural history in the footsteps of Owain Glyndŵr on this peaceful trail.",
         "url": "https://www.nationaltrail.co.uk/trails/glyndwrs-way/",
         "photoUrl": "https://nationaltrails.s3.eu-west-2.amazonaws.com/uploads/IL20190710085844-Nant-Fadian-4-2000x600.jpg",
-        "miles": 135,
-        "km": 217,
         "days": 9,
+        "colour": 3
+    },
+    {
+        "name": "England Coast Path",
+        "metres": 1323122,
+        "id": 15,
+        "description": "Connecting the finest coastal landscapes in England",
+        "url": "https://www.nationaltrail.co.uk/trails/england-coast-path/",
+        "photoUrl": "https://nationaltrails.s3.eu-west-2.amazonaws.com/uploads/IL20190711114216-shutterstock_397175626-2000x600.jpg",
+        "days": 66,
         "colour": 3
     }
 ]
