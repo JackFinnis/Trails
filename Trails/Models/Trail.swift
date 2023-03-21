@@ -123,17 +123,6 @@ enum Country: String, Codable, CaseIterable {
 
 enum TrailSort: String, CaseIterable {
     case name = "Name"
-    case ascent = "Ascent"
-    case distance = "Distance"
-    
-    var image: String {
-        switch self {
-        case .name:
-            return "character"
-        case .ascent:
-            return "arrow.up"
-        case .distance:
-            return "ruler"
-        }
-    }
+    case distance = "Length"
+    case ascent = "Total Ascent"
 }

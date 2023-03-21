@@ -58,6 +58,7 @@ struct TrailsView: View {
                 ToolbarItem(placement: .cancellationAction) {
                     HStack {
                         Menu {
+                            Text("Filter Trails")
                             Picker("", selection: $country.animation()) {
                                 Text("UK")
                                     .tag(nil as Country?)
@@ -71,15 +72,17 @@ struct TrailsView: View {
                             Image(systemName: "line.3.horizontal.decrease.circle" + ((cycle || country != nil) ? ".fill" : ""))
                         }
                         Menu {
+                            Text("Sort Trails")
                             Picker("", selection: $sortBy.animation()) {
                                 ForEach(TrailSort.allCases, id: \.self) { sortBy in
-                                    Label(sortBy.rawValue, systemImage: sortBy.image)
+                                    Text(sortBy.rawValue)
                                 }
                             }
                         } label: {
                             Image(systemName: "arrow.up.arrow.down")
                         }
                     }
+                    .font(.body.weight(.medium))
                 }
                 ToolbarItem(placement: .principal) {
                     DraggableBar("The Trails")
@@ -98,6 +101,7 @@ struct TrailsView: View {
                         }
                         .buttonStyle(.plain)
                     }
+                    .font(.body.weight(.medium))
                 }
             }
         }

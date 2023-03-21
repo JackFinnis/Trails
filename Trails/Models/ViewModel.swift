@@ -302,6 +302,7 @@ extension ViewModel {
     
     func startSelecting() {
         stopSelecting()
+        stopSearching()
         isSelecting = true
     }
     
@@ -485,12 +486,12 @@ extension ViewModel: MKMapViewDelegate {
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
         if let trail = overlay as? Trail {
             let renderer = MKMultiPolylineRenderer(multiPolyline: trail.multiPolyline)
-            renderer.lineWidth = 2
+            renderer.lineWidth = trail == selectedTrail ? 3 : 2
             renderer.strokeColor = UIColor(trail.color(darkMode: darkMode))
             return renderer
         } else if let trips = overlay as? TrailTrips {
             let renderer = MKMultiPolylineRenderer(multiPolyline: trips.multiPolyline)
-            renderer.lineWidth = 2
+            renderer.lineWidth = 3
             renderer.strokeColor = darkMode ? .white : .black
             return renderer
         } else if let polyline = overlay as? MKPolyline {

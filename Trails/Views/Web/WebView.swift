@@ -32,6 +32,13 @@ struct WebView: View {
                     ProgressView()
                 }
             }
+            .if { view in
+                if #available(iOS 16, *) {
+                    view.toolbarBackground(.visible, for: .navigationBar)
+                } else {
+                    view
+                }
+            }
             .animation(.default, value: webVM.error)
             .navigationTitle(trail.name)
             .navigationBarTitleDisplayMode(.inline)

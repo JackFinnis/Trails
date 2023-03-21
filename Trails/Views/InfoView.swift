@@ -31,7 +31,7 @@ struct InfoView: View {
                 .padding(.bottom, 30)
                 
                 VStack(alignment: .leading, spacing: 15) {
-                    InfoRow(systemName: "map", title: "The Trails", description: "Browse 45 of the most spectacular long-distance trails in the United Kingdom.")
+                    InfoRow(systemName: "map", title: "The Trails", description: "Browse 45 of the most spectacular long-distance trails in the UK.")
                     InfoRow(systemName: "magnifyingglass", title: "Search Maps", description: "Find B&Bs, cafés, shops & more along your route.")
                     InfoRow(systemName: "checkmark.circle", title: "Track Your Progress", description: "Mark sections of a trail as complete.")
                     InfoRow(systemName: "point.topleft.down.curvedto.point.bottomright.up", title: "Select a Trail Section", description: "Measure the length of your next trip.")
