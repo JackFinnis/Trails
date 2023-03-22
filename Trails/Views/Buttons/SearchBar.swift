@@ -12,6 +12,21 @@ struct SearchBar: View {
     
     var body: some View {
         HStack(spacing: 0) {
+            if vm.recentSearches.isNotEmpty {
+                Menu {
+                    ForEach(vm.recentSearches, id: \.self) { search in
+                        Button(search) {
+                            vm.searchBar?.text = search
+                            vm.search(text: search)
+                        }
+                    }
+                } label: {
+                    Image(systemName: "clock.arrow.circlepath")
+                }
+                .squareButton()
+                .animation(.none)
+                .padding(.trailing, -5)
+            }
             SearchView()
             Button("Cancel") {
                 vm.stopSearching()

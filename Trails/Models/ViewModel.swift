@@ -35,7 +35,7 @@ class ViewModel: NSObject, ObservableObject {
     
     // Search Bar
     var searchBar: UISearchBar?
-    var search: MKLocalSearch?
+    var localSearch: MKLocalSearch?
     @Published var searchResults = [Annotation]()
     @Published var isSearching = false { didSet {
         updateLayoutMargins()
@@ -67,6 +67,12 @@ class ViewModel: NSObject, ObservableObject {
     }}
     @Defaults("metric") var metric = true { didSet {
         objectWillChange.send()
+    }}
+    @Defaults("recentSearches") var recentSearches = [String]() { didSet {
+        objectWillChange.send()
+        if recentSearches.count > 3 {
+            recentSearches.remove(at: 0)
+        }
     }}
     
     // Map View
@@ -152,6 +158,7 @@ class ViewModel: NSObject, ObservableObject {
     }
     
     func shakeError() {
+        Haptics.tap()
         shake = true
         withAnimation(.spring(response: 0.2, dampingFraction: 0.2, blendDuration: 0.2)) {
             shake = false
@@ -593,13 +600,7 @@ extension ViewModel: MKMapViewDelegate {
 extension ViewModel: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         guard let text = searchBar.text, text.isNotEmpty else { return }
-        search(text: text) { success in
-            if success {
-                searchBar.resignFirstResponder()
-            } else {
-                self.shakeError()
-            }
-        }
+        search(text: text)
     }
     
     func stopSearching() {
@@ -612,6 +613,19 @@ extension ViewModel: UISearchBarDelegate {
         searchResults = []
     }
     
+    func search(text: String) {
+        search(text: text) { success in
+            if success {
+                self.searchBar?.resignFirstResponder()
+                if !self.recentSearches.contains(text) {
+                    self.recentSearches.append(text)
+                }
+            } else {
+                self.shakeError()
+            }
+        }
+    }
+    
     func search(text: String, completion: @escaping (Bool) -> Void) {
         resetSearching()
         
@@ -620,9 +634,9 @@ extension ViewModel: UISearchBarDelegate {
         guard let mapView else { return }
         request.region = mapView.region
         
-        search?.cancel()
-        search = MKLocalSearch(request: request)
-        search?.start { response, error in
+        localSearch?.cancel()
+        localSearch = MKLocalSearch(request: request)
+        localSearch?.start { response, error in
             guard let response else { completion(false); return }
             let filteredResults = response.mapItems.filter { $0.placemark.countryCode == "GB" }
             guard filteredResults.isNotEmpty else { completion(false); return }

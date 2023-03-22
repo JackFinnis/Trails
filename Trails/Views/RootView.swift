@@ -27,9 +27,9 @@ struct RootView: View {
                         Text("\(NAME) needs access to your location to show where you are on the map. Please go to Settings > \(NAME) > Location and allow access while using the app.")
                     }
                 
-                VStack {
+                VStack(spacing: 0) {
                     Blur()
-                        .ignoresSafeArea(.all, edges: .all)
+                        .ignoresSafeArea()
                     Spacer()
                         .layoutPriority(1)
                 }

@@ -16,7 +16,7 @@ struct WebView: View {
     
     var body: some View {
         WebUIView(webVM: webVM)
-            .ignoresSafeArea(edges: .bottom)
+            .ignoresSafeArea()
             .overlay {
                 if webVM.error && !webVM.loaded {
                     WiFiError(compact: false)
