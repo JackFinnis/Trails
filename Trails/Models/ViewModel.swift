@@ -18,7 +18,7 @@ class ViewModel: NSObject, ObservableObject {
     // MARK: - Properties
     var trails = [Trail]()
     var trailsTrips = [TrailTrips]()
-    var selectedTrips: TrailTrips? { trailsTrips.first { $0.id == selectedTrail?.id } }
+    var selectedTrips: TrailTrips? { getSelectedTrips(trail: selectedTrail) }
     @Published var selectedTrail: Trail? { didSet {
         if let selectedTrail {
             mapView?.removeOverlays(trails)
@@ -122,6 +122,7 @@ class ViewModel: NSObject, ObservableObject {
 //            self.deleteAll(entityName: "TrailTrips")
 //            self.completedTrailIDs = []
             self.trailsTrips = (try? self.container.viewContext.fetch(TrailTrips.fetchRequest()) as? [TrailTrips]) ?? []
+            self.trailsTrips.forEach { $0.reload() }
         }
     }
     
@@ -155,6 +156,10 @@ class ViewModel: NSObject, ObservableObject {
         withAnimation(.spring(response: 0.2, dampingFraction: 0.2, blendDuration: 0.2)) {
             shake = false
         }
+    }
+    
+    func getSelectedTrips(trail: Trail?) -> TrailTrips? {
+        trailsTrips.first { $0.id == trail?.id }
     }
     
     var darkMode: Bool {

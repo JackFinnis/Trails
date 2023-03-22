@@ -128,4 +128,18 @@ enum TrailSort: String, CaseIterable {
     case name = "Name"
     case distance = "Length"
     case ascent = "Total Ascent"
+    case completed = "Percentage Completed"
+    
+    var image: String {
+        switch self {
+        case .name:
+            return "character"
+        case .distance:
+            return "ruler"
+        case .ascent:
+            return "arrow.up"
+        case .completed:
+            return "percent"
+        }
+    }
 }

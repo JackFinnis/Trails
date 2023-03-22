@@ -47,7 +47,7 @@ struct TrailRow: View {
                     .overlay(alignment: .bottomTrailing) {
                         if trail.cycle {
                             Image(systemName: "bicycle")
-                                .padding(5)
+                                .padding(4)
                                 .background(.regularMaterial)
                                 .cornerRadius(5)
                                 .padding(5)
@@ -65,7 +65,7 @@ struct TrailRow: View {
                                     Image(systemName: "checkmark.circle.fill")
                                         .foregroundColor(.accentColor)
                                         .padding(.trailing, 5)
-                                } else if let metres = vm.selectedTrips?.metres, metres > 0 {
+                                } else if let metres = vm.getSelectedTrips(trail: trail)?.metres, metres > 0 {
                                     Text("\(vm.formatMiles(metres, showUnit: false, round: true))/")
                                 }
                                 Text("\(vm.formatMiles(trail.metres, showUnit: true, round: true)) • \(trail.days) days")

@@ -15,15 +15,17 @@ struct TrailsView: View {
     @AppStorage("sortBy") var sortBy = TrailSort.name
     @AppStorage("country") var country: Country?
     @AppStorage("cycle") var cycle = false
+    @AppStorage("completed") var completed = false
     
     @Binding var showTrailsView: Bool
     
     var filteredTrails: [Trail] {
         vm.trails
-            .filter { trail in
-                (text.isEmpty || trail.name.localizedCaseInsensitiveContains(text)) &&
-                (country == nil || country == trail.country) &&
-                (!cycle || trail.cycle)
+            .filter {
+                (text.isEmpty || $0.name.localizedCaseInsensitiveContains(text)) &&
+                (country == nil || country == $0.country) &&
+                (!cycle || $0.cycle) &&
+                (!completed || vm.completedTrailIDs.contains($0.id))
             }
             .sorted {
                 switch sortBy {
@@ -33,6 +35,9 @@ struct TrailsView: View {
                     return $0.ascent ?? .max < $1.ascent ?? .max
                 case .distance:
                     return $0.metres < $1.metres
+                case .completed:
+                    return (vm.getSelectedTrips(trail: $0)?.metres ?? 0) >
+                           (vm.getSelectedTrips(trail: $1)?.metres ?? 0)
                 }
             }
     }
@@ -68,15 +73,24 @@ struct TrailsView: View {
                                         .tag(country as Country?)
                                 }
                             }
-                            Toggle("Cycleways", isOn: $cycle.animation())
+                            Section {
+                                Toggle(isOn: $cycle.animation()) {
+                                    Label("Cycleways", systemImage: "bicycle")
+                                }
+                            }
+                            Section {
+                                Toggle(isOn: $completed.animation()) {
+                                    Label("Completed", systemImage: "checkmark.circle")
+                                }
+                            }
                         } label: {
-                            Image(systemName: "line.3.horizontal.decrease.circle" + ((cycle || country != nil) ? ".fill" : ""))
+                            Image(systemName: "line.3.horizontal.decrease.circle" + ((completed || cycle || country != nil) ? ".fill" : ""))
                         }
                         Menu {
                             Text("Sort Trails")
                             Picker("", selection: $sortBy.animation()) {
                                 ForEach(TrailSort.allCases, id: \.self) { sortBy in
-                                    Text(sortBy.rawValue)
+                                    Label(sortBy.rawValue, systemImage: sortBy.image)
                                 }
                             }
                         } label: {
