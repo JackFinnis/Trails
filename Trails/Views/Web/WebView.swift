@@ -16,7 +16,7 @@ struct WebView: View {
     
     var body: some View {
         WebUIView(webVM: webVM)
-            .ignoresSafeArea()
+            .ignoresSafeArea(edges: .bottom)
             .overlay {
                 if webVM.error && !webVM.loaded {
                     WiFiError(compact: false)
@@ -42,13 +42,6 @@ struct WebView: View {
                     } label: {
                         Image(systemName: "safari")
                     }
-                }
-            }
-            .if { view in
-                if #available(iOS 16, *) {
-                    view.toolbarBackground(.visible, for: .navigationBar)
-                } else {
-                    view
                 }
             }
     }

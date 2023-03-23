@@ -21,10 +21,9 @@ struct TrailRow: View {
         Button {
             guard tappedMenu.distance(to: .now) > 1 else { return }
             if list {
-                showTrailsView = false
                 vm.selectedTrail = trail
-            }
-            if vm.selectedTrail != nil {
+                showTrailsView = false
+            } else {
                 vm.zoomTo(trail)
             }
         } label: {
@@ -92,11 +91,6 @@ struct TrailRow: View {
                         } else {
                             Menu {
                                 Button {
-                                    vm.expand.toggle()
-                                } label: {
-                                    Label(vm.expand ? "Shrink" : "Expand", systemImage: vm.expand ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right")
-                                }
-                                Button {
                                     vm.startSelecting()
                                 } label: {
                                     Label("Select a Section", systemImage: "point.topleft.down.curvedto.point.bottomright.up")
@@ -113,12 +107,10 @@ struct TrailRow: View {
                             .onTapGesture {
                                 tappedMenu = .now
                             }
-                        }
-                        if !list {
                             Button {
-                                vm.deselectTrail()
+                                vm.expand.toggle()
                             } label: {
-                                Image(systemName: "xmark")
+                                Image(systemName: vm.expand ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right")
                                     .iconFont()
                             }
                         }
@@ -137,6 +129,7 @@ struct TrailRow: View {
             .buttonStyle(.borderless)
             .contentShape(Rectangle())
         }
+        .detectSize($vm.trailRowSize)
         .buttonStyle(.plain)
         .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
         .animation(.default, value: vm.expand)
@@ -144,7 +137,6 @@ struct TrailRow: View {
         .background {
             NavigationLink("", isActive: $showWebView) {
                 WebView(webVM: WebVM(url: trail.url), trail: trail)
-                    .ignoresSafeArea()
             }
             .hidden()
         }

@@ -56,6 +56,7 @@ struct RootView: View {
             }
         }
         .navigationViewStyle(.stack)
+        .shareSheet(items: vm.shareLocationItems, isPresented: $vm.showShareLocationSheet)
         .sheet(isPresented: $showWelcomeView) {
             InfoView(welcome: true)
         }

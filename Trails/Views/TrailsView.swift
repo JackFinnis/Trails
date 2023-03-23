@@ -50,7 +50,6 @@ struct TrailsView: View {
                         .background(Color.background)
                 }
             }
-            .navigationTitle("The Trails")
             .navigationBarTitleDisplayMode(.inline)
             .searchable(text: $text.animation(), placement: .navigationBarDrawer(displayMode: .always))
             .overlay {

@@ -116,7 +116,7 @@ struct InfoView: View {
                 }
             }
         }
-        .shareSheet(url: APP_URL, isPresented: $showShareSheet)
+        .shareSheet(items: [APP_URL], isPresented: $showShareSheet)
         .emailSheet(recipient: EMAIL, subject: "\(NAME) Feedback", isPresented: $showEmailSheet)
         .interactiveDismissDisabled(welcome)
     }

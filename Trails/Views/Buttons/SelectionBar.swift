@@ -59,10 +59,12 @@ struct SelectionBar: View {
             Spacer()
             HStack(spacing: 15) {
                 Menu {
-                    Button {
-                        vm.completeSelectPolyline()
-                    } label: {
-                        Label("Mark as Completed", systemImage: "checkmark.circle")
+                    if vm.canComplete {
+                        Button {
+                            vm.completeSelectPolyline()
+                        } label: {
+                            Label("Mark as Completed", systemImage: "checkmark.circle")
+                        }
                     }
                     if vm.canUncomplete {
                         Button(role: .destructive) {

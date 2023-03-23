@@ -33,10 +33,10 @@ struct Dismissible: ViewModifier {
     }
     
     func body(content: Content) -> some View {
-        let fadeDistance = vm.expand ? 200.0 : 100.0
+        let distance = vm.expand ? 200.0 : 100.0
         content
             .offset(x: 0, y: offset)
-            .opacity((fadeDistance - (offset * (edge == .top ? -1 : 1)))/fadeDistance)
+            .opacity((distance - (offset * (edge == .top ? -1 : 1)))/distance)
             .simultaneousGesture(DragGesture()
                 .onChanged { value in
                     if value.translation.height > 0 && edge == .bottom || value.translation.height < 0 && edge == .top {
@@ -46,7 +46,7 @@ struct Dismissible: ViewModifier {
                     }
                 }
                 .onEnded { value in
-                    if value.predictedEndTranslation.height > fadeDistance/2 && edge == .bottom || value.predictedEndTranslation.height < -fadeDistance/2 && edge == .top {
+                    if (value.predictedEndTranslation.height > distance/2 && edge == .bottom) || (value.predictedEndTranslation.height < -distance/2 && edge == .top) {
                         onDismiss()
                         offset = 0
                     } else {
@@ -61,7 +61,7 @@ struct Dismissible: ViewModifier {
 
 extension View {
     func materialBackground() -> some View {
-        self.modifier(Background())
+        modifier(Background())
     }
     
     @ViewBuilder
@@ -74,7 +74,7 @@ extension View {
     }
     
     func iconFont() -> some View {
-        self.font(.system(size: SIZE/2))
+        font(.system(size: SIZE/2))
     }
     
     func horizontallyCentred() -> some View {
@@ -96,12 +96,40 @@ extension View {
     }
     
     func dismissible(edge: VerticalEdge, onDismiss: @escaping () -> Void) -> some View {
-        self.modifier(Dismissible(edge: edge, onDismiss: onDismiss))
+        modifier(Dismissible(edge: edge, onDismiss: onDismiss))
     }
     
     func squareButton() -> some View {
         self
             .iconFont()
             .frame(width: SIZE, height: SIZE)
+    }
+    
+    func detectSize(_ size: Binding<CGSize>) -> some View {
+        modifier(SizeDetector(size: size))
+    }
+}
+
+struct SizePreferenceKey: PreferenceKey {
+    static var defaultValue = CGSize.zero
+
+    static func reduce(value: inout CGSize, nextValue: () -> CGSize) {
+        value = nextValue()
+    }
+}
+
+struct SizeDetector: ViewModifier {
+    @Binding var size: CGSize
+
+    func body(content: Content) -> some View {
+        content
+            .overlay {
+                GeometryReader { geo in
+                    Color.clear.preference(key: SizePreferenceKey.self, value: geo.size)
+                }
+            }
+            .onPreferenceChange(SizePreferenceKey.self) { newSize in
+                size = newSize
+            }
     }
 }

@@ -11,7 +11,6 @@ import CoreData
 import SwiftUI
 import StoreKit
 
-@MainActor
 class ViewModel: NSObject, ObservableObject {
     static let shared = ViewModel()
     
@@ -19,8 +18,11 @@ class ViewModel: NSObject, ObservableObject {
     var trails = [Trail]()
     var trailsTrips = [TrailTrips]()
     var selectedTrips: TrailTrips? { getSelectedTrips(trail: selectedTrail) }
+    var zoomedToSelected = true
+    var annotationSelected = false
     @Published var selectedTrail: Trail? { didSet {
         if let selectedTrail {
+            zoomedToSelected = false
             mapView?.removeOverlays(trails)
             mapView?.addOverlay(selectedTrail, level: .aboveRoads)
             if let selectedTrips {
@@ -29,32 +31,42 @@ class ViewModel: NSObject, ObservableObject {
         } else {
             mapView?.removeOverlays(trailsTrips)
             mapView?.addOverlays(trails, level: .aboveRoads)
+            updateLayoutMargins()
         }
-        updateLayoutMargins(animate: selectedTrail == nil)
     }}
     
     // Search Bar
     var searchBar: UISearchBar?
     var localSearch: MKLocalSearch?
     @Published var searchResults = [Annotation]()
-    @Published var isSearching = false { didSet {
-        updateLayoutMargins()
-    }}
+    @Published var isSearching = false
     
     // Select line
     @Published var selectPolyline: MKPolyline?
     @Published var selectMetres = 0.0
     @Published var selectError = false
     @Published var canUncomplete = false
+    @Published var canComplete = false
     @Published var selectPins = [Annotation]()
-    @Published var isSelecting = false { didSet {
-        updateLayoutMargins()
-    }}
+    @Published var isSelecting = false
     
-    // Animations
+    // View
     @Published var shake = false
     @Published var degrees = 0.0
     @Published var scale = 1.0
+    
+    @Published var showShareLocationSheet = false
+    var shareLocationItems = [Any]()
+    
+    var trailRowSize = CGSize() { didSet {
+        if !zoomedToSelected {
+            updateLayoutMargins(animate: false)
+            zoomedToSelected = true
+            zoomTo(selectedTrail)
+        } else {
+            updateLayoutMargins()
+        }
+    }}
     
     // Defaults
     @Published var showCompletedAlert = false
@@ -62,7 +74,6 @@ class ViewModel: NSObject, ObservableObject {
         objectWillChange.send()
     }}
     @Defaults("expand") var expand = false { didSet {
-        updateLayoutMargins()
         objectWillChange.send()
     }}
     @Defaults("metric") var metric = true { didSet {
@@ -221,14 +232,7 @@ extension ViewModel {
     }
     
     func updateLayoutMargins(animate: Bool = true) {
-        var top = CGFloat.zero
-        if let selectedTrail {
-            top = expand ? 275 : 80
-            if selectedTrail.name.count > 30 {
-                top += 25
-            }
-        }
-        let padding = UIEdgeInsets(top: top, left: 0, bottom: 30, right: 0)
+        let padding = UIEdgeInsets(top: selectedTrail == nil ? 0 : (trailRowSize.height + 15), left: 0, bottom: 30, right: 0)
         UIView.animate(withDuration: animate ? 0.35 : 0) {
             self.mapView?.layoutMargins = padding
         }
@@ -251,11 +255,6 @@ extension ViewModel {
             guard let placemark = placemarks?.first else { return }
             completion(placemark)
         }
-    }
-    
-    func selectClosestTrail(to coord: CLLocationCoordinate2D) {
-        (_, _, selectedTrail) = getClosestTrail(to: coord, trails: trails, maxDelta: tapDelta)
-        zoomTo(selectedTrail)
     }
     
     func getClosestTrail(to targetCoord: CLLocationCoordinate2D, trails: [Trail], maxDelta: Double) -> (CLLocationCoordinate2D?, [CLLocation]?, Trail?) {
@@ -305,9 +304,9 @@ extension ViewModel {
             selectError = coords.count < 2
             guard !selectError else { shakeError(); return }
             
-            guard let start = coords.first, let end = coords.last else { return }
-            let tripCoords = selectedTrips?.linesCoords.flatMap { $0 } ?? []
-            canUncomplete = tripCoords.contains(start) || tripCoords.contains(end)
+            let tripCoords = selectedTrips?.linesCoords.concat() ?? []
+            canComplete = coords.contains { !tripCoords.contains($0) }
+            canUncomplete = coords.contains { tripCoords.contains($0) }
             
             selectPolyline = MKPolyline(coordinates: coords, count: coords.count)
             mapView?.addOverlay(selectPolyline!, level: .aboveRoads)
@@ -407,13 +406,11 @@ extension ViewModel {
         mapView?.removeOverlay(trips)
         mapView?.addOverlay(trips, level: .aboveRoads)
         stopSelecting()
+        Haptics.success()
         
         if trips.metres.equalTo(selectedTrail.metres, to: -3) && !completedTrailIDs.contains(selectedTrail.id) {
-            Haptics.success()
             completedTrailIDs.append(selectedTrail.id)
             showCompletedAlert = true
-        } else {
-            Haptics.tap()
         }
     }
     
@@ -443,6 +440,7 @@ extension ViewModel {
         mapView?.removeOverlay(selectedTrips)
         mapView?.addOverlay(selectedTrips, level: .aboveRoads)
         stopSelecting()
+        Haptics.success()
         
         if !selectedTrips.metres.equalTo(selectedTrail.metres, to: -3) {
             completedTrailIDs.removeAll(selectedTrail.id)
@@ -455,6 +453,15 @@ extension ViewModel {
     func getCoord(from gesture: UIGestureRecognizer) -> CLLocationCoordinate2D? {
         guard let mapView = mapView else { return nil }
         let point = gesture.location(in: mapView)
+        
+        var views = [UIView]()
+        var view = mapView.hitTest(point, with: nil)
+        while view != nil {
+            views.append(view!)
+            view = view?.superview
+        }
+        
+        guard !views.contains(where: { $0 is MKAnnotationView }) else { return nil }
         return mapView.convert(point, toCoordinateFrom: mapView)
     }
     
@@ -475,8 +482,8 @@ extension ViewModel {
         
         if isSelecting {
             newSelectCoord(coord)
-        } else if selectedTrail == nil {
-            selectClosestTrail(to: coord)
+        } else if !annotationSelected {
+            (_, _, selectedTrail) = getClosestTrail(to: coord, trails: selectedTrail == nil ? trails : [selectedTrail!], maxDelta: tapDelta)
         }
     }
 }
@@ -513,7 +520,7 @@ extension ViewModel: MKMapViewDelegate {
             return renderer
         } else if let polyline = overlay as? MKPolyline {
             let renderer = MKPolylineRenderer(polyline: polyline)
-            renderer.lineWidth = 3
+            renderer.lineWidth = 4
             renderer.strokeColor = UIColor(.orange)
             return renderer
         }
@@ -530,38 +537,30 @@ extension ViewModel: MKMapViewDelegate {
     }
     
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        guard let annotation = annotation as? Annotation else { return nil }
         let openButton = getButton(systemName: "arrow.triangle.turn.up.right.circle")
         let removeButton = getButton(systemName: "xmark")
-        let shareButton = getButton(systemName: "square.and.arrow.up")
-        if let annotation = annotation as? Annotation {
-            switch annotation.type {
-            case .select:
-                let pin = mapView.dequeueReusableAnnotationView(withIdentifier: MKPinAnnotationView.id, for: annotation) as? MKPinAnnotationView
-                pin?.displayPriority = .required
-                pin?.animatesDrop = true
-                pin?.rightCalloutAccessoryView = openButton
-                pin?.leftCalloutAccessoryView = removeButton
-                pin?.canShowCallout = true
-                pin?.pinTintColor = UIColor(.orange)
-                return pin
-            case .search, .drop:
-                let marker = mapView.dequeueReusableAnnotationView(withIdentifier: MKMarkerAnnotationView.id, for: annotation) as? MKMarkerAnnotationView
-                marker?.displayPriority = .required
-                marker?.animatesWhenAdded = true
-                marker?.rightCalloutAccessoryView = openButton
-                if annotation.type == .drop {
-                    marker?.leftCalloutAccessoryView = removeButton
-                }
-                marker?.canShowCallout = true
-                return marker
+        switch annotation.type {
+        case .select:
+            let pin = mapView.dequeueReusableAnnotationView(withIdentifier: MKPinAnnotationView.id, for: annotation) as? MKPinAnnotationView
+            pin?.displayPriority = .required
+            pin?.animatesDrop = true
+            pin?.rightCalloutAccessoryView = openButton
+            pin?.leftCalloutAccessoryView = removeButton
+            pin?.canShowCallout = true
+            pin?.pinTintColor = UIColor(.orange)
+            return pin
+        case .search, .drop:
+            let marker = mapView.dequeueReusableAnnotationView(withIdentifier: MKMarkerAnnotationView.id, for: annotation) as? MKMarkerAnnotationView
+            marker?.displayPriority = .required
+            marker?.animatesWhenAdded = true
+            marker?.rightCalloutAccessoryView = openButton
+            if annotation.type == .drop {
+                marker?.leftCalloutAccessoryView = removeButton
             }
-        } else if let user = annotation as? MKUserLocation {
-            let view = mapView.dequeueReusableAnnotationView(withIdentifier: MKUserLocationView.id, for: user) as? MKUserLocationView
-            view?.rightCalloutAccessoryView = openButton
-            view?.leftCalloutAccessoryView = shareButton
-            return view
+            marker?.canShowCallout = true
+            return marker
         }
-        return nil
     }
     
     func mapView(_ mapView: MKMapView, didChange mode: MKUserTrackingMode, animated: Bool) {
@@ -570,28 +569,53 @@ extension ViewModel: MKMapViewDelegate {
         }
     }
     
+    func mapView(_ mapView: MKMapView, didAdd views: [MKAnnotationView]) {
+        let openButton = getButton(systemName: "arrow.triangle.turn.up.right.circle")
+        let shareButton = getButton(systemName: "square.and.arrow.up")
+        let view = mapView.view(for: mapView.userLocation)
+        view?.rightCalloutAccessoryView = openButton
+        view?.leftCalloutAccessoryView = shareButton
+    }
+    
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+        annotationSelected = true
         guard let annotation = view.annotation else { return }
-        if annotation is MKUserLocation {
-            mapView.deselectAnnotation(annotation, animated: false)
-        } else if isSelecting && selectPins.count < 2 {
+        if isSelecting && selectPins.count < 2 {
             mapView.deselectAnnotation(annotation, animated: false)
         }
     }
     
+    func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
+        annotationSelected = false
+    }
+    
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
-        guard let annotation = view.annotation as? Annotation else { return }
-        if control == view.leftCalloutAccessoryView {
-            if annotation.type == .drop {
-                mapView.deselectAnnotation(annotation, animated: true)
-                mapView.removeAnnotation(annotation)
+        if let annotation = view.annotation as? Annotation {
+            if control == view.leftCalloutAccessoryView {
+                if annotation.type == .drop {
+                    mapView.deselectAnnotation(annotation, animated: true)
+                    mapView.removeAnnotation(annotation)
+                } else {
+                    selectPins.removeAll { $0 == annotation }
+                    mapView.removeAnnotation(annotation)
+                    removeSelectPolyline()
+                }
             } else {
-                selectPins.removeAll { $0 == annotation }
-                mapView.removeAnnotation(annotation)
-                removeSelectPolyline()
+                annotation.openInMaps()
             }
-        } else {
-            annotation.openInMaps()
+        } else if let user = view.annotation as? MKUserLocation {
+            let coord = user.coordinate
+            if control == view.leftCalloutAccessoryView {
+                guard let url = URL(string: "https://maps.apple.com/?ll=\(coord.latitude),\(coord.longitude)") else { return }
+                shareLocationItems = [url]
+                showShareLocationSheet = true
+            } else {
+                reverseGeocode(coord: coord) { placemark in
+                    let item = MKMapItem(placemark: MKPlacemark(placemark: placemark))
+                    item.name = "My Location"
+                    item.openInMaps()
+                }
+            }
         }
     }
 }

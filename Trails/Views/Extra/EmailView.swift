@@ -42,12 +42,7 @@ struct EmailView: UIViewControllerRepresentable {
 extension View {
     func emailSheet(recipient: String, subject: String, isPresented: Binding<Bool>) -> some View {
         sheet(isPresented: isPresented) {
-            let view = EmailView(recipient: recipient, subject: subject).ignoresSafeArea()
-            if #available(iOS 16, *) {
-                view.presentationDragIndicator(.visible)
-            } else {
-                view
-            }
+            EmailView(recipient: recipient, subject: subject).ignoresSafeArea()
         }
     }
 }

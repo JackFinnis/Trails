@@ -8,19 +8,19 @@
 import SwiftUI
 
 struct ShareView: UIViewControllerRepresentable {
-    let url: URL
+    let items: [Any]
     
     func makeUIViewController(context: Context) -> UIActivityViewController {
-        UIActivityViewController(activityItems: [url], applicationActivities: nil)
+        UIActivityViewController(activityItems: items, applicationActivities: nil)
     }
     
     func updateUIViewController(_ vc: UIActivityViewController, context: Context) {}
 }
 
 extension View {
-    func shareSheet(url: URL, isPresented: Binding<Bool>) -> some View {
+    func shareSheet(items: [Any], isPresented: Binding<Bool>) -> some View {
         sheet(isPresented: isPresented) {
-            let view = ShareView(url: url).ignoresSafeArea()
+            let view = ShareView(items: items).ignoresSafeArea()
             if #available(iOS 16, *) {
                 view.presentationDetents([.medium, .large])
                     .presentationDragIndicator(.visible)

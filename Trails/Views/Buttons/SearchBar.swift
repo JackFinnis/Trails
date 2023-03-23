@@ -14,7 +14,7 @@ struct SearchBar: View {
         HStack(spacing: 0) {
             if vm.recentSearches.isNotEmpty {
                 Menu {
-                    ForEach(vm.recentSearches, id: \.self) { search in
+                    ForEach(vm.recentSearches.reversed(), id: \.self) { search in
                         Button(search) {
                             vm.searchBar?.text = search
                             vm.search(text: search)
