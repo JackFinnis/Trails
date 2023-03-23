@@ -29,7 +29,7 @@ struct SelectionBar: View {
                 HStack(spacing: 0) {
                     Text(vm.formatMiles(vm.selectMetres, showUnit: true, round: false) + " • ")
                     Menu {
-                        Picker("Speed", selection: $speed) {
+                        Picker("", selection: $speed) {
                             if vm.metric {
                                 ForEach([3.0, 3.5, 4.0, 4.5, 5.0], id: \.self) { kmh in
                                     Text(String(format: "%.1f", kmh) + " kmh")
@@ -42,6 +42,7 @@ struct SelectionBar: View {
                                 }
                             }
                         }
+                        Text("Speed")
                     } label: {
                         Text((vm.selectMetres / (speed / 3600)).formattedInterval)
                     }

@@ -15,7 +15,6 @@ struct Buttons: View {
         VStack(spacing: 10) {
             if let trail = vm.selectedTrail {
                 TrailRow(showTrailsView: .constant(false), trail: trail, list: false)
-                    .materialBackground()
                     .frame(maxWidth: 500)
                     .dismissible(edge: .top) {
                         vm.deselectTrail()

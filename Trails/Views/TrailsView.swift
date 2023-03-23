@@ -47,7 +47,6 @@ struct TrailsView: View {
             List(filteredTrails) { trail in
                 Section {
                     TrailRow(showTrailsView: $showTrailsView, trail: trail, list: true)
-                        .background(Color.background)
                 }
             }
             .navigationBarTitleDisplayMode(.inline)

@@ -30,19 +30,22 @@ struct TrailRow: View {
             VStack(spacing: 0) {
                 if vm.expand || list {
                     GeometryReader { geo in
-                        AsyncImage(url: trail.photoUrl) { image in
-                            image
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: geo.size.width, height: 120)
-                                .clipped()
-                        } placeholder: {
-                            Color(.systemFill)
-                                .frame(width: geo.size.width, height: 120)
+                        AsyncImage(url: trail.photoUrl, transaction: Transaction(animation: .default)) { phase in
+                            switch phase {
+                            case .success(let image):
+                                image
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(width: geo.size.width, height: 120)
+                                    .clipped()
+                            default:
+                                Color(.systemFill)
+                                    .frame(width: geo.size.width, height: 120)
+                            }
                         }
                     }
                     .frame(height: 120)
-                    .transition(.opacity)
+                    .transition(.move(edge: .top).combined(with: .opacity))
                     .overlay(alignment: .bottomTrailing) {
                         if trail.cycle {
                             Image(systemName: "bicycle")
@@ -50,6 +53,7 @@ struct TrailRow: View {
                                 .background(.regularMaterial)
                                 .cornerRadius(5)
                                 .padding(5)
+                                .transition(.move(edge: .trailing).combined(with: .opacity))
                         }
                     }
                 }
@@ -64,8 +68,10 @@ struct TrailRow: View {
                                     Image(systemName: "checkmark.circle.fill")
                                         .foregroundColor(.accentColor)
                                         .padding(.trailing, 5)
+                                        .transition(.move(edge: .leading).combined(with: .opacity))
                                 } else if let metres = vm.getSelectedTrips(trail: trail)?.metres, metres > 0 {
                                     Text("\(vm.formatMiles(metres, showUnit: false, round: true))/")
+                                        .transition(.move(edge: .leading).combined(with: .opacity))
                                 }
                                 Text("\(vm.formatMiles(trail.metres, showUnit: true, round: true)) • \(trail.days) days")
                                 
@@ -75,6 +81,7 @@ struct TrailRow: View {
                                         .padding(.trailing, 2)
                                         .font(.caption2.weight(.bold))
                                     Text("\(vm.formatFeet(ascent))")
+                                        .transition(.move(edge: .trailing).combined(with: .opacity))
                                 }
                             }
                             .font(.subheadline.bold())
@@ -121,13 +128,20 @@ struct TrailRow: View {
                         Text(trail.headline)
                             .font(.subheadline)
                             .foregroundColor(.secondary)
-                            .transition(.opacity.combined(with: .move(edge: .bottom)))
+                            .transition(.opacity.combined(with: .move(edge: .top)))
                     }
                 }
                 .padding(10)
             }
             .buttonStyle(.borderless)
             .contentShape(Rectangle())
+        }
+        .if { view in
+            if list {
+                view.background(Color.background)
+            } else {
+                view.materialBackground()
+            }
         }
         .detectSize($vm.trailRowSize)
         .buttonStyle(.plain)
