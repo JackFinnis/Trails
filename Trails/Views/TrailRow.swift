@@ -11,6 +11,8 @@ struct TrailRow: View {
     @EnvironmentObject var vm: ViewModel
     @State var showWebView = false
     @State var tappedMenu = Date.now
+    @State var expandIcon = false
+    @State var expandIconAngle = Angle.zero
     
     @Binding var showTrailsView: Bool
     
@@ -23,7 +25,7 @@ struct TrailRow: View {
             if list {
                 vm.selectedTrail = trail
                 showTrailsView = false
-            } else {
+            } else if vm.selectedTrail == trail {
                 vm.zoomTo(trail)
             }
         } label: {
@@ -115,10 +117,12 @@ struct TrailRow: View {
                                 tappedMenu = .now
                             }
                             Button {
-                                vm.expand.toggle()
+                                toggleExpand()
                             } label: {
-                                Image(systemName: vm.expand ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right")
+                                Image(systemName: expandIcon ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right")
+                                    .rotation3DEffect(expandIconAngle, axis: (-1, 1, 0))
                                     .iconFont()
+                                    .frame(width: 30, height: 30)
                             }
                         }
                     }
@@ -146,13 +150,26 @@ struct TrailRow: View {
         .detectSize($vm.trailRowSize)
         .buttonStyle(.plain)
         .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
-        .animation(.default, value: vm.expand)
         .transition(.move(edge: .top).combined(with: .opacity))
         .background {
             NavigationLink("", isActive: $showWebView) {
                 WebView(webVM: WebVM(url: trail.url), trail: trail)
             }
             .hidden()
+        }
+        .onAppear {
+            expandIcon = vm.expand
+        }
+    }
+    
+    func toggleExpand() {
+        withAnimation(.easeInOut(duration: 0.35)) {
+            vm.expand.toggle()
+            expandIconAngle += .radians(.pi)
+        }
+        let newValue = vm.expand
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.35/2) {
+            expandIcon = newValue
         }
     }
 }
