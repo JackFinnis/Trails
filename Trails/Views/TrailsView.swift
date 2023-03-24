@@ -16,28 +16,30 @@ struct TrailsView: View {
     @AppStorage("country") var country: Country?
     @AppStorage("cycle") var cycle = false
     @AppStorage("completed") var completed = false
+    @AppStorage("favourites") var favourites = false
     
     @Binding var showTrailsView: Bool
     
+    var filtering: Bool { favourites || completed || cycle || country != nil }
     var filteredTrails: [Trail] {
         vm.trails
             .filter {
                 (text.isEmpty || $0.name.localizedCaseInsensitiveContains(text)) &&
                 (country == nil || country == $0.country) &&
                 (!cycle || $0.cycle) &&
-                (!completed || vm.completedTrailIDs.contains($0.id))
+                (!completed || vm.completedTrails.contains($0.id)) &&
+                (!favourites || vm.favouriteTrails.contains($0.id))
             }
             .sorted {
                 switch sortBy {
                 case .name:
                     return $0.name < $1.name
                 case .ascent:
-                    return $0.ascent ?? .max < $1.ascent ?? .max
+                    return $0.ascent ?? .greatestFiniteMagnitude < $1.ascent ?? .greatestFiniteMagnitude
                 case .distance:
                     return $0.metres < $1.metres
                 case .completed:
-                    return (vm.getSelectedTrips(trail: $0)?.metres ?? 0) >
-                           (vm.getSelectedTrips(trail: $1)?.metres ?? 0)
+                    return (vm.getSelectedTrips(trail: $0)?.metres ?? 0) > (vm.getSelectedTrips(trail: $1)?.metres ?? 0)
                 }
             }
     }
@@ -71,18 +73,17 @@ struct TrailsView: View {
                                         .tag(country as Country?)
                                 }
                             }
-                            Section {
-                                Toggle(isOn: $cycle.animation()) {
-                                    Label("Cycleways", systemImage: "bicycle")
-                                }
+                            Toggle(isOn: $cycle.animation()) {
+                                Label("Cycleways", systemImage: "bicycle")
                             }
-                            Section {
-                                Toggle(isOn: $completed.animation()) {
-                                    Label("Completed", systemImage: "checkmark.circle")
-                                }
+                            Toggle(isOn: $completed.animation()) {
+                                Label("Completed", systemImage: "checkmark.circle")
+                            }
+                            Toggle(isOn: $favourites.animation()) {
+                                Label("Favourites", systemImage: "star")
                             }
                         } label: {
-                            Image(systemName: "line.3.horizontal.decrease.circle" + ((completed || cycle || country != nil) ? ".fill" : ""))
+                            Image(systemName: "line.3.horizontal.decrease.circle" + (filtering ? ".fill" : ""))
                         }
                         Menu {
                             Text("Sort Trails")

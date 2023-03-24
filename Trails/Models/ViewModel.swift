@@ -15,11 +15,11 @@ class ViewModel: NSObject, ObservableObject {
     static let shared = ViewModel()
     
     // MARK: - Properties
+    // Trails
     var trails = [Trail]()
     var trailsTrips = [TrailTrips]()
     var selectedTrips: TrailTrips? { getSelectedTrips(trail: selectedTrail) }
     var zoomedToSelected = true
-    var annotationSelected = false
     @Published var selectedTrail: Trail? { didSet {
         if let selectedTrail {
             zoomedToSelected = false
@@ -35,13 +35,16 @@ class ViewModel: NSObject, ObservableObject {
         }
     }}
     
-    // Search Bar
+    // Search
     var searchBar: UISearchBar?
+    var searchRect: MKMapRect?
     var localSearch: MKLocalSearch?
+    @Published var searchLoading = false
     @Published var searchResults = [Annotation]()
     @Published var isSearching = false
+    @Published var showReloadSearch = false
     
-    // Select line
+    // Select Section
     @Published var selectPolyline: MKPolyline?
     @Published var selectMetres = 0.0
     @Published var selectError = false
@@ -50,14 +53,18 @@ class ViewModel: NSObject, ObservableObject {
     @Published var selectPins = [Annotation]()
     @Published var isSelecting = false
     
-    // View
+    // Animations
     @Published var shake = false
     @Published var degrees = 0.0
     @Published var scale = 1.0
     
+    // View
     @Published var showShareLocationSheet = false
-    var shareLocationItems = [Any]()
+    @Published var showCompletedAlert = false
     
+    // Other
+    var shareLocationItems = [Any]()
+    var annotationSelected = false
     var trailRowSize = CGSize() { didSet {
         if !zoomedToSelected {
             updateLayoutMargins(animate: false)
@@ -69,8 +76,10 @@ class ViewModel: NSObject, ObservableObject {
     }}
     
     // Defaults
-    @Published var showCompletedAlert = false
-    @Defaults("completedTrailIDs") var completedTrailIDs = [Int16]() { didSet {
+    @Defaults("favouriteTrails") var favouriteTrails = [Int16]() { didSet {
+        objectWillChange.send()
+    }}
+    @Defaults("completedTrails") var completedTrails = [Int16]() { didSet {
         objectWillChange.send()
     }}
     @Defaults("expand") var expand = false { didSet {
@@ -377,13 +386,14 @@ extension ViewModel {
         
         if let selectedTrips {
             trips = selectedTrips
-            let existingCoords = selectedTrips.linesCoords.flatMap { $0 }
+            var newCoords = Set(selectedTrips.linesCoords.concat())
+            newCoords.formUnion(selectedCoords)
             var newLines = [[CLLocationCoordinate2D]]()
             
             for coords in selectedTrail.linesCoords {
                 var newLine = [CLLocationCoordinate2D]()
                 for coord in coords {
-                    if selectedCoords.contains(coord) || existingCoords.contains(coord) {
+                    if newCoords.contains(coord) {
                         newLine.append(coord)
                     } else {
                         newLines.append(newLine)
@@ -408,8 +418,8 @@ extension ViewModel {
         stopSelecting()
         Haptics.success()
         
-        if trips.metres.equalTo(selectedTrail.metres, to: -3) && !completedTrailIDs.contains(selectedTrail.id) {
-            completedTrailIDs.append(selectedTrail.id)
+        if trips.metres.equalTo(selectedTrail.metres, to: -3) && !completedTrails.contains(selectedTrail.id) {
+            completedTrails.removeAll(selectedTrail.id)
             showCompletedAlert = true
         }
     }
@@ -417,13 +427,14 @@ extension ViewModel {
     func uncompleteSelectPolyline() {
         guard let selectedTrail, let selectedTrips, let selectedCoords = selectPolyline?.coordinates else { return }
 
-        let existingCoords = selectedTrips.linesCoords.flatMap { $0 }
+        var newCoords = Set(selectedTrips.linesCoords.concat())
+        newCoords.subtract(selectedCoords)
         var newLines = [[CLLocationCoordinate2D]]()
         
         for coords in selectedTrail.linesCoords {
             var newLine = [CLLocationCoordinate2D]()
             for coord in coords {
-                if existingCoords.contains(coord) && !selectedCoords.contains(coord) {
+                if newCoords.contains(coord) {
                     newLine.append(coord)
                 } else {
                     newLines.append(newLine)
@@ -443,13 +454,17 @@ extension ViewModel {
         Haptics.success()
         
         if !selectedTrips.metres.equalTo(selectedTrail.metres, to: -3) {
-            completedTrailIDs.removeAll(selectedTrail.id)
+            completedTrails.removeAll(selectedTrail.id)
         }
     }
 }
 
-// MARK: - Gesture Recogniser
-extension ViewModel {
+// MARK: - UIGestureRecognizer
+extension ViewModel: UIGestureRecognizerDelegate {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        true
+    }
+    
     func getCoord(from gesture: UIGestureRecognizer) -> CLLocationCoordinate2D? {
         guard let mapView = mapView else { return nil }
         let point = gesture.location(in: mapView)
@@ -512,6 +527,7 @@ extension ViewModel: MKMapViewDelegate {
             let renderer = MKMultiPolylineRenderer(multiPolyline: trail.multiPolyline)
             renderer.lineWidth = trail == selectedTrail ? 3 : 2
             renderer.strokeColor = darkMode ? UIColor(.cyan) : .link
+            renderer
             return renderer
         } else if let trips = overlay as? TrailTrips {
             let renderer = MKMultiPolylineRenderer(multiPolyline: trips.multiPolyline)
@@ -570,11 +586,9 @@ extension ViewModel: MKMapViewDelegate {
     }
     
     func mapView(_ mapView: MKMapView, didAdd views: [MKAnnotationView]) {
-        let openButton = getButton(systemName: "arrow.triangle.turn.up.right.circle")
-        let shareButton = getButton(systemName: "square.and.arrow.up")
         let view = mapView.view(for: mapView.userLocation)
-        view?.rightCalloutAccessoryView = openButton
-        view?.leftCalloutAccessoryView = shareButton
+        view?.leftCalloutAccessoryView = getButton(systemName: "square.and.arrow.up")
+        view?.rightCalloutAccessoryView = getButton(systemName: "map")
     }
     
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
@@ -587,6 +601,24 @@ extension ViewModel: MKMapViewDelegate {
     
     func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
         annotationSelected = false
+    }
+    
+    func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+        if let searchRect {
+            showReloadSearch = !mapView.region.rect.intersects(searchRect)
+        }
+        if let compass = mapView.subviews.first(where: { type(of: $0).id == "MKCompassView" }),
+           (compass.gestureRecognizers?.count ?? 0) < 2 {
+            let tap = UITapGestureRecognizer(target: self, action: #selector(tappedCompass))
+            tap.delegate = self
+            compass.addGestureRecognizer(tap)
+        }
+    }
+    
+    @objc
+    func tappedCompass() {
+        guard let mode = mapView?.userTrackingMode else { return }
+        updateTrackingMode(mode == .followWithHeading ? .follow : mode)
     }
     
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
@@ -623,8 +655,7 @@ extension ViewModel: MKMapViewDelegate {
 // MARK: - UISearchBarDelegate
 extension ViewModel: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        guard let text = searchBar.text, text.isNotEmpty else { return }
-        search(text: text)
+        search()
     }
     
     func stopSearching() {
@@ -635,10 +666,15 @@ extension ViewModel: UISearchBarDelegate {
     func resetSearching() {
         mapView?.removeAnnotations(searchResults)
         searchResults = []
+        searchRect = nil
+        showReloadSearch = false
     }
     
-    func search(text: String) {
+    func search() {
+        guard let text = searchBar?.text, text.isNotEmpty else { return }
+        searchLoading = true
         search(text: text) { success in
+            self.searchLoading = false
             if success {
                 self.searchBar?.resignFirstResponder()
                 if !self.recentSearches.contains(text) {
@@ -670,7 +706,8 @@ extension ViewModel: UISearchBarDelegate {
                     Annotation(type: .search, placemark: item.placemark, coord: item.placemark.coordinate)
                 }
                 self.mapView?.addAnnotations(self.searchResults)
-                self.setRect(response.boundingRegion.rect, extraPadding: true)
+                self.searchRect = response.boundingRegion.rect
+                self.setRect(self.searchRect!, extraPadding: true)
                 completion(true)
             }
         }

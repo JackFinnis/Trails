@@ -68,7 +68,14 @@ struct TrailRow: View {
                                 .fixedSize(horizontal: false, vertical: true)
                                 .font(.headline)
                             HStack(spacing: 0) {
-                                if vm.completedTrailIDs.contains(trail.id) {
+                                if vm.favouriteTrails.contains(trail.id) {
+                                    Image(systemName: "star.fill")
+                                        .foregroundColor(.yellow)
+                                        .font(.caption)
+                                        .padding(.trailing, 5)
+                                        .transition(.move(edge: .leading).combined(with: .opacity))
+                                }
+                                if vm.completedTrails.contains(trail.id) {
                                     Image(systemName: "checkmark.circle.fill")
                                         .foregroundColor(.accentColor)
                                         .padding(.trailing, 5)
@@ -84,7 +91,7 @@ struct TrailRow: View {
                                     Image(systemName: "arrow.up")
                                         .padding(.trailing, 2)
                                         .font(.caption2.weight(.bold))
-                                    Text("\(vm.formatFeet(ascent))")
+                                    Text("\(vm.formatMiles(ascent, showUnit: true, round: false))")
                                         .transition(.move(edge: .trailing).combined(with: .opacity))
                                 }
                             }
@@ -101,6 +108,16 @@ struct TrailRow: View {
                             }
                         } else {
                             Menu {
+                                let favourite = vm.favouriteTrails.contains(trail.id)
+                                Button {
+                                    if favourite {
+                                        vm.favouriteTrails.removeAll(trail.id)
+                                    } else {
+                                        vm.favouriteTrails.append(trail.id)
+                                    }
+                                } label: {
+                                    Label(favourite ? "Unfavourite" : "Favourite", systemImage: favourite ? "star.slash" : "star")
+                                }
                                 Button {
                                     vm.startSelecting()
                                 } label: {
@@ -122,13 +139,13 @@ struct TrailRow: View {
                                 vm.expand.toggle()
                             } label: {
                                 Image(systemName: "chevron.right")
+                                    .font(.headline)
+                                    .frame(width: 20, height: 20)
                                     .rotationEffect(vm.expand ? .radians(.pi/2) : .zero)
-                                    .iconFont()
-                                    .frame(width: 30, height: 30)
                             }
                         }
                     }
-                    .padding(.trailing, 5)
+                    .padding(.trailing, 10)
                     
                     if vm.expand || list {
                         Text(trail.headline)
@@ -154,6 +171,7 @@ struct TrailRow: View {
         .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
         .transition(.move(edge: .top).combined(with: .opacity))
         .animation(.default, value: vm.expand)
+        .animation(.default, value: vm.favouriteTrails)
         .background {
             NavigationLink("", isActive: $showWebView) {
                 WebView(webVM: WebVM(url: trail.url), trail: trail)

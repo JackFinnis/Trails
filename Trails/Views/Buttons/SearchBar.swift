@@ -12,27 +12,35 @@ struct SearchBar: View {
     
     var body: some View {
         HStack(spacing: 0) {
-            if vm.recentSearches.isNotEmpty {
-                Menu {
-                    ForEach(vm.recentSearches.reversed(), id: \.self) { search in
-                        Button(search) {
-                            vm.searchBar?.text = search
-                            vm.search(text: search)
-                        }
+            Menu {
+                if vm.recentSearches.isEmpty {
+                    Text("No Recents")
+                }
+                ForEach(vm.recentSearches.reversed(), id: \.self) { search in
+                    Button(search) {
+                        vm.searchBar?.text = search
+                        vm.search()
                     }
-                } label: {
+                }
+            } label: {
+                if vm.searchLoading {
+                    ProgressView()
+                } else {
                     Image(systemName: "clock.arrow.circlepath")
                 }
-                .squareButton()
-                .animation(.none)
-                .padding(.trailing, -5)
             }
+            .squareButton()
+            .animation(.none)
+            .padding(.trailing, -8)
             SearchView()
-            Button("Cancel") {
+            
+            Button {
                 vm.stopSearching()
+            } label: {
+                Image(systemName: "xmark")
             }
-            .font(.body)
-            .padding(.trailing, 10)
+            .squareButton()
+            .padding(.leading, -8)
         }
     }
 }

@@ -22,6 +22,18 @@ struct Buttons: View {
             }
             Spacer()
             if vm.isSelecting || vm.isSearching {
+                if vm.showReloadSearch {
+                    Button {
+                        vm.search()
+                    } label: {
+                        Label("Search Here", systemImage: "magnifyingglass")
+                            .font(.subheadline.weight(.semibold))
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                            .materialBackground()
+                    }
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
                 Group {
                     if let polyline = vm.selectPolyline {
                         SelectionBar(polyline: polyline)
@@ -47,6 +59,7 @@ struct Buttons: View {
         .animation(.default, value: vm.isSelecting)
         .animation(.default, value: vm.selectedTrail)
         .animation(.default, value: vm.selectPolyline)
+        .animation(.default, value: vm.showReloadSearch)
         .padding(10)
     }
 }
