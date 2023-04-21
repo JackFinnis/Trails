@@ -8,17 +8,26 @@
 import SwiftUI
 import MapKit
 
+class _MKMapView: MKMapView {
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        if let compass = subviews.first(where: { type(of: $0).id == "MKCompassView" }) {
+            compass.center = compass.center.applying(.init(translationX: -5, y: SIZE*2 + 15))
+        }
+    }
+}
+
 struct MapView: UIViewRepresentable {
     @EnvironmentObject var vm: ViewModel
     
     func makeUIView(context: Context) -> MKMapView {
-        let mapView = MKMapView()
+        let mapView = _MKMapView()
         mapView.delegate = vm
         vm.mapView = mapView
         mapView.addOverlays(vm.trails, level: .aboveRoads)
         vm.updateLayoutMargins()
         vm.zoomTo(MKMultiPolyline(vm.trails.flatMap(\.multiPolyline.polylines)))
-                
+        
         mapView.showsUserLocation = true
         mapView.showsScale = true
         mapView.showsCompass = true

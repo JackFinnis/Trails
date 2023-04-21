@@ -8,49 +8,42 @@
 import SwiftUI
 
 struct WiFiError: View {
-    @EnvironmentObject var vm: ViewModel
+    @Environment(\.openURL) var openURL
+    @Environment(\.colorScheme) var colorScheme
     
     let compact: Bool
     
     var body: some View {
         if compact {
-            Button {
-                vm.openSettings()
-            } label: {
+            Button(action: openSettings) {
                 Label("No Internet Connection", systemImage: "wifi.slash")
                     .font(.headline)
                     .foregroundColor(.white)
                     .padding(.horizontal, 20)
                     .padding(.vertical, 10)
+                    .background(.black)
                     .background(Color.black)
-                    .cornerRadius(10)
+                    .continuousRadius(10)
             }
             .buttonStyle(.plain)
             .padding()
             .transition(.move(edge: .bottom).combined(with: .opacity))
         } else {
             VStack(spacing: 20) {
-                VStack(spacing: 10) {
-                    Image(systemName: "wifi.slash")
-                        .font(.largeTitle)
-                    Text("No Internet Connection")
-                        .font(.title3.bold())
+                BigLabel(systemName: "wifi.slash", title: "News Unavailable", message: "Please check your internet connection\nand try again.")
+                Button(action: openSettings) {
+                    Text("Open Settings")
                 }
-                .allowsHitTesting(false)
-                .foregroundColor(.secondary)
-                
-                Button("Open Settings") {
-                    vm.openSettings()
-                }
-                .font(.headline)
+                .font(.subheadline.bold())
+                .buttonStyle(.bordered)
+                .buttonBorderShape(.capsule)
             }
-            .transition(.opacity)
         }
     }
-}
-
-struct WiFiError_Previews: PreviewProvider {
-    static var previews: some View {
-        WiFiError(compact: false)
+    
+    func openSettings() {
+        if let url = URL(string: UIApplication.openSettingsURLString) {
+            openURL(url)
+        }
     }
 }

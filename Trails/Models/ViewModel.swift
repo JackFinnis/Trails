@@ -11,6 +11,7 @@ import CoreData
 import SwiftUI
 import StoreKit
 
+@MainActor
 class ViewModel: NSObject, ObservableObject {
     static let shared = ViewModel()
     
@@ -18,62 +19,43 @@ class ViewModel: NSObject, ObservableObject {
     // Trails
     var trails = [Trail]()
     var trailsTrips = [TrailTrips]()
-    var selectedTrips: TrailTrips? { getSelectedTrips(trail: selectedTrail) }
-    var zoomedToSelected = true
-    @Published var selectedTrail: Trail? { didSet {
-        if let selectedTrail {
-            zoomedToSelected = false
-            mapView?.removeOverlays(trails)
-            mapView?.addOverlay(selectedTrail, level: .aboveRoads)
-            if let selectedTrips {
-                mapView?.addOverlay(selectedTrips, level: .aboveRoads)
-            }
-        } else {
-            mapView?.removeOverlays(trailsTrips)
-            mapView?.addOverlays(trails, level: .aboveRoads)
-            updateLayoutMargins()
-        }
-    }}
+    var selectedTrips: TrailTrips? { getTrips(trail: selectedTrail) }
+    @Published var selectedTrail: Trail?
     
     // Search
     var searchBar: UISearchBar?
     var searchRect: MKMapRect?
     var localSearch: MKLocalSearch?
-    @Published var searchLoading = false
-    @Published var searchResults = [Annotation]()
     @Published var isSearching = false
-    @Published var showReloadSearch = false
+    @Published var isEditing = false
+    @Published var searchResults = [Annotation]()
+    @Published var searchText = ""
+    @Published var searchScope = SearchScope.Trails
     
     // Select Section
-    @Published var selectPolyline: MKPolyline?
-    @Published var selectMetres = 0.0
+    @Published var isSelecting = false
     @Published var selectError = false
     @Published var canUncomplete = false
     @Published var canComplete = false
+    @Published var selectMetres = 0.0
+    @Published var selectPolyline: MKPolyline?
     @Published var selectPins = [Annotation]()
-    @Published var isSelecting = false
     
     // Animations
-    @Published var shake = false
+    @Published var snapOffset: CGFloat = 5000
+    @Published var dragOffset = CGFloat.zero
     @Published var degrees = 0.0
     @Published var scale = 1.0
     
     // View
     @Published var showShareLocationSheet = false
     @Published var showCompletedAlert = false
+    @Published var showInfoView = false
+    @Published var welcome = false
     
     // Other
     var shareLocationItems = [Any]()
     var annotationSelected = false
-    var trailRowSize = CGSize() { didSet {
-        if !zoomedToSelected {
-            updateLayoutMargins(animate: false)
-            zoomedToSelected = true
-            zoomTo(selectedTrail)
-        } else {
-            updateLayoutMargins()
-        }
-    }}
     
     // Defaults
     @Defaults("favouriteTrails") var favouriteTrails = [Int16]() { didSet {
@@ -82,20 +64,23 @@ class ViewModel: NSObject, ObservableObject {
     @Defaults("completedTrails") var completedTrails = [Int16]() { didSet {
         objectWillChange.send()
     }}
-    @Defaults("expand") var expand = false { didSet {
+    @Defaults("recentSearches") var recentSearches = [String]() { didSet {
         objectWillChange.send()
     }}
     @Defaults("metric") var metric = true { didSet {
         objectWillChange.send()
     }}
-    @Defaults("recentSearches") var recentSearches = [String]() { didSet {
+    @Defaults("ascending") var ascending = false { didSet {
         objectWillChange.send()
-        if recentSearches.count > 3 {
-            recentSearches.remove(at: 0)
+    }}
+    @Defaults("sortBy") var sortBy = TrailSort.name { didSet {
+        objectWillChange.send()
+        if oldValue == sortBy {
+            ascending.toggle()
         }
     }}
     
-    // Map View
+    // MapView
     var mapView: MKMapView?
     @Published var trackingMode = MKUserTrackingMode.none
     @Published var mapType = MKMapType.standard
@@ -158,39 +143,52 @@ class ViewModel: NSObject, ObservableObject {
         _ = try? container.viewContext.execute(deleteRequest)
     }
     
+    // MARK: - General
+    func formatDistance(_ metres: Double, showUnit: Bool, round: Bool) -> String {
+        let value = metres / (metric ? 1000 : 1609.34)
+        return String(format: "%.\(round ? 0 : 1)f", value) + (showUnit ? (metric ? " km" : " miles") : "")
+    }
+    
     func openSettings() {
         if let url = URL(string: UIApplication.openSettingsURLString) {
             UIApplication.shared.open(url)
         }
     }
     
-    // MARK: - General
-    func formatMiles(_ metres: Double, showUnit: Bool, round: Bool) -> String {
-        let value = metres / (metric ? 1000 : 1609.34)
-        return String(format: "%.\(round ? 0 : 1)f", value) + (showUnit ? (metric ? " km" : " miles") : "")
-    }
-    
-    func formatFeet(_ metres: Int) -> String {
-        let value = Double(metres) * (metric ? 2 : 3.28084)
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        return (formatter.string(from: NSNumber(value: Int(value))) ?? "") + (metric ? " m" : " feet")
-    }
-    
-    func shakeError() {
-        Haptics.tap()
-        shake = true
-        withAnimation(.spring(response: 0.2, dampingFraction: 0.2, blendDuration: 0.2)) {
-            shake = false
-        }
-    }
-    
-    func getSelectedTrips(trail: Trail?) -> TrailTrips? {
+    func getTrips(trail: Trail?) -> TrailTrips? {
         trailsTrips.first { $0.id == trail?.id }
     }
     
-    var darkMode: Bool {
-        UITraitCollection.current.userInterfaceStyle == .dark || mapView?.mapType == .hybrid
+    func isFavourite(_ trail: Trail) -> Bool {
+        favouriteTrails.contains(trail.id)
+    }
+    
+    func isCompleted(_ trail: Trail) -> Bool {
+        completedTrails.contains(trail.id)
+    }
+    
+    func toggleFavourite(_ trail: Trail) {
+        if favouriteTrails.contains(trail.id) {
+            favouriteTrails.removeAll(trail.id)
+        } else {
+            favouriteTrails.append(trail.id)
+            Haptics.tap()
+        }
+    }
+    
+    func selectTrail(_ trail: Trail?) {
+        selectedTrail = trail
+        if let trail {
+            mapView?.removeOverlays(trails)
+            mapView?.addOverlay(trail, level: .aboveRoads)
+            if let selectedTrips {
+                mapView?.addOverlay(selectedTrips, level: .aboveRoads)
+            }
+            zoomTo(trail)
+        } else {
+            mapView?.removeOverlays(trailsTrips)
+            mapView?.addOverlays(trails, level: .aboveRoads)
+        }
     }
 }
 
@@ -241,7 +239,7 @@ extension ViewModel {
     }
     
     func updateLayoutMargins(animate: Bool = true) {
-        let padding = UIEdgeInsets(top: selectedTrail == nil ? 0 : (trailRowSize.height + 15), left: 0, bottom: 30, right: 0)
+        let padding = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         UIView.animate(withDuration: animate ? 0.35 : 0) {
             self.mapView?.layoutMargins = padding
         }
@@ -249,7 +247,7 @@ extension ViewModel {
     
     func setRect(_ rect: MKMapRect, extraPadding: Bool = false) {
         let padding: CGFloat = extraPadding ? 40 : 20
-        let insets = UIEdgeInsets(top: padding, left: padding, bottom: padding + 30, right: padding)
+        let insets = UIEdgeInsets(top: padding, left: padding, bottom: padding, right: padding)
         mapView?.setVisibleMapRect(rect, edgePadding: insets, animated: true)
     }
     
@@ -311,7 +309,7 @@ extension ViewModel {
             let coords = calculateLine(between: selectPins[0].coordinate, and: selectPins[1].coordinate)
             
             selectError = coords.count < 2
-            guard !selectError else { shakeError(); return }
+            guard !selectError else { return }
             
             let tripCoords = selectedTrips?.linesCoords.concat() ?? []
             canComplete = coords.contains { !tripCoords.contains($0) }
@@ -326,14 +324,7 @@ extension ViewModel {
     }
     
     func startSelecting() {
-        stopSelecting()
-        stopSearching()
         isSelecting = true
-    }
-    
-    func deselectTrail() {
-        selectedTrail = nil
-        stopSelecting()
     }
     
     func stopSelecting() {
@@ -418,7 +409,7 @@ extension ViewModel {
         stopSelecting()
         Haptics.success()
         
-        if trips.metres.equalTo(selectedTrail.metres, to: -3) && !completedTrails.contains(selectedTrail.id) {
+        if trips.metres.equalTo(selectedTrail.metres, to: -4) && !completedTrails.contains(selectedTrail.id) {
             completedTrails.removeAll(selectedTrail.id)
             showCompletedAlert = true
         }
@@ -451,9 +442,8 @@ extension ViewModel {
         mapView?.removeOverlay(selectedTrips)
         mapView?.addOverlay(selectedTrips, level: .aboveRoads)
         stopSelecting()
-        Haptics.success()
         
-        if !selectedTrips.metres.equalTo(selectedTrail.metres, to: -3) {
+        if !selectedTrips.metres.equalTo(selectedTrail.metres, to: -4) {
             completedTrails.removeAll(selectedTrail.id)
         }
     }
@@ -461,9 +451,7 @@ extension ViewModel {
 
 // MARK: - UIGestureRecognizer
 extension ViewModel: UIGestureRecognizerDelegate {
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        true
-    }
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool { true }
     
     func getCoord(from gesture: UIGestureRecognizer) -> CLLocationCoordinate2D? {
         guard let mapView = mapView else { return nil }
@@ -494,11 +482,12 @@ extension ViewModel: UIGestureRecognizerDelegate {
     @objc
     func handleTap(_ tap: UITapGestureRecognizer) {
         guard let coord = getCoord(from: tap) else { return }
-        
+
         if isSelecting {
             newSelectCoord(coord)
         } else if !annotationSelected {
-            (_, _, selectedTrail) = getClosestTrail(to: coord, trails: selectedTrail == nil ? trails : [selectedTrail!], maxDelta: tapDelta)
+            let (_, _, trail) = getClosestTrail(to: coord, trails: selectedTrail == nil ? trails : [selectedTrail!], maxDelta: tapDelta)
+            selectTrail(trail)
         }
     }
 }
@@ -523,11 +512,11 @@ extension ViewModel: CLLocationManagerDelegate {
 // MARK: - MKMapViewDelegate
 extension ViewModel: MKMapViewDelegate {
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+        let darkMode = UITraitCollection.current.userInterfaceStyle == .dark || mapView.mapType == .hybrid
         if let trail = overlay as? Trail {
             let renderer = MKMultiPolylineRenderer(multiPolyline: trail.multiPolyline)
             renderer.lineWidth = trail == selectedTrail ? 3 : 2
             renderer.strokeColor = darkMode ? UIColor(.cyan) : .link
-            renderer
             return renderer
         } else if let trips = overlay as? TrailTrips {
             let renderer = MKMultiPolylineRenderer(multiPolyline: trips.multiPolyline)
@@ -604,8 +593,8 @@ extension ViewModel: MKMapViewDelegate {
     }
     
     func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
-        if let searchRect {
-            showReloadSearch = !mapView.region.rect.intersects(searchRect)
+        if let searchRect, !mapView.region.rect.intersects(searchRect) {
+            searchMaps()
         }
         if let compass = mapView.subviews.first(where: { type(of: $0).id == "MKCompassView" }),
            (compass.gestureRecognizers?.count ?? 0) < 2 {
@@ -655,38 +644,83 @@ extension ViewModel: MKMapViewDelegate {
 // MARK: - UISearchBarDelegate
 extension ViewModel: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        search()
+        if searchScope == .Maps {
+            searchMaps()
+        }
+    }
+
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        stopSearching()
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
+        withAnimation {
+            searchScope = SearchScope.allCases[selectedScope]
+        }
+    }
+    
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        isEditing = true
+        withAnimation(.sheet) {
+            snapOffset = 0
+        }
+        guard !isSearching else { return }
+        startSearching()
+    }
+    
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        isEditing = false
+    }
+
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        self.searchText = searchText
+    }
+    
+    func startSearching() {
+        searchBar?.becomeFirstResponder()
+        searchBar?.setShowsCancelButton(true, animated: true)
+        searchBar?.setShowsScope(true, animated: true)
+        withAnimation {
+            isSearching = true
+        }
     }
     
     func stopSearching() {
-        isSearching = false
+        searchBar?.text = ""
+        searchText = ""
         resetSearching()
+        stopLocalSearch()
+        searchBar?.resignFirstResponder()
+        searchBar?.setShowsCancelButton(false, animated: false)
+        searchBar?.setShowsScope(false, animated: true)
+        withAnimation {
+            isSearching = false
+        }
+    }
+    
+    func stopLocalSearch() {
+        localSearch?.cancel()
     }
     
     func resetSearching() {
         mapView?.removeAnnotations(searchResults)
         searchResults = []
         searchRect = nil
-        showReloadSearch = false
     }
     
-    func search() {
+    func searchMaps() {
         guard let text = searchBar?.text, text.isNotEmpty else { return }
-        searchLoading = true
-        search(text: text) { success in
-            self.searchLoading = false
+        searchMaps(text: text) { success in
             if success {
                 self.searchBar?.resignFirstResponder()
                 if !self.recentSearches.contains(text) {
                     self.recentSearches.append(text)
                 }
-            } else {
-                self.shakeError()
             }
         }
     }
     
-    func search(text: String, completion: @escaping (Bool) -> Void) {
+    func searchMaps(text: String, completion: @escaping (Bool) -> Void) {
         resetSearching()
         
         let request = MKLocalSearch.Request()
@@ -694,7 +728,7 @@ extension ViewModel: UISearchBarDelegate {
         guard let mapView else { return }
         request.region = mapView.region
         
-        localSearch?.cancel()
+        stopLocalSearch()
         localSearch = MKLocalSearch(request: request)
         localSearch?.start { response, error in
             guard let response else { completion(false); return }

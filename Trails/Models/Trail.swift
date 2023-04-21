@@ -46,24 +46,6 @@ class Trail: NSObject, Identifiable {
     }
     
     static let example = Trail(lines: .init(id: 0, multiPolyline: .init()), metadata: .init(id: 0, name: "Cleveland Way", description: "Experience the varied landscape of the North York Moors National Park on a journey across breathtaking heather moorland and dramatic coastline.", url: URL(string: "https://www.nationaltrail.co.uk/trails/cleveland-way/")!, photoUrl: URL(string: "https://nationaltrails.s3.eu-west-2.amazonaws.com/uploads/Cleveland-Way-Home-2000x600.jpg")!, metres: 170813, days: 9, colour: 1, cycle: true, ascent: 5031, country: .england))
-    
-//    func color(darkMode: Bool) -> Color {
-//        if darkMode {
-//            switch colour {
-//            case 1: return Color(.link)
-//            case 2: return .cyan
-//            case 3: return .mint
-//            default: return .pink
-//            }
-//        } else {
-//            switch colour {
-//            case 1: return Color(.link)
-//            case 2: return .purple
-//            case 3: return .indigo
-//            default: return .pink
-//            }
-//        }
-//    }
 }
 
 extension Trail: MKOverlay {
@@ -124,22 +106,9 @@ enum Country: String, Codable, CaseIterable {
     case ni = "Northern Ireland"
 }
 
-enum TrailSort: String, CaseIterable {
+enum TrailSort: String, CaseIterable, Codable {
     case name = "Name"
     case distance = "Length"
     case ascent = "Total Ascent"
     case completed = "Percentage Completed"
-    
-    var image: String {
-        switch self {
-        case .name:
-            return "character"
-        case .distance:
-            return "ruler"
-        case .ascent:
-            return "arrow.up"
-        case .completed:
-            return "percent"
-        }
-    }
 }

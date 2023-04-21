@@ -27,7 +27,7 @@ struct SelectionBar: View {
         HStack {
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 0) {
-                    Text(vm.formatMiles(vm.selectMetres, showUnit: true, round: false) + " • ")
+                    Text(vm.formatDistance(vm.selectMetres, showUnit: true, round: false) + " • ")
                     Menu {
                         Picker("", selection: $speed) {
                             if vm.metric {
@@ -42,7 +42,6 @@ struct SelectionBar: View {
                                 }
                             }
                         }
-                        Text("Speed")
                     } label: {
                         Text((vm.selectMetres / (speed / 3600)).formattedInterval)
                     }
@@ -76,7 +75,7 @@ struct SelectionBar: View {
                     }
                 } label: {
                     Image(systemName: "ellipsis.circle")
-                        .iconFont()
+                        .font(.icon)
                 }
                 .onTapGesture {
                     tappedMenu = .now
@@ -86,7 +85,7 @@ struct SelectionBar: View {
                     vm.stopSelecting()
                 } label: {
                     Image(systemName: "xmark")
-                        .iconFont()
+                        .font(.icon)
                 }
             }
         }

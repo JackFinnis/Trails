@@ -14,10 +14,6 @@ struct WebUIView: UIViewRepresentable {
     func makeUIView(context: Context) -> WKWebView {
         let webView = WKWebView()
         webView.isOpaque = false
-//        webView.inputViewController?.edgesForExtendedLayout = []
-//        webView.inputAccessoryViewController?.edgesForExtendedLayout = []
-//        webView.automati
-        
         webView.navigationDelegate = webVM
         webVM.webView = webView
         webVM.load()

@@ -16,6 +16,22 @@ struct InfoView: View {
     
     let welcome: Bool
     
+    func row(systemName: String, title: String, description: String) -> some View {
+        HStack {
+            Image(systemName: systemName)
+                .font(.title)
+                .foregroundColor(.accentColor)
+                .frame(width: 50, height: 50)
+            VStack(alignment: .leading) {
+                Text(title)
+                    .font(.headline)
+                Text(description)
+                    .foregroundColor(.secondary)
+            }
+            Spacer(minLength: 0)
+        }
+    }
+    
     var body: some View {
         NavigationView {
             VStack(alignment: .leading, spacing: 0) {
@@ -24,7 +40,7 @@ struct InfoView: View {
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 70, height: 70)
-                        .cornerRadius(15)
+                        .continuousRadius(15)
                     Text(NAME)
                         .font(.largeTitle.bold())
                         .multilineTextAlignment(.center)
@@ -33,10 +49,10 @@ struct InfoView: View {
                 .padding(.bottom, 30)
                 
                 VStack(alignment: .leading, spacing: 15) {
-                    InfoRow(systemName: "map", title: "The Trails", description: "Browse 45 of the most spectacular long-distance UK trails.")
-                    InfoRow(systemName: "magnifyingglass", title: "Search Maps", description: "Find B&Bs, cafés, shops & more along your route.")
-                    InfoRow(systemName: "point.topleft.down.curvedto.point.bottomright.up", title: "Select a Trail Section", description: "Measure the length of your next trip.")
-                    InfoRow(systemName: "checkmark.circle", title: "Track Your Progress", description: "Mark sections of a trail as complete.")
+                    row(systemName: "map", title: "The Trails", description: "Browse 45 of the most spectacular long-distance UK trails.")
+                    row(systemName: "magnifyingglass", title: "Search Maps", description: "Find B&Bs, cafés, shops & more along your route.")
+                    row(systemName: "point.topleft.down.curvedto.point.bottomright.up", title: "Select a Trail Section", description: "Measure the length of your next trip.")
+                    row(systemName: "checkmark.circle", title: "Track Your Progress", description: "Mark sections of a trail as complete.")
                     HStack {
                         Image(systemName: "ruler")
                             .font(.title)
@@ -97,6 +113,7 @@ struct InfoView: View {
                 }
             }
             .padding()
+            .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
@@ -104,14 +121,14 @@ struct InfoView: View {
                         Button {
                             dismiss()
                         } label: {
-                            DismissCross()
+                            DismissCross(toolbar: true)
                         }
                         .buttonStyle(.plain)
                     }
                 }
                 ToolbarItem(placement: .principal) {
                     if !welcome {
-                        DraggableBar()
+                        DraggableTitle()
                     }
                 }
             }
@@ -129,27 +146,5 @@ struct InfoView_Previews: PreviewProvider {
                 InfoView(welcome: false)
                     .environmentObject(ViewModel())
             }
-    }
-}
-
-struct InfoRow: View {
-    let systemName: String
-    let title: String
-    let description: String
-    
-    var body: some View {
-        HStack {
-            Image(systemName: systemName)
-                .font(.title)
-                .foregroundColor(.accentColor)
-                .frame(width: 50, height: 50)
-            VStack(alignment: .leading) {
-                Text(title)
-                    .font(.headline)
-                Text(description)
-                    .foregroundColor(.secondary)
-            }
-            Spacer(minLength: 0)
-        }
     }
 }
