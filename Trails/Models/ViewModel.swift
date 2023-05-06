@@ -105,7 +105,6 @@ class ViewModel: NSObject, ObservableObject {
     
     // MARK: - Load Data
     func loadData(from file: String) -> Data {
-        print(file)
         let url = Bundle.main.url(forResource: file, withExtension: "")!
         return try! Data(contentsOf: url)
     }
@@ -115,6 +114,8 @@ class ViewModel: NSObject, ObservableObject {
     }
     
     func loadData() {
+        let start = Date.now
+        
         let metadataData = loadData(from: "Metadata.json")
         let trailsMetadata: [TrailMetadata] = decodeJSON(data: metadataData)
         
@@ -126,8 +127,8 @@ class ViewModel: NSObject, ObservableObject {
         }
         
         container.loadPersistentStores { description, error in
-            self.deleteAll(entityName: "TrailTrips")
-            self.completedTrails = []
+//            self.deleteAll(entityName: "TrailTrips")
+//            self.completedTrails = []
             self.trailsTrips = (try? self.container.viewContext.fetch(TrailTrips.fetchRequest()) as? [TrailTrips]) ?? []
             self.trailsTrips.forEach { $0.reload() }
         }
