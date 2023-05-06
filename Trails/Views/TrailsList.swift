@@ -21,7 +21,7 @@ struct TrailsList: View {
             .filter {
                 (vm.searchText.isEmpty || $0.name.localizedCaseInsensitiveContains(vm.searchText)) &&
                 (country == nil || country == $0.country) &&
-                (!cycle || $0.cycle) &&
+                (!cycle || $0.cycleStatus != .no) &&
                 (!completed || vm.completedTrails.contains($0.id)) &&
                 (!favourites || vm.favouriteTrails.contains($0.id))
             }

@@ -13,6 +13,11 @@ class _MKMapView: MKMapView {
         super.layoutSubviews()
         if let compass = subviews.first(where: { type(of: $0).id == "MKCompassView" }) {
             compass.center = compass.center.applying(.init(translationX: -5, y: SIZE*2 + 15))
+            if (compass.gestureRecognizers?.count ?? 0) < 2 {
+                let tap = UITapGestureRecognizer(target: ViewModel.shared, action: #selector(ViewModel.tappedCompass))
+                tap.delegate = ViewModel.shared
+                compass.addGestureRecognizer(tap)
+            }
         }
     }
 }
@@ -25,8 +30,7 @@ struct MapView: UIViewRepresentable {
         mapView.delegate = vm
         vm.mapView = mapView
         mapView.addOverlays(vm.trails, level: .aboveRoads)
-        vm.updateLayoutMargins()
-        vm.zoomTo(MKMultiPolyline(vm.trails.flatMap(\.multiPolyline.polylines)))
+        vm.zoomTo(MKMultiPolyline(vm.trails.map(\.polyline)))
         
         mapView.showsUserLocation = true
         mapView.showsScale = true

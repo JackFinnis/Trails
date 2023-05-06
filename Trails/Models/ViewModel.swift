@@ -58,22 +58,22 @@ class ViewModel: NSObject, ObservableObject {
     var annotationSelected = false
     
     // Defaults
-    @Defaults("favouriteTrails") var favouriteTrails = [Int16]() { didSet {
+    @Storage("favouriteTrails") var favouriteTrails = [Int16]() { didSet {
         objectWillChange.send()
     }}
-    @Defaults("completedTrails") var completedTrails = [Int16]() { didSet {
+    @Storage("completedTrails") var completedTrails = [Int16]() { didSet {
         objectWillChange.send()
     }}
-    @Defaults("recentSearches") var recentSearches = [String]() { didSet {
+    @Storage("recentSearches") var recentSearches = [String]() { didSet {
         objectWillChange.send()
     }}
-    @Defaults("metric") var metric = true { didSet {
+    @Storage("metric") var metric = true { didSet {
         objectWillChange.send()
     }}
-    @Defaults("ascending") var ascending = false { didSet {
+    @Storage("ascending") var ascending = false { didSet {
         objectWillChange.send()
     }}
-    @Defaults("sortBy") var sortBy = TrailSort.name { didSet {
+    @Storage("sortBy") var sortBy = TrailSort.name { didSet {
         objectWillChange.send()
         if oldValue == sortBy {
             ascending.toggle()
@@ -105,6 +105,7 @@ class ViewModel: NSObject, ObservableObject {
     
     // MARK: - Load Data
     func loadData(from file: String) -> Data {
+        print(file)
         let url = Bundle.main.url(forResource: file, withExtension: "")!
         return try! Data(contentsOf: url)
     }
@@ -112,26 +113,21 @@ class ViewModel: NSObject, ObservableObject {
     func decodeJSON<T: Decodable>(data: Data) -> T {
         try! JSONDecoder().decode(T.self, from: data)
     }
-
+    
     func loadData() {
-        let linesData = loadData(from: "Coords.geojson")
-        let features = try! MKGeoJSONDecoder().decode(linesData) as! [MKGeoJSONFeature]
-        let trailsLines = features.map { feature in
-            let properties: TrailProperties = decodeJSON(data: feature.properties!)
-            return TrailLines(id: properties.id, multiPolyline: feature.geometry.first as! MKMultiPolyline)
-        }
         let metadataData = loadData(from: "Metadata.json")
         let trailsMetadata: [TrailMetadata] = decodeJSON(data: metadataData)
         
-        for id in 0...44 {
-            let lines = trailsLines.first { $0.id == id }!
-            let metadata = trailsMetadata.first { $0.id == id }!
-            trails.append(Trail(lines: lines, metadata: metadata))
+        for metadata in trailsMetadata {
+            let geojsonData = loadData(from: "\(metadata.name).geojson")
+            let features = try! MKGeoJSONDecoder().decode(geojsonData) as! [MKGeoJSONFeature]
+            let polyline = features.first?.geometry.first as! MKPolyline
+            trails.append(Trail(metadata: metadata, polyline: polyline))
         }
         
         container.loadPersistentStores { description, error in
-//            self.deleteAll(entityName: "TrailTrips")
-//            self.completedTrailIDs = []
+            self.deleteAll(entityName: "TrailTrips")
+            self.completedTrails = []
             self.trailsTrips = (try? self.container.viewContext.fetch(TrailTrips.fetchRequest()) as? [TrailTrips]) ?? []
             self.trailsTrips.forEach { $0.reload() }
         }
@@ -202,6 +198,7 @@ extension ViewModel {
     }
     
     func updateTrackingMode(_ newMode: MKUserTrackingMode) {
+        guard validateAuth() else { return }
         mapView?.setUserTrackingMode(newMode, animated: true)
         if trackingMode == .followWithHeading || newMode == .followWithHeading {
             withAnimation(.easeInOut(duration: 0.25)) {
@@ -238,12 +235,12 @@ extension ViewModel {
         mapView?.addOverlays(overlays, level: .aboveRoads)
     }
     
-    func updateLayoutMargins(animate: Bool = true) {
-        let padding = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-        UIView.animate(withDuration: animate ? 0.35 : 0) {
-            self.mapView?.layoutMargins = padding
-        }
-    }
+//    func updateLayoutMargins(animate: Bool = true) {
+//        let padding = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+//        UIView.animate(withDuration: animate ? 0.35 : 0) {
+//            self.mapView?.layoutMargins = padding
+//        }
+//    }
     
     func setRect(_ rect: MKMapRect, extraPadding: Bool = false) {
         let padding: CGFloat = extraPadding ? 40 : 20
@@ -264,28 +261,24 @@ extension ViewModel {
         }
     }
     
-    func getClosestTrail(to targetCoord: CLLocationCoordinate2D, trails: [Trail], maxDelta: Double) -> (CLLocationCoordinate2D?, [CLLocation]?, Trail?) {
+    func getClosestTrail(to targetCoord: CLLocationCoordinate2D, trails: [Trail], maxDelta: Double) -> (CLLocationCoordinate2D?, Trail?) {
         let targetLocation = targetCoord.location
         var shortestDistance = Double.infinity
         var closestCoord: CLLocationCoordinate2D?
-        var closestLine: [CLLocation]?
         var closestTrail: Trail?
         
         for trail in trails {
-            for line in trail.linesLocations {
-                for location in line {
-                    let delta = location.distance(from: targetLocation)
-                    
-                    if delta < shortestDistance && delta < maxDelta {
-                        shortestDistance = delta
-                        closestTrail = trail
-                        closestCoord = location.coordinate
-                        closestLine = line
-                    }
+            for location in trail.locations {
+                let delta = location.distance(from: targetLocation)
+                
+                if delta < shortestDistance && delta < maxDelta {
+                    shortestDistance = delta
+                    closestTrail = trail
+                    closestCoord = location.coordinate
                 }
             }
         }
-        return (closestCoord, closestLine, closestTrail)
+        return (closestCoord, closestTrail)
     }
 }
 
@@ -311,9 +304,10 @@ extension ViewModel {
             selectError = coords.count < 2
             guard !selectError else { return }
             
-            let tripCoords = selectedTrips?.linesCoords.concat() ?? []
-            canComplete = coords.contains { !tripCoords.contains($0) }
-            canUncomplete = coords.contains { tripCoords.contains($0) }
+            if let selectedTrips {
+                canComplete = coords.contains { !selectedTrips.coordsSet.contains($0) }
+                canUncomplete = coords.contains { selectedTrips.coordsSet.contains($0) }
+            }
             
             selectPolyline = MKPolyline(coordinates: coords, count: coords.count)
             mapView?.addOverlay(selectPolyline!, level: .aboveRoads)
@@ -342,28 +336,13 @@ extension ViewModel {
         }
     }
     
-    func getClosestCoord(to targetCoord: CLLocationCoordinate2D, along line: [CLLocation]) -> CLLocationCoordinate2D? {
-        let targetLocation = targetCoord.location
-        var shortestDistance = Double.infinity
-        var closestCoord: CLLocationCoordinate2D?
-        
-        for location in line {
-            let delta = location.distance(from: targetLocation)
-            
-            if delta < shortestDistance {
-                shortestDistance = delta
-                closestCoord = location.coordinate
-            }
-        }
-        return closestCoord
-    }
-    
     func calculateLine(between coord1: CLLocationCoordinate2D, and coord2: CLLocationCoordinate2D) -> [CLLocationCoordinate2D] {
         guard let selectedTrail else { return [] }
-        let (startCoord, line, _) = getClosestTrail(to: coord1, trails: [selectedTrail], maxDelta: .greatestFiniteMagnitude)
-        guard let startCoord, let line, let endCoord = getClosestCoord(to: coord2, along: line) else { return [] }
+        let (startCoord, _) = getClosestTrail(to: coord1, trails: [selectedTrail], maxDelta: .infinity)
+        let (endCoord, _) = getClosestTrail(to: coord2, trails: [selectedTrail], maxDelta: .infinity)
+        guard let startCoord, let endCoord else { return [] }
         
-        let coords = line.map(\.coordinate)
+        let coords = selectedTrail.coords
         guard let startIndex = coords.firstIndex(of: startCoord),
               let endIndex = coords.firstIndex(of: endCoord)
         else { return [] }
@@ -372,78 +351,63 @@ extension ViewModel {
     }
     
     func completeSelectPolyline() {
-        guard let selectedTrail, let selectedCoords = selectPolyline?.coordinates else { return }
-        let trips: TrailTrips
+        guard let selectedTrail,
+              let selectedCoords = selectPolyline?.coordinates
+        else { return }
         
         if let selectedTrips {
-            trips = selectedTrips
-            var newCoords = Set(selectedTrips.linesCoords.concat())
+            var newCoords = Set(selectedTrips.coordsSet)
             newCoords.formUnion(selectedCoords)
-            var newLines = [[CLLocationCoordinate2D]]()
-            
-            for coords in selectedTrail.linesCoords {
-                var newLine = [CLLocationCoordinate2D]()
-                for coord in coords {
-                    if newCoords.contains(coord) {
-                        newLine.append(coord)
-                    } else {
-                        newLines.append(newLine)
-                        newLine = []
-                    }
-                }
-                if newLine.isNotEmpty {
-                    newLines.append(newLine)
-                }
-            }
-            trips.lines = newLines.map { $0.map { [$0.latitude, $0.longitude] } }
+            update(trips: selectedTrips, with: newCoords)
         } else {
-            trips = TrailTrips(context: container.viewContext)
+            let trips = TrailTrips(context: container.viewContext)
             trips.id = selectedTrail.id
-            trips.lines = [selectedCoords.map { [$0.latitude, $0.longitude] }]
             trailsTrips.append(trips)
+            update(trips: trips, with: Set(selectedCoords))
         }
+        Haptics.success()
+    }
+    
+    func uncompleteSelectPolyline() {
+        guard let selectedTrips,
+              let selectedCoords = selectPolyline?.coordinates
+        else { return }
+
+        var newCoords = Set(selectedTrips.coordsSet)
+        newCoords.subtract(selectedCoords)
+        
+        update(trips: selectedTrips, with: newCoords)
+    }
+    
+    func update(trips: TrailTrips, with newCoords: Set<CLLocationCoordinate2D>) {
+        guard let selectedTrail else { return }
+        
+        var newLines = [[CLLocationCoordinate2D]]()
+        var newLine = [CLLocationCoordinate2D]()
+        for coord in selectedTrail.coords {
+            if newCoords.contains(coord) {
+                newLine.append(coord)
+            } else {
+                newLines.append(newLine)
+                newLine = []
+            }
+        }
+        if newLine.isNotEmpty {
+            newLines.append(newLine)
+        }
+        trips.lines = newLines.map { $0.map { [$0.latitude, $0.longitude] } }
         save()
         trips.reload()
         mapView?.removeOverlay(trips)
         mapView?.addOverlay(trips, level: .aboveRoads)
         stopSelecting()
-        Haptics.success()
         
-        if trips.metres.equalTo(selectedTrail.metres, to: -4) && !completedTrails.contains(selectedTrail.id) {
-            completedTrails.removeAll(selectedTrail.id)
-            showCompletedAlert = true
-        }
-    }
-    
-    func uncompleteSelectPolyline() {
-        guard let selectedTrail, let selectedTrips, let selectedCoords = selectPolyline?.coordinates else { return }
-
-        var newCoords = Set(selectedTrips.linesCoords.concat())
-        newCoords.subtract(selectedCoords)
-        var newLines = [[CLLocationCoordinate2D]]()
-        
-        for coords in selectedTrail.linesCoords {
-            var newLine = [CLLocationCoordinate2D]()
-            for coord in coords {
-                if newCoords.contains(coord) {
-                    newLine.append(coord)
-                } else {
-                    newLines.append(newLine)
-                    newLine = []
-                }
+        if trips.metres.equalTo(selectedTrail.metres, to: -4) {
+            if !completedTrails.contains(selectedTrail.id) {
+                completedTrails.append(selectedTrail.id)
+                showCompletedAlert = true
             }
-            if newLine.isNotEmpty {
-                newLines.append(newLine)
-            }
-        }
-        selectedTrips.lines = newLines.map { $0.map { [$0.latitude, $0.longitude] } }
-        save()
-        selectedTrips.reload()
-        mapView?.removeOverlay(selectedTrips)
-        mapView?.addOverlay(selectedTrips, level: .aboveRoads)
-        stopSelecting()
-        
-        if !selectedTrips.metres.equalTo(selectedTrail.metres, to: -4) {
+        } else {
             completedTrails.removeAll(selectedTrail.id)
         }
     }
@@ -486,7 +450,8 @@ extension ViewModel: UIGestureRecognizerDelegate {
         if isSelecting {
             newSelectCoord(coord)
         } else if !annotationSelected {
-            let (_, _, trail) = getClosestTrail(to: coord, trails: selectedTrail == nil ? trails : [selectedTrail!], maxDelta: tapDelta)
+            let searchTrails = selectedTrail == nil ? trails : [selectedTrail!]
+            let (_, trail) = getClosestTrail(to: coord, trails: searchTrails, maxDelta: tapDelta)
             selectTrail(trail)
         }
     }
@@ -514,7 +479,7 @@ extension ViewModel: MKMapViewDelegate {
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
         let darkMode = UITraitCollection.current.userInterfaceStyle == .dark || mapView.mapType == .hybrid
         if let trail = overlay as? Trail {
-            let renderer = MKMultiPolylineRenderer(multiPolyline: trail.multiPolyline)
+            let renderer = MKPolylineRenderer(polyline: trail.polyline)
             renderer.lineWidth = trail == selectedTrail ? 3 : 2
             renderer.strokeColor = darkMode ? UIColor(.cyan) : .link
             return renderer
@@ -596,18 +561,12 @@ extension ViewModel: MKMapViewDelegate {
         if let searchRect, !mapView.region.rect.intersects(searchRect) {
             searchMaps()
         }
-        if let compass = mapView.subviews.first(where: { type(of: $0).id == "MKCompassView" }),
-           (compass.gestureRecognizers?.count ?? 0) < 2 {
-            let tap = UITapGestureRecognizer(target: self, action: #selector(tappedCompass))
-            tap.delegate = self
-            compass.addGestureRecognizer(tap)
-        }
     }
     
     @objc
     func tappedCompass() {
-        guard let mode = mapView?.userTrackingMode else { return }
-        updateTrackingMode(mode == .followWithHeading ? .follow : mode)
+        guard trackingMode == .followWithHeading else { return }
+        updateTrackingMode(.follow)
     }
     
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {

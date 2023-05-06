@@ -19,18 +19,18 @@ class Trail: NSObject, Identifiable {
     let metres: Double
     let days: Int
     let colour: Int
-    let cycle: Bool
+    let cycleStatus: CycleStatus
     let ascent: Double?
     let country: Country
     
-    let linesCoords: [[CLLocationCoordinate2D]]
-    let linesLocations: [[CLLocation]]
-    let multiPolyline: MKMultiPolyline
+    let coords: [CLLocationCoordinate2D]
+    let locations: [CLLocation]
+    let polyline: MKPolyline
     
-    init(lines: TrailLines, metadata: TrailMetadata) {
-        multiPolyline = lines.multiPolyline
-        linesCoords = multiPolyline.polylines.map(\.coordinates)
-        linesLocations = linesCoords.map { $0.map { $0.location } }
+    init(metadata: TrailMetadata, polyline: MKPolyline) {
+        self.polyline = polyline
+        coords = polyline.coordinates
+        locations = coords.map { $0.location }
         
         id = metadata.id
         name = metadata.name
@@ -40,26 +40,17 @@ class Trail: NSObject, Identifiable {
         metres = metadata.metres
         days = metadata.days
         colour = metadata.colour
-        cycle = metadata.cycle
+        cycleStatus = metadata.cycleStatus
         ascent = metadata.ascent
         country = metadata.country
     }
     
-    static let example = Trail(lines: .init(id: 0, multiPolyline: .init()), metadata: .init(id: 0, name: "Cleveland Way", description: "Experience the varied landscape of the North York Moors National Park on a journey across breathtaking heather moorland and dramatic coastline.", url: URL(string: "https://www.nationaltrail.co.uk/trails/cleveland-way/")!, photoUrl: URL(string: "https://nationaltrails.s3.eu-west-2.amazonaws.com/uploads/Cleveland-Way-Home-2000x600.jpg")!, metres: 170813, days: 9, colour: 1, cycle: true, ascent: 5031, country: .england))
+    static let example = Trail(metadata: .init(id: 0, name: "Cleveland Way", description: "Experience the varied landscape of the North York Moors National Park on a journey across breathtaking heather moorland and dramatic coastline.", url: URL(string: "https://www.nationaltrail.co.uk/trails/cleveland-way/")!, photoUrl: URL(string: "https://nationaltrails.s3.eu-west-2.amazonaws.com/uploads/Cleveland-Way-Home-2000x600.jpg")!, metres: 170813, days: 9, colour: 1, cycleStatus: .no, ascent: 5031, country: .england), polyline: MKPolyline())
 }
 
 extension Trail: MKOverlay {
-    var coordinate: CLLocationCoordinate2D { multiPolyline.coordinate }
-    var boundingMapRect: MKMapRect { multiPolyline.boundingMapRect }
-}
-
-struct TrailLines {
-    let id: Int
-    let multiPolyline: MKMultiPolyline
-}
-
-struct TrailProperties: Codable {
-    let id: Int
+    var coordinate: CLLocationCoordinate2D { polyline.coordinate }
+    var boundingMapRect: MKMapRect { polyline.boundingMapRect }
 }
 
 struct TrailMetadata: Codable {
@@ -71,7 +62,7 @@ struct TrailMetadata: Codable {
     let metres: Double
     let days: Int
     let colour: Int
-    let cycle: Bool
+    let cycleStatus: CycleStatus
     let ascent: Double?
     let country: Country
 }
@@ -81,14 +72,13 @@ class TrailTrips: NSManagedObject {
     @NSManaged var id: Int16
     @NSManaged var lines: [[[Double]]]
     
-    var linesCoords = [[CLLocationCoordinate2D]]()
-    var coords = [CLLocationCoordinate2D]()
+    var coordsSet = Set<CLLocationCoordinate2D>()
     var multiPolyline = MKMultiPolyline()
     var metres = 0.0
     
     func reload() {
-        linesCoords = lines.map { $0.map { CLLocationCoordinate2DMake($0[0], $0[1]) } }
-        coords = linesCoords.concat()
+        let linesCoords = lines.map { $0.map { CLLocationCoordinate2DMake($0[0], $0[1]) } }
+        coordsSet = Set(linesCoords.concat())
         multiPolyline = MKMultiPolyline(linesCoords.map { MKPolyline(coordinates: $0, count: $0.count) })
         metres = linesCoords.map { $0.metres() }.sum()
     }
@@ -111,4 +101,10 @@ enum TrailSort: String, CaseIterable, Codable {
     case distance = "Length"
     case ascent = "Total Ascent"
     case completed = "Percentage Completed"
+}
+
+enum CycleStatus: String, Codable {
+    case no
+    case yes
+    case sections
 }

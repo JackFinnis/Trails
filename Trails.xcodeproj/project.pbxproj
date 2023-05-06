@@ -37,6 +37,50 @@
 		04626C0029C25714004880E3 /* TrailRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04626BFF29C25714004880E3 /* TrailRow.swift */; };
 		048E5F2029C38A0A0080355B /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048E5F1F29C38A0A0080355B /* WebView.swift */; };
 		048E5F2229C38A930080355B /* WebVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048E5F2129C38A930080355B /* WebVM.swift */; };
+		04C71F692A06D3F600417249 /* Thames Path.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F3D2A06D3F600417249 /* Thames Path.geojson */; };
+		04C71F6A2A06D3F600417249 /* Arran Coastal Way.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F3E2A06D3F600417249 /* Arran Coastal Way.geojson */; };
+		04C71F6B2A06D3F600417249 /* Three Lochs Way.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F3F2A06D3F600417249 /* Three Lochs Way.geojson */; };
+		04C71F6C2A06D3F600417249 /* Rob Roy Way.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F402A06D3F600417249 /* Rob Roy Way.geojson */; };
+		04C71F6D2A06D3F600417249 /* Hadrian's Wall Path.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F412A06D3F600417249 /* Hadrian's Wall Path.geojson */; };
+		04C71F6E2A06D3F600417249 /* South Downs Way.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F422A06D3F600417249 /* South Downs Way.geojson */; };
+		04C71F6F2A06D3F600417249 /* Cateran Trail.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F432A06D3F600417249 /* Cateran Trail.geojson */; };
+		04C71F702A06D3F600417249 /* Forth & Clyde and Union Canal Towpath.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F442A06D3F600417249 /* Forth & Clyde and Union Canal Towpath.geojson */; };
+		04C71F712A06D3F600417249 /* Dava Way.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F452A06D3F600417249 /* Dava Way.geojson */; };
+		04C71F722A06D3F600417249 /* Moray Coast Trail.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F462A06D3F600417249 /* Moray Coast Trail.geojson */; };
+		04C71F732A06D3F600417249 /* Cotswold Way.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F472A06D3F600417249 /* Cotswold Way.geojson */; };
+		04C71F742A06D3F600417249 /* West Highland Way.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F482A06D3F600417249 /* West Highland Way.geojson */; };
+		04C71F752A06D3F600417249 /* Peddars Way and Norfolk Coast Path.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F492A06D3F600417249 /* Peddars Way and Norfolk Coast Path.geojson */; };
+		04C71F762A06D3F600417249 /* Offa's Dyke Path.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F4A2A06D3F600417249 /* Offa's Dyke Path.geojson */; };
+		04C71F772A06D3F600417249 /* South West Coast Path.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F4B2A06D3F600417249 /* South West Coast Path.geojson */; };
+		04C71F782A06D3F600417249 /* North Downs Way.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F4C2A06D3F600417249 /* North Downs Way.geojson */; };
+		04C71F792A06D3F600417249 /* Loch Lomond and Cowal Way.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F4D2A06D3F600417249 /* Loch Lomond and Cowal Way.geojson */; };
+		04C71F7A2A06D3F600417249 /* Pennine Bridleway.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F4E2A06D3F600417249 /* Pennine Bridleway.geojson */; };
+		04C71F7B2A06D3F600417249 /* St Cuthbert's Way.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F4F2A06D3F600417249 /* St Cuthbert's Way.geojson */; };
+		04C71F7C2A06D3F600417249 /* The Ridgeway.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F502A06D3F600417249 /* The Ridgeway.geojson */; };
+		04C71F7D2A06D3F600417249 /* Mull of Galloway Trail.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F512A06D3F600417249 /* Mull of Galloway Trail.geojson */; };
+		04C71F7E2A06D3F600417249 /* Fife Coastal Path.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F522A06D3F600417249 /* Fife Coastal Path.geojson */; };
+		04C71F7F2A06D3F600417249 /* Ulster Way.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F532A06D3F600417249 /* Ulster Way.geojson */; };
+		04C71F802A06D3F600417249 /* Kintyre Way.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F542A06D3F600417249 /* Kintyre Way.geojson */; };
+		04C71F812A06D3F600417249 /* Ayrshire Coastal Path.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F552A06D3F600417249 /* Ayrshire Coastal Path.geojson */; };
+		04C71F822A06D3F600417249 /* Yorkshire Wolds Way.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F562A06D3F600417249 /* Yorkshire Wolds Way.geojson */; };
+		04C71F832A06D3F600417249 /* Romans and Reivers Route.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F572A06D3F600417249 /* Romans and Reivers Route.geojson */; };
+		04C71F842A06D3F600417249 /* Pennine Way.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F582A06D3F600417249 /* Pennine Way.geojson */; };
+		04C71F852A06D3F600417249 /* Great Glen Way.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F592A06D3F600417249 /* Great Glen Way.geojson */; };
+		04C71F862A06D3F600417249 /* Southern Upland Way.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F5A2A06D3F600417249 /* Southern Upland Way.geojson */; };
+		04C71F872A06D3F600417249 /* Formartine and Buchan Way.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F5B2A06D3F600417249 /* Formartine and Buchan Way.geojson */; };
+		04C71F882A06D3F600417249 /* Cleveland Way.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F5C2A06D3F600417249 /* Cleveland Way.geojson */; };
+		04C71F892A06D3F600417249 /* Pembrokeshire Coast Path.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F5D2A06D3F600417249 /* Pembrokeshire Coast Path.geojson */; };
+		04C71F8A2A06D3F600417249 /* Borders Abbeys Way.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F5E2A06D3F600417249 /* Borders Abbeys Way.geojson */; };
+		04C71F8B2A06D3F600417249 /* Berwickshire Coastal Path.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F5F2A06D3F600417249 /* Berwickshire Coastal Path.geojson */; };
+		04C71F8C2A06D3F600417249 /* Glyndŵr's Way.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F602A06D3F600417249 /* Glyndŵr's Way.geojson */; };
+		04C71F8D2A06D3F600417249 /* Speyside Way.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F612A06D3F600417249 /* Speyside Way.geojson */; };
+		04C71F8E2A06D3F600417249 /* Clyde Walkway.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F622A06D3F600417249 /* Clyde Walkway.geojson */; };
+		04C71F8F2A06D3F600417249 /* River Ayr Way.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F632A06D3F600417249 /* River Ayr Way.geojson */; };
+		04C71F902A06D3F600417249 /* Annandale Way.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F642A06D3F600417249 /* Annandale Way.geojson */; };
+		04C71F912A06D3F600417249 /* John Muir Way.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F652A06D3F600417249 /* John Muir Way.geojson */; };
+		04C71F922A06D3F600417249 /* Cross Borders Drove Road.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F662A06D3F600417249 /* Cross Borders Drove Road.geojson */; };
+		04C71F932A06D3F600417249 /* West Island Way.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F672A06D3F600417249 /* West Island Way.geojson */; };
+		04C71F942A06D3F600417249 /* Great Trossachs Path.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F682A06D3F600417249 /* Great Trossachs Path.geojson */; };
 		04CEDFC629A2E4DA00810005 /* DraggableBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04CEDFC329A2E4DA00810005 /* DraggableBar.swift */; };
 		04CEDFCB29A2E50700810005 /* Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04CEDFC829A2E50700810005 /* Defaults.swift */; };
 		04CEDFCD29A2E50700810005 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04CEDFCA29A2E50700810005 /* Store.swift */; };
@@ -53,11 +97,10 @@
 		04E0E91229EF704400EB08CC /* SearchScope.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E0E91129EF704400EB08CC /* SearchScope.swift */; };
 		04E0E91429EF717600EB08CC /* SearchList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E0E91329EF717600EB08CC /* SearchList.swift */; };
 		04E0E91629F0302500EB08CC /* TrailImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E0E91529F0302500EB08CC /* TrailImage.swift */; };
-		04E0E91829F06CFD00EB08CC /* CopyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E0E91729F06CFD00EB08CC /* CopyView.swift */; };
+		04E0E91829F06CFD00EB08CC /* CarbonCopy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E0E91729F06CFD00EB08CC /* CarbonCopy.swift */; };
 		04E7185129C79E6C00876116 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E7185029C79E6C00876116 /* UIColor.swift */; };
 		04E7185329C7CC0400876116 /* MKCoordinateRegion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E7185229C7CC0400876116 /* MKCoordinateRegion.swift */; };
 		04E7185529C89D0400876116 /* Number.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E7185429C89D0400876116 /* Number.swift */; };
-		04FFC98929CA679500BF77FD /* Coords.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04FFC98829CA679500BF77FD /* Coords.geojson */; };
 		04FFC98B29CA6A4900BF77FD /* EmailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04FFC98A29CA6A4900BF77FD /* EmailView.swift */; };
 /* End PBXBuildFile section */
 
@@ -93,6 +136,50 @@
 		04626BFF29C25714004880E3 /* TrailRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailRow.swift; sourceTree = "<group>"; };
 		048E5F1F29C38A0A0080355B /* WebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebView.swift; sourceTree = "<group>"; };
 		048E5F2129C38A930080355B /* WebVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebVM.swift; sourceTree = "<group>"; };
+		04C71F3D2A06D3F600417249 /* Thames Path.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Thames Path.geojson"; sourceTree = "<group>"; };
+		04C71F3E2A06D3F600417249 /* Arran Coastal Way.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Arran Coastal Way.geojson"; sourceTree = "<group>"; };
+		04C71F3F2A06D3F600417249 /* Three Lochs Way.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Three Lochs Way.geojson"; sourceTree = "<group>"; };
+		04C71F402A06D3F600417249 /* Rob Roy Way.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Rob Roy Way.geojson"; sourceTree = "<group>"; };
+		04C71F412A06D3F600417249 /* Hadrian's Wall Path.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Hadrian's Wall Path.geojson"; sourceTree = "<group>"; };
+		04C71F422A06D3F600417249 /* South Downs Way.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "South Downs Way.geojson"; sourceTree = "<group>"; };
+		04C71F432A06D3F600417249 /* Cateran Trail.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Cateran Trail.geojson"; sourceTree = "<group>"; };
+		04C71F442A06D3F600417249 /* Forth & Clyde and Union Canal Towpath.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Forth & Clyde and Union Canal Towpath.geojson"; sourceTree = "<group>"; };
+		04C71F452A06D3F600417249 /* Dava Way.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Dava Way.geojson"; sourceTree = "<group>"; };
+		04C71F462A06D3F600417249 /* Moray Coast Trail.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Moray Coast Trail.geojson"; sourceTree = "<group>"; };
+		04C71F472A06D3F600417249 /* Cotswold Way.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Cotswold Way.geojson"; sourceTree = "<group>"; };
+		04C71F482A06D3F600417249 /* West Highland Way.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "West Highland Way.geojson"; sourceTree = "<group>"; };
+		04C71F492A06D3F600417249 /* Peddars Way and Norfolk Coast Path.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Peddars Way and Norfolk Coast Path.geojson"; sourceTree = "<group>"; };
+		04C71F4A2A06D3F600417249 /* Offa's Dyke Path.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Offa's Dyke Path.geojson"; sourceTree = "<group>"; };
+		04C71F4B2A06D3F600417249 /* South West Coast Path.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "South West Coast Path.geojson"; sourceTree = "<group>"; };
+		04C71F4C2A06D3F600417249 /* North Downs Way.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "North Downs Way.geojson"; sourceTree = "<group>"; };
+		04C71F4D2A06D3F600417249 /* Loch Lomond and Cowal Way.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Loch Lomond and Cowal Way.geojson"; sourceTree = "<group>"; };
+		04C71F4E2A06D3F600417249 /* Pennine Bridleway.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Pennine Bridleway.geojson"; sourceTree = "<group>"; };
+		04C71F4F2A06D3F600417249 /* St Cuthbert's Way.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "St Cuthbert's Way.geojson"; sourceTree = "<group>"; };
+		04C71F502A06D3F600417249 /* The Ridgeway.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "The Ridgeway.geojson"; sourceTree = "<group>"; };
+		04C71F512A06D3F600417249 /* Mull of Galloway Trail.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Mull of Galloway Trail.geojson"; sourceTree = "<group>"; };
+		04C71F522A06D3F600417249 /* Fife Coastal Path.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Fife Coastal Path.geojson"; sourceTree = "<group>"; };
+		04C71F532A06D3F600417249 /* Ulster Way.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Ulster Way.geojson"; sourceTree = "<group>"; };
+		04C71F542A06D3F600417249 /* Kintyre Way.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Kintyre Way.geojson"; sourceTree = "<group>"; };
+		04C71F552A06D3F600417249 /* Ayrshire Coastal Path.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Ayrshire Coastal Path.geojson"; sourceTree = "<group>"; };
+		04C71F562A06D3F600417249 /* Yorkshire Wolds Way.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Yorkshire Wolds Way.geojson"; sourceTree = "<group>"; };
+		04C71F572A06D3F600417249 /* Romans and Reivers Route.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Romans and Reivers Route.geojson"; sourceTree = "<group>"; };
+		04C71F582A06D3F600417249 /* Pennine Way.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Pennine Way.geojson"; sourceTree = "<group>"; };
+		04C71F592A06D3F600417249 /* Great Glen Way.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Great Glen Way.geojson"; sourceTree = "<group>"; };
+		04C71F5A2A06D3F600417249 /* Southern Upland Way.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Southern Upland Way.geojson"; sourceTree = "<group>"; };
+		04C71F5B2A06D3F600417249 /* Formartine and Buchan Way.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Formartine and Buchan Way.geojson"; sourceTree = "<group>"; };
+		04C71F5C2A06D3F600417249 /* Cleveland Way.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Cleveland Way.geojson"; sourceTree = "<group>"; };
+		04C71F5D2A06D3F600417249 /* Pembrokeshire Coast Path.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Pembrokeshire Coast Path.geojson"; sourceTree = "<group>"; };
+		04C71F5E2A06D3F600417249 /* Borders Abbeys Way.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Borders Abbeys Way.geojson"; sourceTree = "<group>"; };
+		04C71F5F2A06D3F600417249 /* Berwickshire Coastal Path.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Berwickshire Coastal Path.geojson"; sourceTree = "<group>"; };
+		04C71F602A06D3F600417249 /* Glyndŵr's Way.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Glyndŵr's Way.geojson"; sourceTree = "<group>"; };
+		04C71F612A06D3F600417249 /* Speyside Way.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Speyside Way.geojson"; sourceTree = "<group>"; };
+		04C71F622A06D3F600417249 /* Clyde Walkway.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Clyde Walkway.geojson"; sourceTree = "<group>"; };
+		04C71F632A06D3F600417249 /* River Ayr Way.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "River Ayr Way.geojson"; sourceTree = "<group>"; };
+		04C71F642A06D3F600417249 /* Annandale Way.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Annandale Way.geojson"; sourceTree = "<group>"; };
+		04C71F652A06D3F600417249 /* John Muir Way.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "John Muir Way.geojson"; sourceTree = "<group>"; };
+		04C71F662A06D3F600417249 /* Cross Borders Drove Road.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Cross Borders Drove Road.geojson"; sourceTree = "<group>"; };
+		04C71F672A06D3F600417249 /* West Island Way.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "West Island Way.geojson"; sourceTree = "<group>"; };
+		04C71F682A06D3F600417249 /* Great Trossachs Path.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Great Trossachs Path.geojson"; sourceTree = "<group>"; };
 		04CEDFC329A2E4DA00810005 /* DraggableBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DraggableBar.swift; sourceTree = "<group>"; };
 		04CEDFC829A2E50700810005 /* Defaults.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Defaults.swift; sourceTree = "<group>"; };
 		04CEDFCA29A2E50700810005 /* Store.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
@@ -109,11 +196,10 @@
 		04E0E91129EF704400EB08CC /* SearchScope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchScope.swift; sourceTree = "<group>"; };
 		04E0E91329EF717600EB08CC /* SearchList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchList.swift; sourceTree = "<group>"; };
 		04E0E91529F0302500EB08CC /* TrailImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailImage.swift; sourceTree = "<group>"; };
-		04E0E91729F06CFD00EB08CC /* CopyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyView.swift; sourceTree = "<group>"; };
+		04E0E91729F06CFD00EB08CC /* CarbonCopy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarbonCopy.swift; sourceTree = "<group>"; };
 		04E7185029C79E6C00876116 /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		04E7185229C7CC0400876116 /* MKCoordinateRegion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MKCoordinateRegion.swift; sourceTree = "<group>"; };
 		04E7185429C89D0400876116 /* Number.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Number.swift; sourceTree = "<group>"; };
-		04FFC98829CA679500BF77FD /* Coords.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Coords.geojson; sourceTree = "<group>"; };
 		04FFC98A29CA6A4900BF77FD /* EmailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -161,10 +247,10 @@
 			isa = PBXGroup;
 			children = (
 				0416F17C299EFA0B00B90E68 /* Launch Screen.storyboard */,
-				04FFC98829CA679500BF77FD /* Coords.geojson */,
-				04626BF329C1E085004880E3 /* Metadata.json */,
 				0416F159299E91B200B90E68 /* Assets.xcassets */,
 				0416F1B4299F02AA00B90E68 /* Trails.xcdatamodeld */,
+				04626BF329C1E085004880E3 /* Metadata.json */,
+				04C71F3C2A06D3F600417249 /* GeoJSON */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -232,7 +318,7 @@
 				0416F195299EFB9C00B90E68 /* ShareView.swift */,
 				04FFC98A29CA6A4900BF77FD /* EmailView.swift */,
 				0416F19A299EFB9C00B90E68 /* Blur.swift */,
-				04E0E91729F06CFD00EB08CC /* CopyView.swift */,
+				04E0E91729F06CFD00EB08CC /* CarbonCopy.swift */,
 				0416F170299EF9FC00B90E68 /* View.swift */,
 			);
 			path = Extra;
@@ -258,6 +344,57 @@
 				04E0E90D29EF33CB00EB08CC /* BigLabel.swift */,
 			);
 			path = Web;
+			sourceTree = "<group>";
+		};
+		04C71F3C2A06D3F600417249 /* GeoJSON */ = {
+			isa = PBXGroup;
+			children = (
+				04C71F3D2A06D3F600417249 /* Thames Path.geojson */,
+				04C71F3E2A06D3F600417249 /* Arran Coastal Way.geojson */,
+				04C71F3F2A06D3F600417249 /* Three Lochs Way.geojson */,
+				04C71F402A06D3F600417249 /* Rob Roy Way.geojson */,
+				04C71F412A06D3F600417249 /* Hadrian's Wall Path.geojson */,
+				04C71F422A06D3F600417249 /* South Downs Way.geojson */,
+				04C71F432A06D3F600417249 /* Cateran Trail.geojson */,
+				04C71F442A06D3F600417249 /* Forth & Clyde and Union Canal Towpath.geojson */,
+				04C71F452A06D3F600417249 /* Dava Way.geojson */,
+				04C71F462A06D3F600417249 /* Moray Coast Trail.geojson */,
+				04C71F472A06D3F600417249 /* Cotswold Way.geojson */,
+				04C71F482A06D3F600417249 /* West Highland Way.geojson */,
+				04C71F492A06D3F600417249 /* Peddars Way and Norfolk Coast Path.geojson */,
+				04C71F4A2A06D3F600417249 /* Offa's Dyke Path.geojson */,
+				04C71F4B2A06D3F600417249 /* South West Coast Path.geojson */,
+				04C71F4C2A06D3F600417249 /* North Downs Way.geojson */,
+				04C71F4D2A06D3F600417249 /* Loch Lomond and Cowal Way.geojson */,
+				04C71F4E2A06D3F600417249 /* Pennine Bridleway.geojson */,
+				04C71F4F2A06D3F600417249 /* St Cuthbert's Way.geojson */,
+				04C71F502A06D3F600417249 /* The Ridgeway.geojson */,
+				04C71F512A06D3F600417249 /* Mull of Galloway Trail.geojson */,
+				04C71F522A06D3F600417249 /* Fife Coastal Path.geojson */,
+				04C71F532A06D3F600417249 /* Ulster Way.geojson */,
+				04C71F542A06D3F600417249 /* Kintyre Way.geojson */,
+				04C71F552A06D3F600417249 /* Ayrshire Coastal Path.geojson */,
+				04C71F562A06D3F600417249 /* Yorkshire Wolds Way.geojson */,
+				04C71F572A06D3F600417249 /* Romans and Reivers Route.geojson */,
+				04C71F582A06D3F600417249 /* Pennine Way.geojson */,
+				04C71F592A06D3F600417249 /* Great Glen Way.geojson */,
+				04C71F5A2A06D3F600417249 /* Southern Upland Way.geojson */,
+				04C71F5B2A06D3F600417249 /* Formartine and Buchan Way.geojson */,
+				04C71F5C2A06D3F600417249 /* Cleveland Way.geojson */,
+				04C71F5D2A06D3F600417249 /* Pembrokeshire Coast Path.geojson */,
+				04C71F5E2A06D3F600417249 /* Borders Abbeys Way.geojson */,
+				04C71F5F2A06D3F600417249 /* Berwickshire Coastal Path.geojson */,
+				04C71F602A06D3F600417249 /* Glyndŵr's Way.geojson */,
+				04C71F612A06D3F600417249 /* Speyside Way.geojson */,
+				04C71F622A06D3F600417249 /* Clyde Walkway.geojson */,
+				04C71F632A06D3F600417249 /* River Ayr Way.geojson */,
+				04C71F642A06D3F600417249 /* Annandale Way.geojson */,
+				04C71F652A06D3F600417249 /* John Muir Way.geojson */,
+				04C71F662A06D3F600417249 /* Cross Borders Drove Road.geojson */,
+				04C71F672A06D3F600417249 /* West Island Way.geojson */,
+				04C71F682A06D3F600417249 /* Great Trossachs Path.geojson */,
+			);
+			path = GeoJSON;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -318,10 +455,53 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				04C71F8B2A06D3F600417249 /* Berwickshire Coastal Path.geojson in Resources */,
+				04C71F712A06D3F600417249 /* Dava Way.geojson in Resources */,
+				04C71F7B2A06D3F600417249 /* St Cuthbert's Way.geojson in Resources */,
+				04C71F932A06D3F600417249 /* West Island Way.geojson in Resources */,
+				04C71F7E2A06D3F600417249 /* Fife Coastal Path.geojson in Resources */,
+				04C71F852A06D3F600417249 /* Great Glen Way.geojson in Resources */,
+				04C71F762A06D3F600417249 /* Offa's Dyke Path.geojson in Resources */,
+				04C71F8D2A06D3F600417249 /* Speyside Way.geojson in Resources */,
+				04C71F8F2A06D3F600417249 /* River Ayr Way.geojson in Resources */,
+				04C71F6C2A06D3F600417249 /* Rob Roy Way.geojson in Resources */,
+				04C71F792A06D3F600417249 /* Loch Lomond and Cowal Way.geojson in Resources */,
+				04C71F942A06D3F600417249 /* Great Trossachs Path.geojson in Resources */,
 				04626BF529C1E086004880E3 /* Metadata.json in Resources */,
+				04C71F872A06D3F600417249 /* Formartine and Buchan Way.geojson in Resources */,
+				04C71F822A06D3F600417249 /* Yorkshire Wolds Way.geojson in Resources */,
+				04C71F6A2A06D3F600417249 /* Arran Coastal Way.geojson in Resources */,
+				04C71F722A06D3F600417249 /* Moray Coast Trail.geojson in Resources */,
+				04C71F892A06D3F600417249 /* Pembrokeshire Coast Path.geojson in Resources */,
+				04C71F692A06D3F600417249 /* Thames Path.geojson in Resources */,
+				04C71F752A06D3F600417249 /* Peddars Way and Norfolk Coast Path.geojson in Resources */,
+				04C71F7F2A06D3F600417249 /* Ulster Way.geojson in Resources */,
+				04C71F8C2A06D3F600417249 /* Glyndŵr's Way.geojson in Resources */,
+				04C71F6F2A06D3F600417249 /* Cateran Trail.geojson in Resources */,
+				04C71F6D2A06D3F600417249 /* Hadrian's Wall Path.geojson in Resources */,
+				04C71F902A06D3F600417249 /* Annandale Way.geojson in Resources */,
+				04C71F882A06D3F600417249 /* Cleveland Way.geojson in Resources */,
+				04C71F7D2A06D3F600417249 /* Mull of Galloway Trail.geojson in Resources */,
+				04C71F742A06D3F600417249 /* West Highland Way.geojson in Resources */,
+				04C71F6E2A06D3F600417249 /* South Downs Way.geojson in Resources */,
+				04C71F7C2A06D3F600417249 /* The Ridgeway.geojson in Resources */,
+				04C71F7A2A06D3F600417249 /* Pennine Bridleway.geojson in Resources */,
+				04C71F8A2A06D3F600417249 /* Borders Abbeys Way.geojson in Resources */,
+				04C71F812A06D3F600417249 /* Ayrshire Coastal Path.geojson in Resources */,
+				04C71F922A06D3F600417249 /* Cross Borders Drove Road.geojson in Resources */,
+				04C71F732A06D3F600417249 /* Cotswold Way.geojson in Resources */,
+				04C71F862A06D3F600417249 /* Southern Upland Way.geojson in Resources */,
+				04C71F842A06D3F600417249 /* Pennine Way.geojson in Resources */,
 				0416F17D299EFA0B00B90E68 /* Launch Screen.storyboard in Resources */,
+				04C71F782A06D3F600417249 /* North Downs Way.geojson in Resources */,
+				04C71F832A06D3F600417249 /* Romans and Reivers Route.geojson in Resources */,
+				04C71F802A06D3F600417249 /* Kintyre Way.geojson in Resources */,
+				04C71F6B2A06D3F600417249 /* Three Lochs Way.geojson in Resources */,
+				04C71F772A06D3F600417249 /* South West Coast Path.geojson in Resources */,
 				0416F15A299E91B200B90E68 /* Assets.xcassets in Resources */,
-				04FFC98929CA679500BF77FD /* Coords.geojson in Resources */,
+				04C71F912A06D3F600417249 /* John Muir Way.geojson in Resources */,
+				04C71F8E2A06D3F600417249 /* Clyde Walkway.geojson in Resources */,
+				04C71F702A06D3F600417249 /* Forth & Clyde and Union Canal Towpath.geojson in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -379,7 +559,7 @@
 				0416F1A1299EFB9D00B90E68 /* SelectBar.swift in Sources */,
 				0416F156299E91B000B90E68 /* TrailsApp.swift in Sources */,
 				048E5F2229C38A930080355B /* WebVM.swift in Sources */,
-				04E0E91829F06CFD00EB08CC /* CopyView.swift in Sources */,
+				04E0E91829F06CFD00EB08CC /* CarbonCopy.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
