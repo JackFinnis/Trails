@@ -11,8 +11,6 @@ struct RootView: View {
     @Environment(\.colorScheme) var colorScheme
     @AppStorage("launchedBefore") var launchedBefore = false
     @StateObject var vm = ViewModel.shared
-    @State var infoSnapOffset = CGFloat.zero
-    @State var infoDragOffset = CGFloat.zero
 
     var body: some View {
         NavigationView {
