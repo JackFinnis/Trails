@@ -413,6 +413,8 @@
 			dependencies = (
 			);
 			name = Trails;
+			packageProductDependencies = (
+			);
 			productName = Trails;
 			productReference = 0416F152299E91B000B90E68 /* Trails.app */;
 			productType = "com.apple.product-type.application";
@@ -441,6 +443,8 @@
 				Base,
 			);
 			mainGroup = 0416F149299E91B000B90E68;
+			packageReferences = (
+			);
 			productRefGroup = 0416F153299E91B000B90E68 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";

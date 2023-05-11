@@ -113,9 +113,10 @@ class ViewModel: NSObject, ObservableObject {
         try! JSONDecoder().decode(T.self, from: data)
     }
     
+    // Decoder  Computer  Phone
+    // MapKit   0.246     1.148
+    // Package  1.074     8.074
     func loadData() {
-        let start = Date.now
-        
         let metadataData = loadData(from: "Metadata.json")
         let trailsMetadata: [TrailMetadata] = decodeJSON(data: metadataData)
         
