@@ -65,8 +65,8 @@ extension View {
             .frame(width: SIZE, height: SIZE)
     }
     
-    func continuousRadius(_ cornerRadius: CGFloat) -> some View {
-        clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+    func continuousRadius(_ radius: CGFloat) -> some View {
+        clipShape(RoundedRectangle(cornerRadius: radius, style: .continuous))
     }
     
     func bigButton() -> some View {

@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0402C6432A0EA09600238C51 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 0402C6422A0EA09600238C51 /* FirebaseAnalytics */; };
+		0402C6452A0EA0BD00238C51 /* Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0402C6442A0EA0BD00238C51 /* Analytics.swift */; };
+		0402C6472A0EA12700238C51 /* Emails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0402C6462A0EA12700238C51 /* Emails.swift */; };
 		0416F156299E91B000B90E68 /* TrailsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0416F155299E91B000B90E68 /* TrailsApp.swift */; };
 		0416F15A299E91B200B90E68 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0416F159299E91B200B90E68 /* Assets.xcassets */; };
 		0416F16C299E930400B90E68 /* Trail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0416F16B299E930400B90E68 /* Trail.swift */; };
@@ -23,7 +26,6 @@
 		0416F1A3299EFB9D00B90E68 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0416F192299EFB9C00B90E68 /* RootView.swift */; };
 		0416F1A5299EFB9D00B90E68 /* ShareView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0416F195299EFB9C00B90E68 /* ShareView.swift */; };
 		0416F1A7299EFB9D00B90E68 /* SearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0416F198299EFB9C00B90E68 /* SearchBar.swift */; };
-		0416F1A9299EFB9D00B90E68 /* Blur.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0416F19A299EFB9C00B90E68 /* Blur.swift */; };
 		0416F1B6299F02AA00B90E68 /* Trails.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0416F1B4299F02AA00B90E68 /* Trails.xcdatamodeld */; };
 		0416F1BD29A1692100B90E68 /* NSObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0416F1BC29A1692100B90E68 /* NSObject.swift */; };
 		041C01A029D0C35000F8C5F3 /* CLPlacemark.swift in Sources */ = {isa = PBXBuildFile; fileRef = 041C019F29D0C35000F8C5F3 /* CLPlacemark.swift */; };
@@ -82,7 +84,7 @@
 		04C71F932A06D3F600417249 /* West Island Way.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F672A06D3F600417249 /* West Island Way.geojson */; };
 		04C71F942A06D3F600417249 /* Great Trossachs Path.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04C71F682A06D3F600417249 /* Great Trossachs Path.geojson */; };
 		04CEDFC629A2E4DA00810005 /* DraggableBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04CEDFC329A2E4DA00810005 /* DraggableBar.swift */; };
-		04CEDFCB29A2E50700810005 /* Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04CEDFC829A2E50700810005 /* Defaults.swift */; };
+		04CEDFCB29A2E50700810005 /* Storage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04CEDFC829A2E50700810005 /* Storage.swift */; };
 		04CEDFCD29A2E50700810005 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04CEDFCA29A2E50700810005 /* Store.swift */; };
 		04CEDFDB29A2E60400810005 /* InfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04CEDFDA29A2E60400810005 /* InfoView.swift */; };
 		04CEDFDD29A2E66200810005 /* DismissCross.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04CEDFDC29A2E66200810005 /* DismissCross.swift */; };
@@ -105,6 +107,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0402C6442A0EA0BD00238C51 /* Analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Analytics.swift; sourceTree = "<group>"; };
+		0402C6462A0EA12700238C51 /* Emails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Emails.swift; sourceTree = "<group>"; };
 		0416F152299E91B000B90E68 /* Trails.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Trails.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0416F155299E91B000B90E68 /* TrailsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailsApp.swift; sourceTree = "<group>"; };
 		0416F159299E91B200B90E68 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -122,7 +126,6 @@
 		0416F192299EFB9C00B90E68 /* RootView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		0416F195299EFB9C00B90E68 /* ShareView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShareView.swift; sourceTree = "<group>"; };
 		0416F198299EFB9C00B90E68 /* SearchBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchBar.swift; sourceTree = "<group>"; };
-		0416F19A299EFB9C00B90E68 /* Blur.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Blur.swift; sourceTree = "<group>"; };
 		0416F1B5299F02AA00B90E68 /* Trails.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Trails.xcdatamodel; sourceTree = "<group>"; };
 		0416F1BC29A1692100B90E68 /* NSObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSObject.swift; sourceTree = "<group>"; };
 		041C019F29D0C35000F8C5F3 /* CLPlacemark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CLPlacemark.swift; sourceTree = "<group>"; };
@@ -181,7 +184,7 @@
 		04C71F672A06D3F600417249 /* West Island Way.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "West Island Way.geojson"; sourceTree = "<group>"; };
 		04C71F682A06D3F600417249 /* Great Trossachs Path.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Great Trossachs Path.geojson"; sourceTree = "<group>"; };
 		04CEDFC329A2E4DA00810005 /* DraggableBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DraggableBar.swift; sourceTree = "<group>"; };
-		04CEDFC829A2E50700810005 /* Defaults.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Defaults.swift; sourceTree = "<group>"; };
+		04CEDFC829A2E50700810005 /* Storage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Storage.swift; sourceTree = "<group>"; };
 		04CEDFCA29A2E50700810005 /* Store.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
 		04CEDFDA29A2E60400810005 /* InfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoView.swift; sourceTree = "<group>"; };
 		04CEDFDC29A2E66200810005 /* DismissCross.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DismissCross.swift; sourceTree = "<group>"; };
@@ -208,6 +211,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0402C6432A0EA09600238C51 /* FirebaseAnalytics in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -317,7 +321,6 @@
 				04CEDFDC29A2E66200810005 /* DismissCross.swift */,
 				0416F195299EFB9C00B90E68 /* ShareView.swift */,
 				04FFC98A29CA6A4900BF77FD /* EmailView.swift */,
-				0416F19A299EFB9C00B90E68 /* Blur.swift */,
 				04E0E91729F06CFD00EB08CC /* CarbonCopy.swift */,
 				0416F170299EF9FC00B90E68 /* View.swift */,
 			);
@@ -327,9 +330,11 @@
 		0416F1B729A0591600B90E68 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
-				04CEDFC829A2E50700810005 /* Defaults.swift */,
+				04CEDFC829A2E50700810005 /* Storage.swift */,
+				0402C6462A0EA12700238C51 /* Emails.swift */,
 				04CEDFCA29A2E50700810005 /* Store.swift */,
 				0416F183299EFB9100B90E68 /* Haptics.swift */,
+				0402C6442A0EA0BD00238C51 /* Analytics.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -414,6 +419,7 @@
 			);
 			name = Trails;
 			packageProductDependencies = (
+				0402C6422A0EA09600238C51 /* FirebaseAnalytics */,
 			);
 			productName = Trails;
 			productReference = 0416F152299E91B000B90E68 /* Trails.app */;
@@ -444,6 +450,7 @@
 			);
 			mainGroup = 0416F149299E91B000B90E68;
 			packageReferences = (
+				0402C6412A0EA09600238C51 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			productRefGroup = 0416F153299E91B000B90E68 /* Products */;
 			projectDirPath = "";
@@ -520,6 +527,7 @@
 				0416F1BD29A1692100B90E68 /* NSObject.swift in Sources */,
 				04CEDFC629A2E4DA00810005 /* DraggableBar.swift in Sources */,
 				04E0E90629EEF5BD00EB08CC /* Int.swift in Sources */,
+				0402C6472A0EA12700238C51 /* Emails.swift in Sources */,
 				0421202929C91E03003DE52F /* WebUIView.swift in Sources */,
 				04CEDFE129A2EADB00810005 /* SelectionBar.swift in Sources */,
 				04CEDFDD29A2E66200810005 /* DismissCross.swift in Sources */,
@@ -530,9 +538,8 @@
 				0416F16C299E930400B90E68 /* Trail.swift in Sources */,
 				04CEDFCD29A2E50700810005 /* Store.swift in Sources */,
 				0416F1A7299EFB9D00B90E68 /* SearchBar.swift in Sources */,
-				0416F1A9299EFB9D00B90E68 /* Blur.swift in Sources */,
 				0416F1A3299EFB9D00B90E68 /* RootView.swift in Sources */,
-				04CEDFCB29A2E50700810005 /* Defaults.swift in Sources */,
+				04CEDFCB29A2E50700810005 /* Storage.swift in Sources */,
 				0416F17A299EF9FC00B90E68 /* CLLocationCoordinate2D.swift in Sources */,
 				0416F176299EF9FC00B90E68 /* View.swift in Sources */,
 				04626BFA29C24297004880E3 /* Annotation.swift in Sources */,
@@ -552,6 +559,7 @@
 				04FFC98B29CA6A4900BF77FD /* EmailView.swift in Sources */,
 				0416F177299EF9FC00B90E68 /* Collection.swift in Sources */,
 				0416F179299EF9FC00B90E68 /* MKMultiPoint.swift in Sources */,
+				0402C6452A0EA0BD00238C51 /* Analytics.swift in Sources */,
 				0416F17B299EF9FC00B90E68 /* Double.swift in Sources */,
 				04E0E91429EF717600EB08CC /* SearchList.swift in Sources */,
 				04E0E90C29EF32A800EB08CC /* Font.swift in Sources */,
@@ -772,6 +780,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		0402C6412A0EA09600238C51 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 10.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		0402C6422A0EA09600238C51 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0402C6412A0EA09600238C51 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		0416F1B4299F02AA00B90E68 /* Trails.xcdatamodeld */ = {
