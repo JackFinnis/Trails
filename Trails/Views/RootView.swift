@@ -17,7 +17,7 @@ struct RootView: View {
             ZStack(alignment: .topTrailing) {
                 MapView()
                     .ignoresSafeArea()
-                    .alert("Access Denied", isPresented: $vm.showAuthError) {
+                    .alert("Access Denied", isPresented: $vm.showAuthAlert) {
                         Button("Maybe Later") {}
                         Button("Settings", role: .cancel) {
                             vm.openSettings()

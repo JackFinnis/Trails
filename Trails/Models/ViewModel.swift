@@ -88,7 +88,7 @@ class ViewModel: NSObject, ObservableObject {
     // CLLocationManager
     let manager = CLLocationManager()
     var authStatus = CLAuthorizationStatus.notDetermined
-    @Published var showAuthError = false
+    @Published var showAuthAlert = false
     
     // Persistence
     let container = NSPersistentContainer(name: "Trails")
@@ -420,7 +420,7 @@ extension ViewModel: UIGestureRecognizerDelegate {
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool { true }
     
     func getCoord(from gesture: UIGestureRecognizer) -> CLLocationCoordinate2D? {
-        guard let mapView = mapView else { return nil }
+        guard let mapView else { return nil }
         let point = gesture.location(in: mapView)
         
         var views = [UIView]()
@@ -464,15 +464,15 @@ extension ViewModel: CLLocationManagerDelegate {
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         authStatus = manager.authorizationStatus
         if authStatus == .denied {
-            showAuthError = true
+            showAuthAlert = true
         } else if authStatus == .notDetermined {
             manager.requestWhenInUseAuthorization()
         }
     }
     
     func validateAuth() -> Bool {
-        showAuthError = authStatus == .denied
-        return !showAuthError
+        showAuthAlert = authStatus == .denied
+        return !showAuthAlert
     }
 }
 
@@ -542,9 +542,9 @@ extension ViewModel: MKMapViewDelegate {
     }
     
     func mapView(_ mapView: MKMapView, didAdd views: [MKAnnotationView]) {
-        let view = mapView.view(for: mapView.userLocation)
-        view?.leftCalloutAccessoryView = getButton(systemName: "square.and.arrow.up")
-        view?.rightCalloutAccessoryView = getButton(systemName: "map")
+        guard let user = mapView.view(for: mapView.userLocation) else { return }
+        user.leftCalloutAccessoryView = getButton(systemName: "square.and.arrow.up")
+        user.rightCalloutAccessoryView = getButton(systemName: "map")
     }
     
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {

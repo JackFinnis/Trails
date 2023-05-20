@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension Array where Element: Comparable {
+extension Array where Element: Equatable {
     mutating func removeAll(_ value: Element) {
         removeAll { $0 == value }
     }
