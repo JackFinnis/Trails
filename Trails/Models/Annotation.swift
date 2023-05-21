@@ -8,14 +8,10 @@
 import Foundation
 import MapKit
 
-class Annotation: NSObject, MKAnnotation {
+class Annotation: NSObject {
     let type: AnnotationType
     let coord: CLLocationCoordinate2D
     let placemark: CLPlacemark
-    
-    var title: String? { placemark.name }
-    var subtitle: String?  { placemark.subLocality }
-    var coordinate: CLLocationCoordinate2D { coord }
     
     init(type: AnnotationType, placemark: CLPlacemark, coord: CLLocationCoordinate2D) {
         self.type = type
@@ -28,6 +24,12 @@ class Annotation: NSObject, MKAnnotation {
         item.name = placemark.name
         item.openInMaps()
     }
+}
+
+extension Annotation: MKAnnotation {
+    var title: String? { placemark.name }
+    var subtitle: String?  { placemark.subLocality }
+    var coordinate: CLLocationCoordinate2D { coord }
 }
 
 enum AnnotationType {

@@ -11,38 +11,22 @@ struct RootView: View {
     @Environment(\.colorScheme) var colorScheme
     @AppStorage("launchedBefore") var launchedBefore = false
     @StateObject var vm = ViewModel.shared
+    @State var showInfoView = false
+    @State var showWelcomeView = false
 
     var body: some View {
         NavigationView {
             ZStack(alignment: .topTrailing) {
                 MapView()
                     .ignoresSafeArea()
-                    .alert("Access Denied", isPresented: $vm.showAuthAlert) {
-                        Button("Maybe Later") {}
-                        Button("Settings", role: .cancel) {
-                            vm.openSettings()
-                        }
-                    } message: {
-                        Text("\(NAME) needs access to your location to show where you are on the map. Please go to Settings > \(NAME) > Location and allow access while using the app.")
-                    }
                 
                 VStack(spacing: 0) {
                     CarbonCopy()
+                        .id(colorScheme)
                         .blur(radius: 10, opaque: true)
                         .ignoresSafeArea()
                     Spacer()
                         .layoutPriority(1)
-                }
-                .alert("🎉 Congratulations! 🎉", isPresented: $vm.showCompletedAlert) {
-                    Button("Review \(NAME)") {
-                        Store.writeReview()
-                    }
-                    Button("Rate \(NAME)") {
-                        Store.requestRating()
-                    }
-                    Button("Maybe Later") {}
-                } message: {
-                    Text("You have walked the entire length of \(vm.selectedTrail?.name ?? ""); that's over \(vm.formatDistance(vm.selectMetres, showUnit: true, round: true))! Please consider leaving a review or rating \(NAME) if the app helped you navigate.")
                 }
                 
                 if vm.snapOffset != 0 {
@@ -51,7 +35,7 @@ struct RootView: View {
                 
                 Sheet {
                     if vm.searchScope == .Trails || !vm.isSearching {
-                        TrailsList()
+                        TrailsView()
                     } else {
                         SearchList()
                     }
@@ -63,15 +47,13 @@ struct RootView: View {
                         
                         if !vm.isSearching {
                             Button {
-                                vm.welcome = false
-                                vm.showInfoView = true
+                                showInfoView = true
                             } label: {
                                 Image(systemName: "info.circle")
                                     .font(.icon)
                             }
                         }
                     }
-                    .animation(.none, value: vm.isSearching)
                 }
                 
                 if let trail = vm.selectedTrail {
@@ -102,21 +84,46 @@ struct RootView: View {
             }
         }
         .animation(.sheet, value: vm.selectedTrail)
-        .navigationViewStyle(.stack)
         .onChange(of: colorScheme) { _ in
-            vm.refreshOverlays()
+            vm.refreshTrailOverlays()
         }
         .task {
             if !launchedBefore {
                 launchedBefore = true
-                vm.welcome = true
-                vm.showInfoView = true
+                showWelcomeView = true
             }
         }
-        .shareSheet(items: vm.shareLocationItems, isPresented: $vm.showShareLocationSheet)
-        .sheet(isPresented: $vm.showInfoView) {
-            InfoView(welcome: vm.welcome)
+        .shareSheet(items: vm.shareItems, showsSharedAlert: false, isPresented: $vm.showShareSheet)
+        .sheet(isPresented: $showWelcomeView) {
+            InfoView(welcome: true)
+        }
+        .sheet(isPresented: $showInfoView) {
+            InfoView(welcome: false)
         }
         .environmentObject(vm)
+        .navigationViewStyle(.stack)
+        .background {
+            Text("")
+                .alert("Access Denied", isPresented: $vm.showAuthAlert) {
+                    Button("Maybe Later") {}
+                    Button("Settings", role: .cancel) {
+                        vm.openSettings()
+                    }
+                } message: {
+                    Text("\(Constants.name) needs access to your location to show where you are on the map. Please go to Settings > \(Constants.name) > Location and allow access while using the app.")
+                }
+            Text("")
+                .alert("🎉 Congratulations! 🎉", isPresented: $vm.showCompletedAlert) {
+                    Button("Review \(Constants.name)") {
+                        Store.writeReview()
+                    }
+                    Button("Rate \(Constants.name)") {
+                        Store.requestRating()
+                    }
+                    Button("Maybe Later") {}
+                } message: {
+                    Text("You have walked the entire length of \(vm.selectedTrail?.name ?? ""); that's over \(vm.formatDistance(vm.selectMetres, showUnit: true, round: true))! Please consider leaving a review or rating \(Constants.name) if the app helped you navigate.")
+                }
+        }
     }
 }

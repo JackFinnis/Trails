@@ -9,8 +9,8 @@ import SwiftUI
 
 struct WebView: View {
     @EnvironmentObject var vm: ViewModel
-    @Environment(\.openURL) var openURL
     @StateObject var webVM: WebVM
+    @State var showShareSheet = false
     
     let trail: Trail
     
@@ -35,12 +35,28 @@ struct WebView: View {
             .animation(.default, value: webVM.error)
             .navigationTitle(trail.name)
             .navigationBarTitleDisplayMode(.inline)
+            .shareSheet(items: [trail.url], showsSharedAlert: false, isPresented: $showShareSheet)
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
-                    Button {
-                        openURL(trail.url)
+                    Menu {
+                        Button {
+                            UIApplication.shared.open(trail.url)
+                        } label: {
+                            Label("Open in Safari", systemImage: "safari")
+                        }
+                        Button {
+                            UIPasteboard.general.url = trail.url
+                            Haptics.tap()
+                        } label: {
+                            Label("Copy Link", systemImage: "link")
+                        }
+                        Button {
+                            showShareSheet = true
+                        } label: {
+                            Label("Share...", systemImage: "square.and.arrow.up")
+                        }
                     } label: {
-                        Image(systemName: "safari")
+                        Image(systemName: "ellipsis.circle")
                     }
                 }
             }

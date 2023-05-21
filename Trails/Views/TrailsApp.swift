@@ -8,11 +8,6 @@
 import SwiftUI
 import FirebaseCore
 
-let NAME = "UK Walks"
-let SIZE = 44.0
-let EMAIL = "jack.finnis@icloud.com"
-let APP_URL = URL(string: "https://apps.apple.com/app/id6446465966")!
-
 @main
 struct TrailsApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate

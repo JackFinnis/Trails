@@ -7,49 +7,12 @@
 
 import SwiftUI
 
-struct Dismissible: ViewModifier {
-    @State var offset = 0.0
-    
-    let edge: VerticalEdge
-    let dismiss: () -> Void
-    
-    init(edge: VerticalEdge, dismiss: @escaping () -> Void) {
-        self.edge = edge
-        self.dismiss = dismiss
-    }
-    
-    func body(content: Content) -> some View {
-        content
-            .offset(x: 0, y: offset)
-            .opacity((100 - (offset * (edge == .top ? -1 : 1)))/100)
-            .simultaneousGesture(DragGesture()
-                .onChanged { value in
-                    if value.translation.height > 0 && edge == .bottom || value.translation.height < 0 && edge == .top {
-                        offset = value.translation.height
-                    } else {
-                        offset = sqrt(value.translation.height.magnitude) * (value.translation.height.sign == .plus ? 1 : -1)
-                    }
-                }
-                .onEnded { value in
-                    if (value.predictedEndTranslation.height > 50 && edge == .bottom) || (value.predictedEndTranslation.height < -50 && edge == .top) {
-                        dismiss()
-                        offset = 0
-                    } else {
-                        withAnimation(.spring()) {
-                            offset = 0
-                        }
-                    }
-                }
-            )
-    }
-}
-
 extension View {
-    func blurBackground(opacity: CGFloat) -> some View {
+    func blurBackground(thick: Bool) -> some View {
         self.background(.thickMaterial, ignoresSafeAreaEdges: .all)
             .continuousRadius(10)
             .compositingGroup()
-            .shadow(color: Color.black.opacity(opacity), radius: 5)
+            .shadow(color: Color.black.opacity(thick ? 0.2 : 0.1), radius: 5)
     }
     
     func horizontallyCentred() -> some View {
@@ -62,11 +25,11 @@ extension View {
     
     func squareButton() -> some View {
         self.font(.icon)
-            .frame(width: SIZE, height: SIZE)
+            .frame(width: Constants.size, height: Constants.size)
     }
     
-    func continuousRadius(_ radius: CGFloat) -> some View {
-        clipShape(RoundedRectangle(cornerRadius: radius, style: .continuous))
+    func continuousRadius(_ radius: CGFloat, corners: UIRectCorner = .allCorners) -> some View {
+        clipShape(RoundedCorners(radius: radius, corners: corners))
     }
     
     func bigButton() -> some View {
@@ -87,36 +50,14 @@ extension View {
             self
         }
     }
-    
-    func dismissible(edge: VerticalEdge, dismiss: @escaping () -> Void) -> some View {
-        modifier(Dismissible(edge: edge, dismiss: dismiss))
-    }
-    
-    func detectSize(_ size: Binding<CGSize>) -> some View {
-        modifier(SizeDetector(size: size))
-    }
 }
 
-struct SizePreferenceKey: PreferenceKey {
-    static var defaultValue = CGSize.zero
+struct RoundedCorners: Shape {
+    let radius: CGFloat
+    let corners: UIRectCorner
 
-    static func reduce(value: inout CGSize, nextValue: () -> CGSize) {
-        value = nextValue()
-    }
-}
-
-struct SizeDetector: ViewModifier {
-    @Binding var size: CGSize
-
-    func body(content: Content) -> some View {
-        content
-            .overlay {
-                GeometryReader { geo in
-                    Color.clear.preference(key: SizePreferenceKey.self, value: geo.size)
-                }
-            }
-            .onPreferenceChange(SizePreferenceKey.self) { newSize in
-                size = newSize
-            }
+    func path(in rect: CGRect) -> Path {
+        let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
+        return Path(path.cgPath)
     }
 }

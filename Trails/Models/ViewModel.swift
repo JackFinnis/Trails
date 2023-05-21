@@ -21,16 +21,25 @@ class ViewModel: NSObject, ObservableObject {
     var trailsTrips = [TrailTrips]()
     var selectedTrips: TrailTrips? { getTrips(trail: selectedTrail) }
     @Published var selectedTrail: Trail?
+    @Published var filteredTrails = [Trail]()
+    @Published var trailFilter: TrailFilter? { didSet {
+        filterTrails()
+        zoomToFilteredTrails()
+    }}
     
     // Search
     var searchBar: UISearchBar?
     var searchRect: MKMapRect?
     var localSearch: MKLocalSearch?
-    @Published var isSearching = false
     @Published var isEditing = false
     @Published var searchResults = [Annotation]()
-    @Published var searchText = ""
     @Published var searchScope = SearchScope.Trails
+    @Published var isSearching = false { didSet {
+        filterTrails()
+    }}
+    @Published var searchText = "" { didSet {
+        filterTrails()
+    }}
     
     // Select Section
     @Published var isSelecting = false
@@ -48,14 +57,9 @@ class ViewModel: NSObject, ObservableObject {
     @Published var scale = 1.0
     
     // View
-    @Published var showShareLocationSheet = false
+    var shareItems = [Any]()
+    @Published var showShareSheet = false
     @Published var showCompletedAlert = false
-    @Published var showInfoView = false
-    @Published var welcome = false
-    
-    // Other
-    var shareLocationItems = [Any]()
-    var annotationSelected = false
     
     // Defaults
     @Storage("favouriteTrails") var favouriteTrails = [Int16]() { didSet {
@@ -70,18 +74,17 @@ class ViewModel: NSObject, ObservableObject {
     @Storage("metric") var metric = true { didSet {
         objectWillChange.send()
     }}
-    @Storage("ascending") var ascending = false { didSet {
-        objectWillChange.send()
-    }}
+    @Storage("ascending") var ascending = false
     @Storage("sortBy") var sortBy = TrailSort.name { didSet {
-        objectWillChange.send()
         if oldValue == sortBy {
             ascending.toggle()
         }
+        sortTrails()
     }}
     
     // MapView
     var mapView: MKMapView?
+    var annotationSelected = false
     @Published var trackingMode = MKUserTrackingMode.none
     @Published var mapType = MKMapType.standard
     
@@ -113,9 +116,6 @@ class ViewModel: NSObject, ObservableObject {
         try! JSONDecoder().decode(T.self, from: data)
     }
     
-    // Decoder  Computer  Phone
-    // MapKit   0.246     1.148
-    // Package  1.074     8.074
     func loadData() {
         let metadataData = loadData(from: "Metadata.json")
         let trailsMetadata: [TrailMetadata] = decodeJSON(data: metadataData)
@@ -126,10 +126,9 @@ class ViewModel: NSObject, ObservableObject {
             let polyline = features.first?.geometry.first as! MKPolyline
             trails.append(Trail(metadata: metadata, polyline: polyline))
         }
+        filterTrails()
         
         container.loadPersistentStores { description, error in
-//            self.deleteAll(entityName: "TrailTrips")
-//            self.completedTrails = []
             self.trailsTrips = (try? self.container.viewContext.fetch(TrailTrips.fetchRequest()) as? [TrailTrips]) ?? []
             self.trailsTrips.forEach { $0.reload() }
         }
@@ -175,17 +174,53 @@ class ViewModel: NSObject, ObservableObject {
     }
     
     func selectTrail(_ trail: Trail?) {
+        searchBar?.endEditing(true)
         selectedTrail = trail
+        refreshTrailOverlays()
         if let trail {
-            mapView?.removeOverlays(trails)
-            mapView?.addOverlay(trail, level: .aboveRoads)
-            if let selectedTrips {
-                mapView?.addOverlay(selectedTrips, level: .aboveRoads)
-            }
             zoomTo(trail)
-        } else {
-            mapView?.removeOverlays(trailsTrips)
-            mapView?.addOverlays(trails, level: .aboveRoads)
+        }
+    }
+    
+    func filterTrails() {
+        filteredTrails = trails.filter { trail in
+            let searching = trail.name.localizedCaseInsensitiveContains(searchText) || searchText.isEmpty
+            let filter: Bool
+            switch trailFilter {
+            case nil:
+                filter = true
+            case .favourite:
+                filter = isFavourite(trail)
+            case .completed:
+                filter = isCompleted(trail)
+            case .country(let country):
+                filter = country == trail.country
+            }
+            return isSearching ? searching : filter
+        }
+        sortTrails()
+        refreshTrailOverlays()
+    }
+    
+    func sortTrails() {
+        let sorted = filteredTrails.sorted {
+            switch sortBy {
+            case .name:
+                return $0.name < $1.name
+            case .ascent:
+                return $0.ascent ?? .greatestFiniteMagnitude < $1.ascent ?? .greatestFiniteMagnitude
+            case .distance:
+                return $0.metres < $1.metres
+            case .completed:
+                return getTrips(trail: $0)?.metres ?? 0 < getTrips(trail: $1)?.metres ?? 0
+            }
+        }
+        filteredTrails = ascending ? sorted : sorted.reversed()
+    }
+    
+    func zoomToFilteredTrails() {
+        if filteredTrails.isNotEmpty {
+            setRect(filteredTrails.rect)
         }
     }
 }
@@ -219,7 +254,7 @@ extension ViewModel {
     
     func updateMapType(_ newType: MKMapType) {
         mapView?.mapType = newType
-        refreshOverlays()
+        refreshTrailOverlays()
         withAnimation(.easeInOut(duration: 0.25)) {
             degrees += 90
         }
@@ -231,18 +266,26 @@ extension ViewModel {
         }
     }
     
-    func refreshOverlays() {
-        let overlays = mapView?.overlays(in: .aboveRoads) ?? []
-        mapView?.removeOverlays(overlays)
-        mapView?.addOverlays(overlays, level: .aboveRoads)
+    func refreshTrailOverlays() {
+        mapView?.removeOverlays(trails)
+        mapView?.removeOverlays(trailsTrips)
+        if let selectedTrail {
+            mapView?.addOverlay(selectedTrail, level: .aboveRoads)
+            if let selectedTrips {
+                mapView?.addOverlay(selectedTrips, level: .aboveRoads)
+            }
+        } else {
+            mapView?.addOverlays(filteredTrails, level: .aboveRoads)
+        }
     }
     
-//    func updateLayoutMargins(animate: Bool = true) {
-//        let padding = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-//        UIView.animate(withDuration: animate ? 0.35 : 0) {
-//            self.mapView?.layoutMargins = padding
-//        }
-//    }
+    //todo
+    func updateLayoutMargins(animate: Bool = true) {
+        let padding = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        UIView.animate(withDuration: animate ? 0.35 : 0) {
+            self.mapView?.layoutMargins = padding
+        }
+    }
     
     func setRect(_ rect: MKMapRect, extraPadding: Bool = false) {
         let padding: CGFloat = extraPadding ? 40 : 20
@@ -501,10 +544,10 @@ extension ViewModel: MKMapViewDelegate {
     
     func getButton(systemName: String) -> UIButton {
         let button = UIButton()
-        let config = UIImage.SymbolConfiguration(font: .systemFont(ofSize: SIZE/2))
+        let config = UIImage.SymbolConfiguration(font: .systemFont(ofSize: Constants.size/2))
         let image = UIImage(systemName: systemName, withConfiguration: config)
         button.setImage(image, for: .normal)
-        button.frame.size = CGSize(width: SIZE, height: SIZE)
+        button.frame.size = CGSize(width: Constants.size, height: Constants.size)
         return button
     }
     
@@ -589,8 +632,8 @@ extension ViewModel: MKMapViewDelegate {
             let coord = user.coordinate
             if control == view.leftCalloutAccessoryView {
                 guard let url = URL(string: "https://maps.apple.com/?ll=\(coord.latitude),\(coord.longitude)") else { return }
-                shareLocationItems = [url]
-                showShareLocationSheet = true
+                shareItems = [url]
+                showShareSheet = true
             } else {
                 reverseGeocode(coord: coord) { placemark in
                     let item = MKMapItem(placemark: MKPlacemark(placemark: placemark))
@@ -605,11 +648,14 @@ extension ViewModel: MKMapViewDelegate {
 // MARK: - UISearchBarDelegate
 extension ViewModel: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        if searchScope == .Maps {
+        switch searchScope {
+        case .Maps:
             searchMaps()
+        case .Trails:
+            zoomToFilteredTrails()
         }
     }
-
+    
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         stopSearching()
     }
@@ -631,6 +677,10 @@ extension ViewModel: UISearchBarDelegate {
     
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
         isEditing = false
+        searchBar.resignFirstResponder()
+        if let cancelButton = searchBar.value(forKey: "cancelButton") as? UIButton {
+            cancelButton.isEnabled = true
+        }
     }
 
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
@@ -639,11 +689,9 @@ extension ViewModel: UISearchBarDelegate {
     
     func startSearching() {
         searchBar?.becomeFirstResponder()
-        searchBar?.setShowsCancelButton(true, animated: true)
-        searchBar?.setShowsScope(true, animated: true)
-        withAnimation {
-            isSearching = true
-        }
+        searchBar?.showsCancelButton = true
+        searchBar?.showsScopeBar = true
+        isSearching = true
     }
     
     func stopSearching() {
@@ -652,11 +700,9 @@ extension ViewModel: UISearchBarDelegate {
         resetSearching()
         stopLocalSearch()
         searchBar?.resignFirstResponder()
-        searchBar?.setShowsCancelButton(false, animated: false)
-        searchBar?.setShowsScope(false, animated: true)
-        withAnimation {
-            isSearching = false
-        }
+        searchBar?.showsCancelButton = false
+        searchBar?.showsScopeBar = false
+        isSearching = false
     }
     
     func stopLocalSearch() {

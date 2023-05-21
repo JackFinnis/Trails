@@ -23,7 +23,7 @@ struct ShareView: UIViewControllerRepresentable {
 }
 
 extension View {
-    func shareSheet(items: [Any], showsSharedAlert: Bool = false, isPresented: Binding<Bool>) -> some View {
+    func shareSheet(items: [Any], showsSharedAlert: Bool, isPresented: Binding<Bool>) -> some View {
         modifier(ShareModifier(items: items, showsSharedAlert: showsSharedAlert, isPresented: isPresented))
     }
 }
@@ -48,7 +48,7 @@ struct ShareModifier: ViewModifier {
                     view
                 }
             }
-            .alert("Thanks for sharing \(NAME)!", isPresented: $showSharedAlert) {
+            .alert("Thanks for sharing \(Constants.name)!", isPresented: $showSharedAlert) {
                 Button("OK", role: .cancel) {}
             }
     }

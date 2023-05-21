@@ -33,7 +33,6 @@ struct Sheet<Content: View, Header: View>: View {
                     .overlay {
                         GeometryReader { headerGeo in
                             Color.clear.task {
-                                print(geo.safeAreaInsets.bottom)
                                 headerHeight = headerGeo.size.height + 17
                                 vm.snapOffset = [0, medium, geo.size.height - headerHeight].min { $0.distance(to: vm.snapOffset).magnitude < $1.distance(to: vm.snapOffset).magnitude }!
                             }
@@ -46,8 +45,7 @@ struct Sheet<Content: View, Header: View>: View {
                 Spacer(minLength: 0)
                     .layoutPriority(-1)
             }
-//            .frame(height: geo.size.height + geo.safeAreaInsets.bottom + 20)
-            .blurBackground(opacity: 0.1)
+            .blurBackground(thick: false)
             .offset(x: 0, y: vm.snapOffset + vm.dragOffset)
             .gesture(DragGesture(minimumDistance: 1)
                 .onChanged { value in

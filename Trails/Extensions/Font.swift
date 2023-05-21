@@ -8,5 +8,5 @@
 import SwiftUI
 
 extension Font {
-    static let icon = Font.system(size: SIZE/2)
+    static let icon = Font.system(size: Constants.size/2)
 }

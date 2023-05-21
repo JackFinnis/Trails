@@ -7,7 +7,6 @@
 
 import Foundation
 import MapKit
-import CoreData
 import SwiftUI
 
 class Trail: NSObject, Identifiable {
@@ -19,9 +18,9 @@ class Trail: NSObject, Identifiable {
     let metres: Double
     let days: Int
     let colour: Int
-    let cycleStatus: CycleStatus
+    let cycleStatus: TrailCycleStatus
     let ascent: Double?
-    let country: Country
+    let country: TrailCountry
     
     let coords: [CLLocationCoordinate2D]
     let locations: [CLLocation]
@@ -62,48 +61,19 @@ struct TrailMetadata: Codable {
     let metres: Double
     let days: Int
     let colour: Int
-    let cycleStatus: CycleStatus
+    let cycleStatus: TrailCycleStatus
     let ascent: Double?
-    let country: Country
+    let country: TrailCountry
 }
 
-@objc(TrailTrips)
-class TrailTrips: NSManagedObject {
-    @NSManaged var id: Int16
-    @NSManaged var lines: [[[Double]]]
-    
-    var coordsSet = Set<CLLocationCoordinate2D>()
-    var multiPolyline = MKMultiPolyline()
-    var metres = 0.0
-    
-    func reload() {
-        let linesCoords = lines.map { $0.map { CLLocationCoordinate2DMake($0[0], $0[1]) } }
-        coordsSet = Set(linesCoords.concat())
-        multiPolyline = MKMultiPolyline(linesCoords.map { MKPolyline(coordinates: $0, count: $0.count) })
-        metres = linesCoords.map { $0.metres() }.sum()
-    }
-}
-
-extension TrailTrips: MKOverlay {
-    var coordinate: CLLocationCoordinate2D { multiPolyline.coordinate }
-    var boundingMapRect: MKMapRect { multiPolyline.boundingMapRect }
-}
-
-enum Country: String, Codable, CaseIterable {
+enum TrailCountry: String, Codable, CaseIterable {
     case england = "England"
     case scotland = "Scotland"
     case wales = "Wales"
     case ni = "Northern Ireland"
 }
 
-enum TrailSort: String, CaseIterable, Codable {
-    case name = "Name"
-    case distance = "Length"
-    case ascent = "Total Ascent"
-    case completed = "Percentage Completed"
-}
-
-enum CycleStatus: String, Codable {
+enum TrailCycleStatus: String, Codable {
     case no
     case yes
     case sections

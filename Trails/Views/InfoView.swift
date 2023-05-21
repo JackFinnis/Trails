@@ -20,12 +20,12 @@ struct InfoView: View {
         NavigationView {
             VStack(alignment: .leading, spacing: 0) {
                 VStack(spacing: 10) {
-                    Image("my_logo")
+                    Image("logo")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 70, height: 70)
                         .continuousRadius(15)
-                    Text(NAME)
+                    Text(Constants.name)
                         .font(.largeTitle.bold())
                         .multilineTextAlignment(.center)
                 }
@@ -33,10 +33,10 @@ struct InfoView: View {
                 .padding(.bottom, 30)
                 
                 VStack(alignment: .leading, spacing: 15) {
-                    InfoRow(systemName: "map", title: "The Walks", description: "Browse \(vm.trails.count) of the most spectacular long-distance UK walks.")
-                    InfoRow(systemName: "magnifyingglass", title: "Search Maps", description: "Find B&Bs, cafés, shops & more along your trip.")
-                    InfoRow(systemName: "point.topleft.down.curvedto.point.bottomright.up", title: "Select a Trail Section", description: "Measure the length of your next trip.")
-                    InfoRow(systemName: "checkmark.circle", title: "Track Your Progress", description: "Mark sections of a trail as complete.")
+                    InfoRow(systemName: "figure.walk", title: "Adventure Awaits", description: "Discover 44 long-distance walking trails through the UK's most breathtaking landscapes.")
+                    InfoRow(systemName: "point.topleft.down.curvedto.point.bottomright.up", title: "Plan Your Trip", description: "Measure the length of your next trip.")
+                    InfoRow(systemName: "magnifyingglass", title: "Locate Amenities", description: "Find B&Bs, cafés and shops en route.")
+                    InfoRow(systemName: "checkmark.circle", title: "Track Your Progress", description: "Mark sections of a trail as completed.")
                     InfoRow(systemName: "ruler", title: "Distance Unit") {
                         Picker("", selection: $vm.metric) {
                             Text("Kilometres")
@@ -47,6 +47,7 @@ struct InfoView: View {
                         .frame(width: 250)
                         .pickerStyle(.segmented)
                         .labelsHidden()
+                        .padding(.top, 5)
                     }
                 }
                 
@@ -75,12 +76,12 @@ struct InfoView: View {
                         Button {
                             Store.requestRating()
                         } label: {
-                            Label("Rate \(NAME)", systemImage: "star")
+                            Label("Rate \(Constants.name)", systemImage: "star")
                         }
                         Button {
                             showShareSheet = true
                         } label: {
-                            Label("Share with a Friend", systemImage: "person.badge.plus")
+                            Label("Share \(Constants.name)", systemImage: "square.and.arrow.up")
                         }
                     } label: {
                         Text("Contribute...")
@@ -111,8 +112,8 @@ struct InfoView: View {
                 }
             }
         }
-        .shareSheet(items: [APP_URL], isPresented: $showShareSheet)
-        .emailSheet(recipient: EMAIL, subject: "\(NAME) Feedback", isPresented: $showEmailSheet)
+        .shareSheet(items: [Constants.appUrl], showsSharedAlert: true, isPresented: $showShareSheet)
+        .emailSheet(recipient: Constants.email, subject: "\(Constants.name) Feedback", isPresented: $showEmailSheet)
         .interactiveDismissDisabled(welcome)
     }
 }
@@ -138,7 +139,7 @@ struct InfoRow<Content: View>: View {
                 .font(.title)
                 .foregroundColor(.accentColor)
                 .frame(width: 50, height: 50)
-            VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 0) {
                 Text(title)
                     .font(.headline)
                 content()

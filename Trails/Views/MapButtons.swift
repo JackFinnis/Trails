@@ -17,12 +17,12 @@ struct MapButtons: View {
                 updateMapType()
             } label: {
                 Image(systemName: mapTypeImage)
-                    .squareButton()
                     .rotation3DEffect(.degrees(vm.mapType == .standard ? 0 : 180), axis: (x: 0, y: 1, z: 0))
                     .rotation3DEffect(.degrees(vm.degrees), axis: (x: 0, y: 1, z: 0))
+                    .squareButton()
             }
             
-            Divider().frame(width: SIZE)
+            Divider().frame(width: Constants.size)
             Button {
                 updateTrackingMode()
             } label: {
@@ -31,7 +31,7 @@ struct MapButtons: View {
                     .squareButton()
             }
         }
-        .blurBackground(opacity: 0.2)
+        .blurBackground(thick: true)
         .padding(10)
         .transition(.opacity)
     }

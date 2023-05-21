@@ -22,9 +22,3 @@ extension CLLocationCoordinate2D: Equatable, Hashable {
         CLLocation(latitude: latitude, longitude: longitude)
     }
 }
-
-extension Array where Element == CLLocationCoordinate2D {
-    func metres() -> Double {
-        map(\.location).metres()
-    }
-}
