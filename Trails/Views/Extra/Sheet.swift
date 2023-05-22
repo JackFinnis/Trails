@@ -82,12 +82,17 @@ struct Sheet<Content: View, Header: View>: View {
                 .onChange(of: vm.selectedTrail) { _ in
                     setDetent(detent: vm.sheetDetent, geo: geo)
                 }
+                .onChange(of: horizontalSizeClass) { _ in
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        setDetent(detent: vm.sheetDetent, geo: geo)
+                    }
+                }
             }
-            .frame(maxWidth: 450)
+            .frame(maxWidth: horizontalSizeClass == .regular ? 350 : 1000)
             Spacer(minLength: 0)
         }
         .padding(.top, 20)
-        .padding(.horizontal, horizontalSizeClass == .compact ? 0 : 20)
+        .padding(.horizontal, horizontalSizeClass == .compact ? 0 : 10)
         .transition(.move(edge: .bottom))
     }
     

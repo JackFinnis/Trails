@@ -11,6 +11,7 @@ import MessageUI
 struct InfoView: View {
     @EnvironmentObject var vm: ViewModel
     @Environment(\.dismiss) var dismiss
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @State var showShareSheet = false
     @State var showEmailSheet = false
     
@@ -18,84 +19,89 @@ struct InfoView: View {
     
     var body: some View {
         NavigationView {
-            VStack(alignment: .leading, spacing: 0) {
-                VStack(spacing: 10) {
-                    Image("logo")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 70, height: 70)
-                        .continuousRadius(15)
-                    Text(Constants.name)
-                        .font(.largeTitle.bold())
-                        .multilineTextAlignment(.center)
-                }
-                .horizontallyCentred()
-                .padding(.bottom, 30)
-                
-                VStack(alignment: .leading, spacing: 15) {
-                    InfoRow(systemName: "figure.walk", title: "Adventure Awaits", description: "Discover 44 long-distance walking trails through the UK's most breathtaking landscapes.")
-                    InfoRow(systemName: "point.topleft.down.curvedto.point.bottomright.up", title: "Plan Your Trip", description: "Measure the length of your next trip.")
-                    InfoRow(systemName: "magnifyingglass", title: "Locate Amenities", description: "Find B&Bs, cafés and shops en route.")
-                    InfoRow(systemName: "checkmark.circle", title: "Track Your Progress", description: "Mark sections of a trail as completed.")
-                    InfoRow(systemName: "ruler", title: "Distance Unit") {
-                        Picker("", selection: $vm.metric) {
-                            Text("Kilometres")
-                                .tag(true)
-                            Text("Miles")
-                                .tag(false)
-                        }
-                        .frame(width: 250)
-                        .pickerStyle(.segmented)
-                        .labelsHidden()
-                        .padding(.top, 5)
+            ScrollView {
+                VStack(alignment: .leading, spacing: 30) {
+                    VStack(spacing: 10) {
+                        Image("logo")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 70, height: 70)
+                            .continuousRadius(15)
+                        Text(Constants.name)
+                            .font(.largeTitle.bold())
+                            .multilineTextAlignment(.center)
                     }
-                }
-                
-                Spacer()
-                if welcome {
-                    Button {
-                        dismiss()
-                    } label: {
-                        Text("Continue")
-                            .bigButton()
-                    }
-                } else {
-                    Menu {
-                        if MFMailComposeViewController.canSendMail() {
-                            Button {
-                                showEmailSheet = true
-                            } label: {
-                                Label("Send us Feedback", systemImage: "envelope")
+                    .horizontallyCentred()
+                    
+                    VStack(alignment: .leading, spacing: 15) {
+                        InfoRow(systemName: "figure.walk", title: "Adventure Awaits", description: "Discover 44 long-distance walking trails through the UK's most breathtaking landscapes.")
+                        InfoRow(systemName: "point.topleft.down.curvedto.point.bottomright.up", title: "Plan Your Trip", description: "Measure the length of your next trip.")
+                        InfoRow(systemName: "magnifyingglass", title: "Locate Amenities", description: "Find B&Bs, cafés and shops en route.")
+                        InfoRow(systemName: "checkmark.circle", title: "Track Your Progress", description: "Mark sections of a trail as completed.")
+                        InfoRow(systemName: "ruler", title: "Distance Unit") {
+                            Picker("", selection: $vm.metric) {
+                                Text("Kilometres")
+                                    .tag(true)
+                                Text("Miles")
+                                    .tag(false)
                             }
+                            .frame(width: 250)
+                            .pickerStyle(.segmented)
+                            .labelsHidden()
+                            .padding(.top, 5)
                         }
-                        Button {
-                            Store.writeReview()
-                        } label: {
-                            Label("Write a Review", systemImage: "quote.bubble")
-                        }
-                        Button {
-                            Store.requestRating()
-                        } label: {
-                            Label("Rate \(Constants.name)", systemImage: "star")
-                        }
-                        Button {
-                            showShareSheet = true
-                        } label: {
-                            Label("Share \(Constants.name)", systemImage: "square.and.arrow.up")
-                        }
-                    } label: {
-                        Text("Contribute...")
-                            .bigButton()
                     }
                 }
+                .padding(.horizontal)
             }
-            .padding()
+            .safeAreaInset(edge: .bottom) {
+                Group {
+                    if welcome {
+                        Button {
+                            dismiss()
+                        } label: {
+                            Text("Continue")
+                                .bigButton()
+                        }
+                    } else {
+                        Menu {
+                            if MFMailComposeViewController.canSendMail() {
+                                Button {
+                                    showEmailSheet = true
+                                } label: {
+                                    Label("Send us Feedback", systemImage: "envelope")
+                                }
+                            }
+                            Button {
+                                Store.writeReview()
+                            } label: {
+                                Label("Write a Review", systemImage: "quote.bubble")
+                            }
+                            Button {
+                                Store.requestRating()
+                            } label: {
+                                Label("Rate \(Constants.name)", systemImage: "star")
+                            }
+                            Button {
+                                showShareSheet = true
+                            } label: {
+                                Label("Share \(Constants.name)", systemImage: "square.and.arrow.up")
+                            }
+                        } label: {
+                            Text("Contribute...")
+                                .bigButton()
+                        }
+                    }
+                }
+                .padding()
+                .background(Color(.systemBackground))
+            }
             .frame(maxWidth: 450, maxHeight: 800)
             .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    if welcome {
+                    if welcome || horizontalSizeClass == .regular {
                         Text("")
                     } else {
                         DraggableTitle()

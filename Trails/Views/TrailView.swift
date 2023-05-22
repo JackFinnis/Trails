@@ -14,67 +14,71 @@ struct TrailView: View {
     let trail: Trail
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 15) {
-            Text(trail.headline)
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-            
-            HStack(spacing: 10) {
-                let divider = Divider().frame(height: 20)
-                TrailViewStat(name: "Distance", value: vm.formatDistance(trail.metres, showUnit: true, round: true), systemName: "point.topleft.down.curvedto.point.bottomright.up.fill")
-                divider
-                TrailViewStat(name: "Duration", value: "\(trail.days) days", systemName: "clock")
-                if let ascent = trail.ascent {
-                    divider
-                    TrailViewStat(name: "Ascent", value: vm.formatDistance(ascent, showUnit: true, round: false), systemName: "arrow.up")
-                }
-                if let metres = vm.getTrips(trail: trail)?.metres, metres > 0 {
-                    divider
-                    let complete = Int(trail.metres / metres * 100)
-                    let completed = vm.isCompleted(trail)
-                    TrailViewStat(name: "Completed", value: "\(complete)%", systemName: completed ? "checkmark.circle.fill" : "checkmark.circle", tint: completed ? .accentColor : .secondary)
-                }
-            }
-            
-            GeometryReader { geo in
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 15) {
+                Text(trail.headline)
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                
                 HStack(spacing: 10) {
-                    Button {
-                        vm.toggleFavourite(trail)
-                    } label: {
-                        let favourite = vm.isFavourite(trail)
-                        TrailViewButton(title: favourite ? "Saved" : "Save", systemName: favourite ? "bookmark.fill" : "bookmark", geo: geo)
+                    let divider = Divider().frame(height: 20)
+                    TrailViewStat(name: "Distance", value: vm.formatDistance(trail.metres, showUnit: true, round: true), systemName: "point.topleft.down.curvedto.point.bottomright.up.fill")
+                    divider
+                    TrailViewStat(name: "Duration", value: "\(trail.days) days", systemName: "clock")
+                    if let ascent = trail.ascent {
+                        divider
+                        TrailViewStat(name: "Ascent", value: vm.formatDistance(ascent, showUnit: true, round: false), systemName: "arrow.up")
                     }
-                    Button {
-                        vm.startSelecting()
-                    } label: {
-                        TrailViewButton(title: "Select", systemName: "point.topleft.down.curvedto.point.bottomright.up", geo: geo)
-                    }
-                    Button {
-                        guard vm.sheetDetent != .large else { return }
-                        vm.zoomTo(trail)
-                    } label: {
-                        TrailViewButton(title: "Zoom", systemName: "arrow.up.left.and.arrow.down.right", geo: geo)
-                    }
-                    Button {
-                        showWebView = true
-                    } label: {
-                        TrailViewButton(title: "Website", systemName: "safari", geo: geo)
+                    if let metres = vm.getTrips(trail: trail)?.metres, metres > 0 {
+                        divider
+                        let complete = Int(trail.metres / metres * 100)
+                        let completed = vm.isCompleted(trail)
+                        TrailViewStat(name: "Completed", value: "\(complete)%", systemName: completed ? "checkmark.circle.fill" : "checkmark.circle", tint: completed ? .accentColor : .secondary)
                     }
                 }
-                .font(.subheadline.bold())
+                
+                GeometryReader { geo in
+                    HStack(spacing: 10) {
+                        Button {
+                            vm.toggleFavourite(trail)
+                        } label: {
+                            let favourite = vm.isFavourite(trail)
+                            TrailViewButton(title: favourite ? "Saved" : "Save", systemName: favourite ? "bookmark.fill" : "bookmark", geo: geo)
+                        }
+                        Button {
+                            vm.startSelecting()
+                        } label: {
+                            TrailViewButton(title: "Select", systemName: "point.topleft.down.curvedto.point.bottomright.up", geo: geo)
+                        }
+                        Button {
+                            guard vm.sheetDetent != .large else { return }
+                            vm.zoomTo(trail)
+                        } label: {
+                            TrailViewButton(title: "Zoom", systemName: "arrow.up.left.and.arrow.down.right", geo: geo)
+                        }
+                        Button {
+                            showWebView = true
+                        } label: {
+                            TrailViewButton(title: "Website", systemName: "safari", geo: geo)
+                        }
+                    }
+                    .font(.subheadline.bold())
+                }
+                .frame(height: 60)
+                
+                TrailImage(trail: trail)
+                    .continuousRadius(10)
+                Spacer()
             }
-            .frame(height: 60)
-            
-            TrailImage(trail: trail)
-                .continuousRadius(10)
-            Spacer()
-        }
-        .padding(.horizontal)
-        .background {
-            NavigationLink("", isActive: $showWebView) {
-                WebView(webVM: WebVM(url: trail.url), trail: trail)
+            .padding(.horizontal)
+            .onTapGesture {}
+            .background {
+                NavigationLink("", isActive: $showWebView) {
+                    WebView(webVM: WebVM(url: trail.url), trail: trail)
+                }
+                .hidden()
             }
-            .hidden()
         }
     }
 }

@@ -38,7 +38,6 @@ struct MapView: UIViewRepresentable {
         mapView.showsScale = true
         mapView.showsCompass = true
         mapView.isPitchEnabled = false
-        mapView.layoutMargins.bottom = 40
         
         mapView.register(MKPinAnnotationView.self, forAnnotationViewWithReuseIdentifier: MKPinAnnotationView.id)
         mapView.register(MKMarkerAnnotationView.self, forAnnotationViewWithReuseIdentifier: MKMarkerAnnotationView.id)

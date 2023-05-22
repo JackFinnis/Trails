@@ -58,6 +58,14 @@ class ViewModel: NSObject, ObservableObject {
     @Published var sheetDetent = SheetDetent.small
     var detentSet = false
     
+    // Traits
+    var darkMode: Bool {
+        UITraitCollection.current.userInterfaceStyle == .dark || mapView?.mapType == .hybrid
+    }
+    var wideScreen: Bool {
+        UITraitCollection.current.horizontalSizeClass == .regular
+    }
+    
     // View
     var shareItems = [Any]()
     @Published var showShareSheet = false
@@ -286,8 +294,8 @@ extension ViewModel {
     func setRect(_ rect: MKMapRect, extraPadding: Bool = false, animated: Bool = true) {
         guard let mapView else { return }
         let padding = extraPadding ? 40.0 : 20.0
-        let bottom = sheetDetent == .large || !detentSet ? 0 : mapView.frame.height - (80 + snapOffset)
-        let left = sheetDetent == .large && UITraitCollection.current.horizontalSizeClass == .regular ? 470.0 : 0.0
+        let bottom = sheetDetent == .large || !detentSet || wideScreen ? 0 : mapView.frame.height - (80 + snapOffset)
+        let left = wideScreen ? 360.0 : 0.0
         let insets = UIEdgeInsets(top: padding, left: padding + left, bottom: padding + bottom, right: padding)
         mapView.setVisibleMapRect(rect, edgePadding: insets, animated: animated)
     }
@@ -519,7 +527,6 @@ extension ViewModel: CLLocationManagerDelegate {
 // MARK: - MKMapViewDelegate
 extension ViewModel: MKMapViewDelegate {
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
-        let darkMode = UITraitCollection.current.userInterfaceStyle == .dark || mapView.mapType == .hybrid
         if let trail = overlay as? Trail {
             let renderer = MKPolylineRenderer(polyline: trail.polyline)
             renderer.lineWidth = trail == selectedTrail ? 3 : 2

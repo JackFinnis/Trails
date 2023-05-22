@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct RootView: View {
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.colorScheme) var colorScheme
     @AppStorage("launchedBefore") var launchedBefore = false
     @StateObject var vm = ViewModel.shared
@@ -29,7 +30,7 @@ struct RootView: View {
                         .layoutPriority(1)
                 }
                 
-                if vm.snapOffset != 0 {
+                if vm.snapOffset != 0 || horizontalSizeClass == .regular {
                     MapButtons()
                 }
                 
