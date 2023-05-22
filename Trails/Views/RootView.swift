@@ -71,6 +71,10 @@ struct RootView: View {
                             }
                             .buttonStyle(.plain)
                         }
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            vm.zoomTo(trail)
+                        }
                     }
                     .zIndex(1)
                 }

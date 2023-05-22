@@ -18,6 +18,9 @@ struct TrailsView: View {
                     Text(vm.filteredTrails.count.formatted(singular: "Trail") + (vm.trailFilter == nil ? "" : " Found"))
                         .font(.headline)
                         .animation(.none, value: vm.filteredTrails)
+                        .onTapGesture {
+                            vm.setRect(vm.filteredTrails.rect)
+                        }
                     Spacer()
                     Menu {
                         Picker("", selection: $vm.trailFilter.animation()) {

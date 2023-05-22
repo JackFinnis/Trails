@@ -8,11 +8,11 @@
 import SwiftUI
 
 extension View {
-    func blurBackground(thick: Bool) -> some View {
-        self.background(.thickMaterial, ignoresSafeAreaEdges: .all)
-            .continuousRadius(10)
+    func blurBackground(prominentShadow: Bool, corners: UIRectCorner = .allCorners) -> some View {
+        self.background(.thickMaterial)
+            .continuousRadius(10, corners: corners)
             .compositingGroup()
-            .shadow(color: Color.black.opacity(thick ? 0.2 : 0.1), radius: 5)
+            .shadow(color: Color.black.opacity(prominentShadow ? 0.2 : 0.1), radius: 5)
     }
     
     func horizontallyCentred() -> some View {

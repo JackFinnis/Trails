@@ -30,12 +30,15 @@ struct MapView: UIViewRepresentable {
         mapView.delegate = vm
         vm.mapView = mapView
         vm.refreshTrailOverlays()
-        vm.zoomToFilteredTrails()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            vm.zoomToFilteredTrails(animated: false)
+        }
         
         mapView.showsUserLocation = true
         mapView.showsScale = true
         mapView.showsCompass = true
         mapView.isPitchEnabled = false
+        mapView.layoutMargins.bottom = 40
         
         mapView.register(MKPinAnnotationView.self, forAnnotationViewWithReuseIdentifier: MKPinAnnotationView.id)
         mapView.register(MKMarkerAnnotationView.self, forAnnotationViewWithReuseIdentifier: MKMarkerAnnotationView.id)

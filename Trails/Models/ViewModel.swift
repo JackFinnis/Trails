@@ -51,10 +51,12 @@ class ViewModel: NSObject, ObservableObject {
     @Published var selectPins = [Annotation]()
     
     // Animations
-    @Published var snapOffset: CGFloat = 5000
-    @Published var dragOffset = CGFloat.zero
     @Published var degrees = 0.0
     @Published var scale = 1.0
+    @Published var dragOffset = 0.0
+    @Published var snapOffset = 5000.0
+    @Published var sheetDetent = SheetDetent.small
+    var detentSet = false
     
     // View
     var shareItems = [Any]()
@@ -174,11 +176,13 @@ class ViewModel: NSObject, ObservableObject {
     }
     
     func selectTrail(_ trail: Trail?) {
-        searchBar?.endEditing(true)
+        stopEditing()
         selectedTrail = trail
         refreshTrailOverlays()
         if let trail {
-            zoomTo(trail)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                self.zoomTo(trail)
+            }
         }
     }
     
@@ -218,9 +222,9 @@ class ViewModel: NSObject, ObservableObject {
         filteredTrails = ascending ? sorted : sorted.reversed()
     }
     
-    func zoomToFilteredTrails() {
+    func zoomToFilteredTrails(animated: Bool = true) {
         if filteredTrails.isNotEmpty {
-            setRect(filteredTrails.rect)
+            setRect(filteredTrails.rect, animated: animated)
         }
     }
 }
@@ -279,24 +283,17 @@ extension ViewModel {
         }
     }
     
-    //todo
-    func updateLayoutMargins(animate: Bool = true) {
-        let padding = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-        UIView.animate(withDuration: animate ? 0.35 : 0) {
-            self.mapView?.layoutMargins = padding
-        }
+    func setRect(_ rect: MKMapRect, extraPadding: Bool = false, animated: Bool = true) {
+        guard let mapView else { return }
+        let padding = extraPadding ? 40.0 : 20.0
+        let bottom = sheetDetent == .large || !detentSet ? 0 : mapView.frame.height - (80 + snapOffset)
+        let left = sheetDetent == .large && UITraitCollection.current.horizontalSizeClass == .regular ? 470.0 : 0.0
+        let insets = UIEdgeInsets(top: padding, left: padding + left, bottom: padding + bottom, right: padding)
+        mapView.setVisibleMapRect(rect, edgePadding: insets, animated: animated)
     }
     
-    func setRect(_ rect: MKMapRect, extraPadding: Bool = false) {
-        let padding: CGFloat = extraPadding ? 40 : 20
-        let insets = UIEdgeInsets(top: padding, left: padding, bottom: padding, right: padding)
-        mapView?.setVisibleMapRect(rect, edgePadding: insets, animated: true)
-    }
-    
-    func zoomTo(_ overlay: MKOverlay?, extraPadding: Bool = false) {
-        if let overlay {
-            setRect(overlay.boundingMapRect, extraPadding: extraPadding)
-        }
+    func zoomTo(_ overlay: MKOverlay, extraPadding: Bool = false) {
+        setRect(overlay.boundingMapRect, extraPadding: extraPadding)
     }
     
     func reverseGeocode(coord: CLLocationCoordinate2D, completion: @escaping (CLPlacemark) -> Void) {
@@ -357,7 +354,7 @@ extension ViewModel {
             selectPolyline = MKPolyline(coordinates: coords, count: coords.count)
             mapView?.addOverlay(selectPolyline!, level: .aboveRoads)
             selectMetres = coords.metres()
-            zoomTo(selectPolyline, extraPadding: true)
+            zoomTo(selectPolyline!, extraPadding: true)
             Haptics.tap()
         }
     }
@@ -648,6 +645,7 @@ extension ViewModel: MKMapViewDelegate {
 // MARK: - UISearchBarDelegate
 extension ViewModel: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        stopEditing()
         switch searchScope {
         case .Maps:
             searchMaps()
@@ -663,45 +661,49 @@ extension ViewModel: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
         withAnimation {
             searchScope = SearchScope.allCases[selectedScope]
+            sheetDetent = .large
         }
     }
     
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         isEditing = true
-        withAnimation(.sheet) {
-            snapOffset = 0
-        }
+        sheetDetent = .large
         guard !isSearching else { return }
         startSearching()
     }
     
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-        isEditing = false
-        searchBar.resignFirstResponder()
-        if let cancelButton = searchBar.value(forKey: "cancelButton") as? UIButton {
-            cancelButton.isEnabled = true
-        }
+        stopEditing()
     }
 
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         self.searchText = searchText
     }
     
+    func stopEditing() {
+        isEditing = false
+        searchBar?.resignFirstResponder()
+        if let cancelButton = searchBar?.value(forKey: "cancelButton") as? UIButton {
+            cancelButton.isEnabled = true
+        }
+    }
+    
     func startSearching() {
         searchBar?.becomeFirstResponder()
-        searchBar?.showsCancelButton = true
-        searchBar?.showsScopeBar = true
+        searchBar?.setShowsCancelButton(true, animated: true)
+        searchBar?.setShowsScope(true, animated: true)
         isSearching = true
     }
     
     func stopSearching() {
         searchBar?.text = ""
+        sheetDetent = .medium
         searchText = ""
         resetSearching()
         stopLocalSearch()
         searchBar?.resignFirstResponder()
-        searchBar?.showsCancelButton = false
-        searchBar?.showsScopeBar = false
+        searchBar?.setShowsCancelButton(false, animated: false)
+        searchBar?.setShowsScope(false, animated: false)
         isSearching = false
     }
     

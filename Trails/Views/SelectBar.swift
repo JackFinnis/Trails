@@ -38,7 +38,7 @@ struct SelectBar: View {
                     .padding(.trailing, 5)
                 }
             }
-            .blurBackground(thick: false)
+            .blurBackground(prominentShadow: false)
             .padding(10)
         }
     }

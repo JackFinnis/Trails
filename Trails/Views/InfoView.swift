@@ -90,6 +90,7 @@ struct InfoView: View {
                 }
             }
             .padding()
+            .frame(maxWidth: 450, maxHeight: 800)
             .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

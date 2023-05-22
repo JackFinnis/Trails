@@ -18,7 +18,6 @@ struct TrailView: View {
             Text(trail.headline)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
-                .padding(.horizontal)
             
             HStack(spacing: 10) {
                 let divider = Divider().frame(height: 20)
@@ -36,7 +35,6 @@ struct TrailView: View {
                     TrailViewStat(name: "Completed", value: "\(complete)%", systemName: completed ? "checkmark.circle.fill" : "checkmark.circle", tint: completed ? .accentColor : .secondary)
                 }
             }
-            .padding(.horizontal)
             
             GeometryReader { geo in
                 HStack(spacing: 10) {
@@ -52,6 +50,7 @@ struct TrailView: View {
                         TrailViewButton(title: "Select", systemName: "point.topleft.down.curvedto.point.bottomright.up", geo: geo)
                     }
                     Button {
+                        guard vm.sheetDetent != .large else { return }
                         vm.zoomTo(trail)
                     } label: {
                         TrailViewButton(title: "Zoom", systemName: "arrow.up.left.and.arrow.down.right", geo: geo)
@@ -65,13 +64,12 @@ struct TrailView: View {
                 .font(.subheadline.bold())
             }
             .frame(height: 60)
-            .padding(.horizontal)
             
             TrailImage(trail: trail)
                 .continuousRadius(10)
-                .padding(.horizontal)
+            Spacer()
         }
-        .padding(.bottom)
+        .padding(.horizontal)
         .background {
             NavigationLink("", isActive: $showWebView) {
                 WebView(webVM: WebVM(url: trail.url), trail: trail)
@@ -89,6 +87,8 @@ struct TrailView_Previews: PreviewProvider {
 }
 
 struct TrailViewButton: View {
+    @Environment(\.colorScheme) var colorScheme
+    
     let title: String
     let systemName: String
     let geo: GeometryProxy
@@ -96,12 +96,12 @@ struct TrailViewButton: View {
     var body: some View {
         VStack(spacing: 2) {
             Image(systemName: systemName)
-                .font(.headline)
+                .font(.body.weight(.medium))
             Text(title)
                 .font(.footnote.bold())
         }
         .frame(width: (geo.size.width - 30)/4, height: geo.size.height)
-        .background(Color(.tertiarySystemFill))
+        .background(Color(colorScheme == .light ? .tertiarySystemFill : .quaternarySystemFill))
         .continuousRadius(10)
     }
 }
@@ -113,7 +113,7 @@ struct TrailViewStat: View {
     var tint: Color = .secondary
     
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 2) {
             Text(name)
                 .textCase(.uppercase)
                 .foregroundColor(.secondary)

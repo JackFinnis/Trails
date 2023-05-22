@@ -35,7 +35,6 @@ struct WebView: View {
             .animation(.default, value: webVM.error)
             .navigationTitle(trail.name)
             .navigationBarTitleDisplayMode(.inline)
-            .shareSheet(items: [trail.url], showsSharedAlert: false, isPresented: $showShareSheet)
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Menu {
@@ -58,6 +57,7 @@ struct WebView: View {
                     } label: {
                         Image(systemName: "ellipsis.circle")
                     }
+                    .shareSheet(items: [trail.url], showsSharedAlert: false, isPresented: $showShareSheet)
                 }
             }
     }

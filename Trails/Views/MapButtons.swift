@@ -31,7 +31,7 @@ struct MapButtons: View {
                     .squareButton()
             }
         }
-        .blurBackground(thick: true)
+        .blurBackground(prominentShadow: true)
         .padding(10)
         .transition(.opacity)
     }
