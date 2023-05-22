@@ -96,7 +96,7 @@ struct InfoView: View {
                 .padding()
                 .background(Color(.systemBackground))
             }
-            .frame(maxWidth: 450, maxHeight: 800)
+            .frame(maxWidth: 450)
             .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
