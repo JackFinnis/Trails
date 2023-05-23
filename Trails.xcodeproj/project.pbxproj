@@ -13,7 +13,7 @@
 		0402C6492A0EA37B00238C51 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0402C6482A0EA37B00238C51 /* GoogleService-Info.plist */; };
 		0402C71D2A1A74B900238C51 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0402C71C2A1A74B900238C51 /* Constants.swift */; };
 		0402C71F2A1A755000238C51 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0402C71E2A1A755000238C51 /* String.swift */; };
-		0402C7212A1A780400238C51 /* SizeDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0402C7202A1A780400238C51 /* SizeDetector.swift */; };
+		0402C7212A1A780400238C51 /* DetectSize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0402C7202A1A780400238C51 /* DetectSize.swift */; };
 		0402C7232A1A7D4300238C51 /* TrailTrips.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0402C7222A1A7D4300238C51 /* TrailTrips.swift */; };
 		0402C7252A1A7D8900238C51 /* TrailSort.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0402C7242A1A7D8900238C51 /* TrailSort.swift */; };
 		0402C7292A1A954300238C51 /* TrailFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0402C7282A1A954300238C51 /* TrailFilter.swift */; };
@@ -118,7 +118,7 @@
 		0402C6482A0EA37B00238C51 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		0402C71C2A1A74B900238C51 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		0402C71E2A1A755000238C51 /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
-		0402C7202A1A780400238C51 /* SizeDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SizeDetector.swift; sourceTree = "<group>"; };
+		0402C7202A1A780400238C51 /* DetectSize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetectSize.swift; sourceTree = "<group>"; };
 		0402C7222A1A7D4300238C51 /* TrailTrips.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailTrips.swift; sourceTree = "<group>"; };
 		0402C7242A1A7D8900238C51 /* TrailSort.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailSort.swift; sourceTree = "<group>"; };
 		0402C7282A1A954300238C51 /* TrailFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailFilter.swift; sourceTree = "<group>"; };
@@ -322,6 +322,7 @@
 				04E0E91529F0302500EB08CC /* TrailImage.swift */,
 				04E0E91329EF717600EB08CC /* SearchView.swift */,
 				04CEDFDA29A2E60400810005 /* InfoView.swift */,
+				04E0E90029EEDF9D00EB08CC /* Sheet.swift */,
 				0421202729C91CDC003DE52F /* Web */,
 				0416F196299EFB9C00B90E68 /* Extra */,
 			);
@@ -337,7 +338,6 @@
 				04FFC98A29CA6A4900BF77FD /* EmailView.swift */,
 				0416F195299EFB9C00B90E68 /* ShareView.swift */,
 				0416F198299EFB9C00B90E68 /* SearchBar.swift */,
-				04E0E90029EEDF9D00EB08CC /* Sheet.swift */,
 				0416F170299EF9FC00B90E68 /* View.swift */,
 			);
 			path = Extra;
@@ -348,9 +348,9 @@
 			children = (
 				0402C6442A0EA0BD00238C51 /* Analytics.swift */,
 				0402C71C2A1A74B900238C51 /* Constants.swift */,
+				0402C7202A1A780400238C51 /* DetectSize.swift */,
 				0402C6462A0EA12700238C51 /* Emails.swift */,
 				0416F183299EFB9100B90E68 /* Haptics.swift */,
-				0402C7202A1A780400238C51 /* SizeDetector.swift */,
 				04CEDFC829A2E50700810005 /* Storage.swift */,
 				04CEDFCA29A2E50700810005 /* Store.swift */,
 			);
@@ -578,7 +578,7 @@
 				04626BFE29C24EE7004880E3 /* TrailsView.swift in Sources */,
 				04FCA9F32A1BFE50007B5817 /* Search.swift in Sources */,
 				0402C7252A1A7D8900238C51 /* TrailSort.swift in Sources */,
-				0402C7212A1A780400238C51 /* SizeDetector.swift in Sources */,
+				0402C7212A1A780400238C51 /* DetectSize.swift in Sources */,
 				04FFC98B29CA6A4900BF77FD /* EmailView.swift in Sources */,
 				0416F177299EF9FC00B90E68 /* Collection.swift in Sources */,
 				0416F179299EF9FC00B90E68 /* MKMultiPoint.swift in Sources */,

@@ -61,29 +61,46 @@ class ViewModel: NSObject, ObservableObject {
     // Animations
     @Published var degrees = 0.0
     @Published var scale = 1.0
+    var animateDetentChange = false
+    @Published var sheetDetent = SheetDetent.small
+    @Published var safeAreaInset = 0.0
     @Published var dragOffset = 0.0
-    @Published var snapOffset = 5000.0
-    var detentSet = false
-    @Published var sheetDetent = SheetDetent.small { didSet {
-        mapView?.compass?.isHidden = sheetDetent == .large
+    @Published var snapOffset = 0.0 { didSet {
+        mapView?.compass?.isHidden = mapDisabled
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            self.safeAreaInset = self.snapOffset
+        }
     }}
     
     // Traits
-    var darkMode: Bool {
+    var lightOverlays: Bool {
         UITraitCollection.current.userInterfaceStyle == .dark || mapView?.mapType == .hybrid
     }
-    var wideScreen: Bool {
-        UITraitCollection.current.horizontalSizeClass == .regular
+    var compact: Bool {
+        mapView?.safeAreaLayoutGuide.layoutFrame.width ?? 0 < 500
+    }
+    var mapDisabled: Bool {
+        snapOffset == 0 && compact
     }
     
-    // View
+    // Dimensions
+    let mediumSheetHeight = 270.0
+    let regularWidth = 320.0
+    var topPadding: CGFloat {
+        compact ? 20 : 10
+    }
+    var horizontalPadding: CGFloat {
+        compact ? 0 : 10
+    }
+    
+    // View State
     @Published var showCompletedAlert = false
     @Published var showShareSheet = false
     var shareItems = [Any]() { didSet {
         showShareSheet = true
     }}
     
-    // Defaults
+    // Storage
     @Storage("favouriteTrails") var favouriteTrails = [Int16]() { didSet {
         objectWillChange.send()
     }}
@@ -128,6 +145,19 @@ class ViewModel: NSObject, ObservableObject {
         searchCompleter.delegate = self
         loadData()
         filterRecentSearches()
+        NotificationCenter.default.addObserver(self, selector: #selector(orientationDidChange), name: UIDevice.orientationDidChangeNotification, object: nil)
+    }
+    
+    @objc
+    func orientationDidChange() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            self.animateDetentChange = true
+            self.refreshSheetDetent()
+        }
+    }
+    
+    func refreshSheetDetent() {
+        sheetDetent = sheetDetent
     }
     
     // MARK: - Load Data
@@ -318,8 +348,8 @@ extension ViewModel {
     func setRect(_ rect: MKMapRect, extraPadding: Bool = false, animated: Bool = true) {
         guard let mapView else { return }
         let padding = extraPadding ? 40.0 : 20.0
-        let bottom = sheetDetent == .large || !detentSet || wideScreen ? 0 : mapView.safeAreaLayoutGuide.layoutFrame.height - (20 + snapOffset)
-        let left = wideScreen ? 360.0 : 0.0
+        let bottom = sheetDetent == .large || !compact ? 0 : mapView.safeAreaLayoutGuide.layoutFrame.height - (topPadding + snapOffset)
+        let left = compact ? 0.0 : horizontalPadding + regularWidth
         let insets = UIEdgeInsets(top: padding, left: padding + left, bottom: padding + bottom, right: padding)
         mapView.setVisibleMapRect(rect, edgePadding: insets, animated: animated)
     }
@@ -555,12 +585,12 @@ extension ViewModel: MKMapViewDelegate {
         if let trail = overlay as? Trail {
             let renderer = MKPolylineRenderer(polyline: trail.polyline)
             renderer.lineWidth = trail == selectedTrail ? 3 : 2
-            renderer.strokeColor = darkMode ? UIColor(.cyan) : .link
+            renderer.strokeColor = lightOverlays ? UIColor(.cyan) : .link
             return renderer
         } else if let trips = overlay as? TrailTrips {
             let renderer = MKMultiPolylineRenderer(multiPolyline: trips.multiPolyline)
             renderer.lineWidth = 3
-            renderer.strokeColor = darkMode ? .white : .black
+            renderer.strokeColor = lightOverlays ? .white : .black
             return renderer
         } else if let polyline = overlay as? MKPolyline {
             let renderer = MKPolylineRenderer(polyline: polyline)

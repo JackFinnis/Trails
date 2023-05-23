@@ -11,7 +11,6 @@ import MessageUI
 struct InfoView: View {
     @EnvironmentObject var vm: ViewModel
     @Environment(\.dismiss) var dismiss
-    @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @State var showShareSheet = false
     @State var showEmailSheet = false
     
@@ -19,7 +18,7 @@ struct InfoView: View {
     
     var body: some View {
         NavigationView {
-            ScrollView {
+            ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 30) {
                     VStack(spacing: 10) {
                         Image("logo")
@@ -53,6 +52,8 @@ struct InfoView: View {
                     }
                 }
                 .padding(.horizontal)
+                .frame(maxWidth: 450)
+                .horizontallyCentred()
             }
             .safeAreaInset(edge: .bottom) {
                 Group {
@@ -93,15 +94,16 @@ struct InfoView: View {
                         }
                     }
                 }
+                .sharePopover(items: [Constants.appUrl], showsSharedAlert: true, isPresented: $showShareSheet)
                 .padding()
-                .background(Color(.systemBackground))
+                .frame(maxWidth: 450)
+                .horizontallyCentred()
             }
-            .frame(maxWidth: 450)
             .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    if welcome || horizontalSizeClass == .regular {
+                    if welcome || !vm.compact {
                         Text("")
                     } else {
                         DraggableTitle()
@@ -119,7 +121,6 @@ struct InfoView: View {
                 }
             }
         }
-        .shareSheet(items: [Constants.appUrl], showsSharedAlert: true, isPresented: $showShareSheet)
         .emailSheet(recipient: Constants.email, subject: "\(Constants.name) Feedback", isPresented: $showEmailSheet)
         .interactiveDismissDisabled(welcome)
     }

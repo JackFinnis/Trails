@@ -43,6 +43,7 @@ struct TrailRow: View {
                                 .font(.caption2.weight(.bold))
                             Text("\(vm.formatDistance(ascent, showUnit: true, round: false))")
                         }
+                        Spacer(minLength: 0)
                     }
                     .font(.subheadline.bold())
                     .foregroundColor(.secondary)

@@ -15,7 +15,7 @@ struct SizePreferenceKey: PreferenceKey {
     }
 }
 
-struct SizeDetector: ViewModifier {
+struct DetectSize: ViewModifier {
     @Binding var size: CGSize
 
     func body(content: Content) -> some View {
@@ -33,6 +33,6 @@ struct SizeDetector: ViewModifier {
 
 extension View {
     func detectSize(_ size: Binding<CGSize>) -> some View {
-        modifier(SizeDetector(size: size))
+        modifier(DetectSize(size: size))
     }
 }

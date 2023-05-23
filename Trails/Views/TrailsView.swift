@@ -17,7 +17,7 @@ struct TrailsView: View {
                 HStack(spacing: 15) {
                     Text(vm.filteredTrails.count.formatted(singular: "Trail") + (vm.trailFilter == nil ? "" : " Found"))
                         .font(.headline)
-                        .animation(.none, value: vm.filteredTrails)
+//                        .animation(.none, value: vm.trailFilter)
                         .onTapGesture {
                             vm.setRect(vm.filteredTrails.rect)
                         }
@@ -58,6 +58,7 @@ struct TrailsView: View {
                     }
                 }
                 .padding(.horizontal)
+                .padding(.bottom, 10)
             }
             
             Divider()

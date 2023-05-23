@@ -57,7 +57,7 @@ struct WebView: View {
                     } label: {
                         Image(systemName: "ellipsis.circle")
                     }
-                    .shareSheet(items: [trail.url], showsSharedAlert: false, isPresented: $showShareSheet)
+                    .sharePopover(items: [trail.url], showsSharedAlert: false, isPresented: $showShareSheet)
                 }
             }
     }

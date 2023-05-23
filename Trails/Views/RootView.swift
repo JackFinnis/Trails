@@ -9,24 +9,20 @@ import SwiftUI
 
 struct RootView: View {
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    @Environment(\.scenePhase) var scenePhase
     @Environment(\.colorScheme) var colorScheme
     @AppStorage("launchedBefore") var launchedBefore = false
     @StateObject var vm = ViewModel.shared
     @State var showInfoView = false
     @State var showWelcomeView = false
-    @GestureState var dragOffset = CGFloat.zero
-    
-    var mapDisabled: Bool {
-        vm.snapOffset == 0 && horizontalSizeClass == .compact
-    }
     
     var body: some View {
         NavigationView {
             ZStack(alignment: .topTrailing) {
                 MapView()
-                    .disabled(mapDisabled)
+                    .disabled(vm.mapDisabled)
                     .overlay {
-                        if mapDisabled {
+                        if vm.mapDisabled {
                             Color.black.opacity(0.1)
                         }
                     }
@@ -34,14 +30,14 @@ struct RootView: View {
                 
                 VStack(spacing: 0) {
                     CarbonCopy()
-                        .id(colorScheme)
+                        .id(scenePhase)
                         .blur(radius: 10, opaque: true)
                         .ignoresSafeArea()
                     Spacer()
                         .layoutPriority(1)
                 }
                 
-                if !mapDisabled {
+                if !vm.mapDisabled {
                     MapButtons()
                 }
                 
@@ -67,6 +63,7 @@ struct RootView: View {
                         }
                     }
                 }
+                .sharePopover(items: vm.shareItems, showsSharedAlert: false, isPresented: $vm.showShareSheet)
                 
                 if let trail = vm.selectedTrail {
                     Sheet {
@@ -100,23 +97,26 @@ struct RootView: View {
             }
         }
         .animation(.sheet, value: vm.selectedTrail)
+        .animation(.default, value: vm.mapDisabled)
         .onChange(of: colorScheme) { _ in
             vm.refreshTrailOverlays()
         }
+        .onChange(of: horizontalSizeClass) { _ in
+            vm.refreshSheetDetent()
+        }
         .task {
+            vm.refreshSheetDetent()
             if !launchedBefore {
                 launchedBefore = true
                 showWelcomeView = true
             }
         }
-        .shareSheet(items: vm.shareItems, showsSharedAlert: false, isPresented: $vm.showShareSheet)
         .sheet(isPresented: $showWelcomeView) {
             InfoView(welcome: true)
         }
         .sheet(isPresented: $showInfoView) {
             InfoView(welcome: false)
         }
-        .animation(.default, value: mapDisabled)
         .environmentObject(vm)
         .navigationViewStyle(.stack)
         .background {

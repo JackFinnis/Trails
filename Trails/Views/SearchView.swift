@@ -99,7 +99,9 @@ struct SearchView: View {
                                 vm.sheetDetent = .medium
                                 vm.mapView?.selectAnnotation(result, animated: true)
                                 if let rect = result.mapItem.placemark.region?.rect {
-                                    vm.setRect(rect, extraPadding: true)
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                        vm.setRect(rect, extraPadding: true)
+                                    }
                                 }
                             } label: {
                             HStack(spacing: 10) {
