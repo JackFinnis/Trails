@@ -50,6 +50,10 @@ struct Sheet<Content: View, Header: View>: View {
                             .opacity((bottom - (vm.snapOffset + vm.dragOffset))/50.0)
                     }
                 }
+                .safeAreaInset(edge: .bottom) {
+                    Spacer(minLength: 0)
+                        .frame(height: vm.snapOffset)
+                }
                 .offset(x: 0, y: vm.snapOffset + vm.dragOffset)
                 .gesture(DragGesture(minimumDistance: 1)
                     .onChanged { value in
@@ -110,16 +114,5 @@ struct Sheet<Content: View, Header: View>: View {
                 vm.snapOffset = 0
             }
         }
-    }
-}
-
-struct Sheet_Previews: PreviewProvider {
-    static var previews: some View {
-        ZStack {
-            Map(mapRect: .constant(.world))
-                .ignoresSafeArea()
-            Sheet {} header: {}
-        }
-        .environmentObject(ViewModel())
     }
 }

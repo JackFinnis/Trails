@@ -22,19 +22,18 @@ struct TrailView: View {
                     .fixedSize(horizontal: false, vertical: true)
                 
                 HStack(spacing: 10) {
-                    let divider = Divider().frame(height: 20)
                     TrailViewStat(name: "Distance", value: vm.formatDistance(trail.metres, showUnit: true, round: true), systemName: "point.topleft.down.curvedto.point.bottomright.up.fill")
-                    divider
+                    Divider().frame(height: 20)
                     TrailViewStat(name: "Duration", value: "\(trail.days) days", systemName: "clock")
                     if let ascent = trail.ascent {
-                        divider
+                        Divider().frame(height: 20)
                         TrailViewStat(name: "Ascent", value: vm.formatDistance(ascent, showUnit: true, round: false), systemName: "arrow.up")
                     }
                     if let metres = vm.getTrips(trail: trail)?.metres, metres > 0 {
-                        divider
-                        let complete = Int(trail.metres / metres * 100)
+                        Divider().frame(height: 20)
+                        let percentageCompleted = Int(trail.metres / metres * 100)
                         let completed = vm.isCompleted(trail)
-                        TrailViewStat(name: "Completed", value: "\(complete)%", systemName: completed ? "checkmark.circle.fill" : "checkmark.circle", tint: completed ? .accentColor : .secondary)
+                        TrailViewStat(name: "Completed", value: "\(percentageCompleted)%", systemName: completed ? "checkmark.circle.fill" : "checkmark.circle", tint: completed ? .accentColor : .secondary)
                     }
                 }
                 

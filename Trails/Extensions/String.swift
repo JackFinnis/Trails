@@ -11,4 +11,8 @@ extension String {
     var urlEncoded: String? {
         addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
     }
+    
+    var trimmed: String {
+        trimmingCharacters(in: .whitespacesAndNewlines)
+    }
 }

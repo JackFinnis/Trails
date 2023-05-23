@@ -31,14 +31,22 @@ class ViewModel: NSObject, ObservableObject {
     var searchBar: UISearchBar?
     var searchRect: MKMapRect?
     var localSearch: MKLocalSearch?
+    let searchCompleter = MKLocalSearchCompleter()
+    var previousSearch: Search?
+    @Published var searchCompletions = [MKLocalSearchCompletion]()
     @Published var isEditing = false
     @Published var searchResults = [Annotation]()
+    @Published var searchRequestLoading = false
+    @Published var filteredRecentSearches = [String]()
     @Published var searchScope = SearchScope.Trails
     @Published var isSearching = false { didSet {
         filterTrails()
     }}
     @Published var searchText = "" { didSet {
+        searchBar?.text = searchText
         filterTrails()
+        filterRecentSearches()
+        fetchCompletions()
     }}
     
     // Select Section
@@ -55,8 +63,10 @@ class ViewModel: NSObject, ObservableObject {
     @Published var scale = 1.0
     @Published var dragOffset = 0.0
     @Published var snapOffset = 5000.0
-    @Published var sheetDetent = SheetDetent.small
     var detentSet = false
+    @Published var sheetDetent = SheetDetent.small { didSet {
+        mapView?.compass?.isHidden = sheetDetent == .large
+    }}
     
     // Traits
     var darkMode: Bool {
@@ -67,9 +77,11 @@ class ViewModel: NSObject, ObservableObject {
     }
     
     // View
-    var shareItems = [Any]()
-    @Published var showShareSheet = false
     @Published var showCompletedAlert = false
+    @Published var showShareSheet = false
+    var shareItems = [Any]() { didSet {
+        showShareSheet = true
+    }}
     
     // Defaults
     @Storage("favouriteTrails") var favouriteTrails = [Int16]() { didSet {
@@ -79,7 +91,7 @@ class ViewModel: NSObject, ObservableObject {
         objectWillChange.send()
     }}
     @Storage("recentSearches") var recentSearches = [String]() { didSet {
-        objectWillChange.send()
+        filterRecentSearches()
     }}
     @Storage("metric") var metric = true { didSet {
         objectWillChange.send()
@@ -93,13 +105,13 @@ class ViewModel: NSObject, ObservableObject {
     }}
     
     // MapView
-    var mapView: MKMapView?
+    var mapView: _MKMapView?
     var annotationSelected = false
     @Published var trackingMode = MKUserTrackingMode.none
     @Published var mapType = MKMapType.standard
     
     // CLLocationManager
-    let manager = CLLocationManager()
+    let locationManager = CLLocationManager()
     var authStatus = CLAuthorizationStatus.notDetermined
     @Published var showAuthAlert = false
     
@@ -112,8 +124,10 @@ class ViewModel: NSObject, ObservableObject {
     // MARK: - Initialiser
     override init() {
         super.init()
-        manager.delegate = self
+        locationManager.delegate = self
+        searchCompleter.delegate = self
         loadData()
+        filterRecentSearches()
     }
     
     // MARK: - Load Data
@@ -153,7 +167,7 @@ class ViewModel: NSObject, ObservableObject {
     // MARK: - General
     func formatDistance(_ metres: Double, showUnit: Bool, round: Bool) -> String {
         let value = metres / (metric ? 1000 : 1609.34)
-        return String(format: "%.\(round ? 0 : 1)f", value) + (showUnit ? (metric ? " km" : " miles") : "")
+        return String(format: "%.\(round ? 0 : 1)f", max(0.1, value)) + (showUnit ? (metric ? " km" : " miles") : "")
     }
     
     func openSettings() {
@@ -235,6 +249,12 @@ class ViewModel: NSObject, ObservableObject {
             setRect(filteredTrails.rect, animated: animated)
         }
     }
+    
+    func filterRecentSearches() {
+        filteredRecentSearches = recentSearches.filter { search in
+            searchText.isEmpty || search.localizedStandardContains(searchText) && searchText != search
+        }.reversed()
+    }
 }
 
 // MARK: - Map
@@ -291,17 +311,17 @@ extension ViewModel {
         }
     }
     
+    func zoomTo(_ overlay: MKOverlay, extraPadding: Bool = false) {
+        setRect(overlay.boundingMapRect, extraPadding: extraPadding)
+    }
+    
     func setRect(_ rect: MKMapRect, extraPadding: Bool = false, animated: Bool = true) {
         guard let mapView else { return }
         let padding = extraPadding ? 40.0 : 20.0
-        let bottom = sheetDetent == .large || !detentSet || wideScreen ? 0 : mapView.frame.height - (80 + snapOffset)
+        let bottom = sheetDetent == .large || !detentSet || wideScreen ? 0 : mapView.safeAreaLayoutGuide.layoutFrame.height - (20 + snapOffset)
         let left = wideScreen ? 360.0 : 0.0
         let insets = UIEdgeInsets(top: padding, left: padding + left, bottom: padding + bottom, right: padding)
         mapView.setVisibleMapRect(rect, edgePadding: insets, animated: animated)
-    }
-    
-    func zoomTo(_ overlay: MKOverlay, extraPadding: Bool = false) {
-        setRect(overlay.boundingMapRect, extraPadding: extraPadding)
     }
     
     func reverseGeocode(coord: CLLocationCoordinate2D, completion: @escaping (CLPlacemark) -> Void) {
@@ -337,13 +357,12 @@ extension ViewModel {
     func newSelectCoord(_ coord: CLLocationCoordinate2D) {
         if selectPins.count < 2 {
             reverseGeocode(coord: coord) { placemark in
-                self.newSelectPin(placemark: placemark, coord: coord)
+                self.newSelectPin(annotation: Annotation(type: .select, placemark: placemark))
             }
         }
     }
     
-    func newSelectPin(placemark: CLPlacemark, coord: CLLocationCoordinate2D) {
-        let annotation = Annotation(type: .select, placemark: placemark, coord: coord)
+    func newSelectPin(annotation: Annotation) {
         selectPins.append(annotation)
         mapView?.addAnnotation(annotation)
         mapView?.deselectAnnotation(annotation, animated: false)
@@ -487,7 +506,7 @@ extension ViewModel: UIGestureRecognizerDelegate {
         guard !(isSelecting && selectPins.count < 2), press.state == .began, let coord = getCoord(from: press) else { return }
         reverseGeocode(coord: coord) { placemark in
             Haptics.tap()
-            let annotation = Annotation(type: .drop, placemark: placemark, coord: coord)
+            let annotation = Annotation(type: .drop, placemark: placemark)
             self.mapView?.addAnnotation(annotation)
             self.mapView?.selectAnnotation(annotation, animated: true)
         }
@@ -504,6 +523,12 @@ extension ViewModel: UIGestureRecognizerDelegate {
             let (_, trail) = getClosestTrail(to: coord, trails: searchTrails, maxDelta: tapDelta)
             selectTrail(trail)
         }
+    }
+    
+    @objc
+    func tappedCompass() {
+        guard trackingMode == .followWithHeading else { return }
+        updateTrackingMode(.follow)
     }
 }
 
@@ -555,16 +580,35 @@ extension ViewModel: MKMapViewDelegate {
         return button
     }
     
+    func getShareMenu(mapItem: MKMapItem, allowsDirections: Bool) -> UIButton {
+        let options = getButton(systemName: "ellipsis.circle")
+        var children = [UIMenuElement]()
+        if allowsDirections {
+            children.append(UIAction(title: "Get Directions", image: UIImage(systemName: "arrow.triangle.turn.up.right.diamond")) { _ in
+                self.openInMaps(mapItem: mapItem, directions: true)
+            })
+        }
+        children.append(UIAction(title: "Open in Maps", image: UIImage(systemName: "map")) { _ in
+            self.openInMaps(mapItem: mapItem, directions: false)
+        })
+        children.append(UIAction(title: "Share...", image: UIImage(systemName: "square.and.arrow.up")) { _ in
+            self.shareCoord(mapItem.placemark.coordinate)
+        })
+        options.menu = UIMenu(children: children)
+        options.showsMenuAsPrimaryAction = true
+        return options
+    }
+    
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         guard let annotation = annotation as? Annotation else { return nil }
-        let openButton = getButton(systemName: "arrow.triangle.turn.up.right.circle")
         let removeButton = getButton(systemName: "xmark")
+        let shareMenu = getShareMenu(mapItem: annotation.mapItem, allowsDirections: true)
         switch annotation.type {
         case .select:
             let pin = mapView.dequeueReusableAnnotationView(withIdentifier: MKPinAnnotationView.id, for: annotation) as? MKPinAnnotationView
             pin?.displayPriority = .required
             pin?.animatesDrop = true
-            pin?.rightCalloutAccessoryView = openButton
+            pin?.rightCalloutAccessoryView = shareMenu
             pin?.leftCalloutAccessoryView = removeButton
             pin?.canShowCallout = true
             pin?.pinTintColor = UIColor(.orange)
@@ -573,12 +617,49 @@ extension ViewModel: MKMapViewDelegate {
             let marker = mapView.dequeueReusableAnnotationView(withIdentifier: MKMarkerAnnotationView.id, for: annotation) as? MKMarkerAnnotationView
             marker?.displayPriority = .required
             marker?.animatesWhenAdded = true
-            marker?.rightCalloutAccessoryView = openButton
+            marker?.rightCalloutAccessoryView = shareMenu
+            marker?.canShowCallout = true
+            let category = annotation.mapItem.pointOfInterestCategory
+            marker?.glyphImage = UIImage(systemName: category?.systemName ?? "mappin")
+            marker?.markerTintColor = UIColor(category?.color ?? .red)
             if annotation.type == .drop {
                 marker?.leftCalloutAccessoryView = removeButton
             }
-            marker?.canShowCallout = true
             return marker
+        }
+    }
+    
+    func mapView(_ mapView: MKMapView, didAdd views: [MKAnnotationView]) {
+        guard let view = mapView.view(for: mapView.userLocation),
+              let user = view.annotation
+        else { return }
+        reverseGeocode(coord: user.coordinate) { placemark in
+            let mapItem = MKMapItem(placemark: MKPlacemark(placemark: placemark))
+            mapItem.name = "My Location"
+            view.rightCalloutAccessoryView = self.getShareMenu(mapItem: mapItem, allowsDirections: false)
+        }
+    }
+    
+    func openInMaps(mapItem: MKMapItem, directions: Bool) {
+        mapItem.openInMaps(launchOptions: directions ? [MKLaunchOptionsDirectionsModeKey: MKLaunchOptionsDirectionsModeDefault] : nil)
+    }
+    
+    func shareCoord(_ coord: CLLocationCoordinate2D) {
+        guard let url = URL(string: "https://maps.apple.com/?ll=\(coord.latitude),\(coord.longitude)") else { return }
+        shareItems = [url]
+    }
+    
+    func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+        guard let annotation = view.annotation as? Annotation else { return }
+        switch annotation.type {
+        case .drop:
+            mapView.deselectAnnotation(annotation, animated: true)
+            mapView.removeAnnotation(annotation)
+        case .select:
+            selectPins.removeAll { $0 == annotation }
+            mapView.removeAnnotation(annotation)
+            removeSelectPolyline()
+        default: break
         }
     }
     
@@ -586,12 +667,6 @@ extension ViewModel: MKMapViewDelegate {
         if !animated {
             updateTrackingMode(.none)
         }
-    }
-    
-    func mapView(_ mapView: MKMapView, didAdd views: [MKAnnotationView]) {
-        guard let user = mapView.view(for: mapView.userLocation) else { return }
-        user.leftCalloutAccessoryView = getButton(systemName: "square.and.arrow.up")
-        user.rightCalloutAccessoryView = getButton(systemName: "map")
     }
     
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
@@ -607,44 +682,8 @@ extension ViewModel: MKMapViewDelegate {
     }
     
     func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
-        if let searchRect, !mapView.region.rect.intersects(searchRect) {
-            searchMaps()
-        }
-    }
-    
-    @objc
-    func tappedCompass() {
-        guard trackingMode == .followWithHeading else { return }
-        updateTrackingMode(.follow)
-    }
-    
-    func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
-        if let annotation = view.annotation as? Annotation {
-            if control == view.leftCalloutAccessoryView {
-                if annotation.type == .drop {
-                    mapView.deselectAnnotation(annotation, animated: true)
-                    mapView.removeAnnotation(annotation)
-                } else {
-                    selectPins.removeAll { $0 == annotation }
-                    mapView.removeAnnotation(annotation)
-                    removeSelectPolyline()
-                }
-            } else {
-                annotation.openInMaps()
-            }
-        } else if let user = view.annotation as? MKUserLocation {
-            let coord = user.coordinate
-            if control == view.leftCalloutAccessoryView {
-                guard let url = URL(string: "https://maps.apple.com/?ll=\(coord.latitude),\(coord.longitude)") else { return }
-                shareItems = [url]
-                showShareSheet = true
-            } else {
-                reverseGeocode(coord: coord) { placemark in
-                    let item = MKMapItem(placemark: MKPlacemark(placemark: placemark))
-                    item.name = "My Location"
-                    item.openInMaps()
-                }
-            }
+        if let searchRect, !mapView.visibleMapRect.intersects(searchRect) {
+            searchMaps(newSearch: nil)
         }
     }
 }
@@ -652,12 +691,14 @@ extension ViewModel: MKMapViewDelegate {
 // MARK: - UISearchBarDelegate
 extension ViewModel: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        stopEditing()
         switch searchScope {
         case .Maps:
-            searchMaps()
+            searchText = searchText.trimmed
+            guard searchText.isNotEmpty else { return }
+            searchMaps(newSearch: .string(searchText))
         case .Trails:
             zoomToFilteredTrails()
+            stopEditing()
         }
     }
     
@@ -666,25 +707,34 @@ extension ViewModel: UISearchBarDelegate {
     }
     
     func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
-        withAnimation {
+        withAnimation(.sheet) {
             searchScope = SearchScope.allCases[selectedScope]
             sheetDetent = .large
         }
+        startEditing()
     }
     
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        isEditing = true
-        sheetDetent = .large
-        guard !isSearching else { return }
-        startSearching()
+        startEditing()
     }
     
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
         stopEditing()
     }
-
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        self.searchText = searchText
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange text: String) {
+        searchText = text
+    }
+    
+    func startEditing() {
+        fetchCompletions()
+        isEditing = true
+        sheetDetent = .large
+        resetSearching()
+        searchBar?.becomeFirstResponder()
+        if !isSearching {
+            startSearching()
+        }
     }
     
     func stopEditing() {
@@ -703,63 +753,90 @@ extension ViewModel: UISearchBarDelegate {
     }
     
     func stopSearching() {
-        searchBar?.text = ""
         sheetDetent = .medium
         searchText = ""
         resetSearching()
-        stopLocalSearch()
-        searchBar?.resignFirstResponder()
+        stopEditing()
         searchBar?.setShowsCancelButton(false, animated: false)
         searchBar?.setShowsScope(false, animated: false)
         isSearching = false
     }
     
-    func stopLocalSearch() {
+    func stopSearchRequest() {
         localSearch?.cancel()
+        searchRequestLoading = false
     }
     
     func resetSearching() {
         mapView?.removeAnnotations(searchResults)
+        stopSearchRequest()
         searchResults = []
         searchRect = nil
     }
     
-    func searchMaps() {
-        guard let text = searchBar?.text, text.isNotEmpty else { return }
-        searchMaps(text: text) { success in
-            if success {
-                self.searchBar?.resignFirstResponder()
-                if !self.recentSearches.contains(text) {
-                    self.recentSearches.append(text)
-                }
+    func updateRecentSearches(with string: String) {
+        recentSearches.removeAll { $0.lowercased() == string.lowercased() }
+        recentSearches.append(string)
+    }
+    
+    func searchMaps(newSearch: Search?) {
+        previousSearch = newSearch ?? previousSearch
+        guard let search = previousSearch else { return }
+        let request: MKLocalSearch.Request
+        switch search {
+        case .string(let string):
+            request = .init()
+            request.naturalLanguageQuery = string
+            searchText = string
+            updateRecentSearches(with: string)
+        case .completion(let completion):
+            request = .init(completion: completion)
+            updateRecentSearches(with: completion.title)
+        }
+        guard let mapView else { return }
+        request.region = mapView.region
+        request.resultTypes = [.address, .pointOfInterest]
+        
+        sheetDetent = .medium
+        resetSearching()
+        stopEditing()
+        searchRect = mapView.visibleMapRect
+        
+        stopSearchRequest()
+        searchRequestLoading = true
+        localSearch = MKLocalSearch(request: request)
+        localSearch?.start { response, error in
+            self.searchRequestLoading = false
+            guard let response else { return }
+
+            let rect = response.boundingRegion.rect
+            let results = response.mapItems.map { mapItem in
+                Annotation(type: .search, mapItem: mapItem)
+            }
+            
+            self.searchRect = rect
+            self.searchResults = results.filter { result in !self.searchResults.contains { $0.coordinate == result.coordinate } }
+            mapView.addAnnotations(results)
+            if results.count == 1 {
+                mapView.selectAnnotation(results.first!, animated: true)
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                self.setRect(rect, extraPadding: true)
             }
         }
     }
+}
+
+extension ViewModel: MKLocalSearchCompleterDelegate {
+    func completerDidUpdateResults(_ completer: MKLocalSearchCompleter) {
+        searchCompletions = completer.results
+    }
     
-    func searchMaps(text: String, completion: @escaping (Bool) -> Void) {
-        resetSearching()
-        
-        let request = MKLocalSearch.Request()
-        request.naturalLanguageQuery = text
-        guard let mapView else { return }
-        request.region = mapView.region
-        
-        stopLocalSearch()
-        localSearch = MKLocalSearch(request: request)
-        localSearch?.start { response, error in
-            guard let response else { completion(false); return }
-            let filteredResults = response.mapItems.filter { $0.placemark.countryCode == "GB" }
-            guard filteredResults.isNotEmpty else { completion(false); return }
-            
-            DispatchQueue.main.async {
-                self.searchResults = filteredResults.map { item in
-                    Annotation(type: .search, placemark: item.placemark, coord: item.placemark.coordinate)
-                }
-                self.mapView?.addAnnotations(self.searchResults)
-                self.searchRect = response.boundingRegion.rect
-                self.setRect(self.searchRect!, extraPadding: true)
-                completion(true)
-            }
-        }
+    func fetchCompletions() {
+        guard let mapView, searchText.isNotEmpty, searchScope == .Maps else { return }
+        searchCompleter.cancel()
+        searchCompleter.queryFragment = searchText
+        searchCompleter.region = mapView.region
+        searchCompleter.resultTypes = [.address, .pointOfInterest, .query]
     }
 }

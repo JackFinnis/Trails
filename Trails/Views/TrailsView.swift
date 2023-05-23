@@ -12,7 +12,7 @@ struct TrailsView: View {
     @State var angle = Angle.zero
     
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             if !vm.isSearching {
                 HStack(spacing: 15) {
                     Text(vm.filteredTrails.count.formatted(singular: "Trail") + (vm.trailFilter == nil ? "" : " Found"))
@@ -60,14 +60,15 @@ struct TrailsView: View {
                 .padding(.horizontal)
             }
             
+            Divider()
+                .padding(.leading)
             ScrollView {
-                LazyVStack(spacing: 16) {
+                LazyVStack(spacing: 15) {
                     ForEach(vm.filteredTrails) { trail in
                         TrailRow(trail: trail)
                     }
                 }
-                .padding(.horizontal)
-                .padding(.bottom)
+                .padding()
             }
             .overlay {
                 if vm.filteredTrails.isEmpty {

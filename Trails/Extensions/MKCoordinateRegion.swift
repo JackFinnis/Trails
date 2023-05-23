@@ -17,3 +17,10 @@ extension MKCoordinateRegion {
         return MKMapRect(origin: MKMapPoint(topLeft), size: .init()).union(MKMapRect(origin: MKMapPoint(bottomRight), size: .init()))
     }
 }
+
+extension CLRegion {
+    var rect: MKMapRect? {
+        guard let region = self as? CLCircularRegion else { return nil }
+        return MKCoordinateRegion(center: region.center, latitudinalMeters: region.radius, longitudinalMeters: region.radius).rect
+    }
+}

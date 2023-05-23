@@ -8,32 +8,29 @@
 import Foundation
 import MapKit
 
-class Annotation: NSObject {
-    let type: AnnotationType
-    let coord: CLLocationCoordinate2D
-    let placemark: CLPlacemark
-    
-    init(type: AnnotationType, placemark: CLPlacemark, coord: CLLocationCoordinate2D) {
-        self.type = type
-        self.coord = coord
-        self.placemark = placemark
-    }
-    
-    func openInMaps() {
-        let item = MKMapItem(placemark: MKPlacemark(placemark: placemark))
-        item.name = placemark.name
-        item.openInMaps()
-    }
-}
-
-extension Annotation: MKAnnotation {
-    var title: String? { placemark.name }
-    var subtitle: String?  { placemark.subLocality }
-    var coordinate: CLLocationCoordinate2D { coord }
-}
-
 enum AnnotationType {
     case select
     case search
     case drop
+}
+
+class Annotation: NSObject {
+    let type: AnnotationType
+    let mapItem: MKMapItem
+    
+    init(type: AnnotationType, mapItem: MKMapItem) {
+        self.type = type
+        self.mapItem = mapItem
+    }
+    
+    init(type: AnnotationType, placemark: CLPlacemark) {
+        self.type = type
+        self.mapItem = MKMapItem(placemark: MKPlacemark(placemark: placemark))
+    }
+}
+
+extension Annotation: MKAnnotation {
+    var title: String? { mapItem.placemark.name }
+    var subtitle: String?  { mapItem.placemark.subLocality ?? mapItem.placemark.locality }
+    var coordinate: CLLocationCoordinate2D { mapItem.placemark.coordinate }
 }

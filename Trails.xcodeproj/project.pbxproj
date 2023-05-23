@@ -107,6 +107,8 @@
 		04E0E91629F0302500EB08CC /* TrailImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E0E91529F0302500EB08CC /* TrailImage.swift */; };
 		04E0E91829F06CFD00EB08CC /* CarbonCopy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E0E91729F06CFD00EB08CC /* CarbonCopy.swift */; };
 		04E7185329C7CC0400876116 /* MKCoordinateRegion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E7185229C7CC0400876116 /* MKCoordinateRegion.swift */; };
+		04FCA9F32A1BFE50007B5817 /* Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04FCA9F22A1BFE50007B5817 /* Search.swift */; };
+		04FCA9F52A1C090F007B5817 /* MKPointOfInterestCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04FCA9F42A1C090F007B5817 /* MKPointOfInterestCategory.swift */; };
 		04FFC98B29CA6A4900BF77FD /* EmailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04FFC98A29CA6A4900BF77FD /* EmailView.swift */; };
 /* End PBXBuildFile section */
 
@@ -211,6 +213,8 @@
 		04E0E91529F0302500EB08CC /* TrailImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailImage.swift; sourceTree = "<group>"; };
 		04E0E91729F06CFD00EB08CC /* CarbonCopy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarbonCopy.swift; sourceTree = "<group>"; };
 		04E7185229C7CC0400876116 /* MKCoordinateRegion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MKCoordinateRegion.swift; sourceTree = "<group>"; };
+		04FCA9F22A1BFE50007B5817 /* Search.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Search.swift; sourceTree = "<group>"; };
+		04FCA9F42A1C090F007B5817 /* MKPointOfInterestCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MKPointOfInterestCategory.swift; sourceTree = "<group>"; };
 		04FFC98A29CA6A4900BF77FD /* EmailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -280,6 +284,7 @@
 				04E0E90529EEF5BD00EB08CC /* Int.swift */,
 				0416F173299EF9FC00B90E68 /* MKMultiPoint.swift */,
 				04E7185229C7CC0400876116 /* MKCoordinateRegion.swift */,
+				04FCA9F42A1C090F007B5817 /* MKPointOfInterestCategory.swift */,
 				0416F1BC29A1692100B90E68 /* NSObject.swift */,
 				0402C71E2A1A755000238C51 /* String.swift */,
 			);
@@ -294,6 +299,7 @@
 				0402C7222A1A7D4300238C51 /* TrailTrips.swift */,
 				0402C7282A1A954300238C51 /* TrailFilter.swift */,
 				0402C7242A1A7D8900238C51 /* TrailSort.swift */,
+				04FCA9F22A1BFE50007B5817 /* Search.swift */,
 				04E0E91129EF704400EB08CC /* SearchScope.swift */,
 				04626BF929C24297004880E3 /* Annotation.swift */,
 			);
@@ -306,7 +312,6 @@
 			children = (
 				0416F190299EFB9C00B90E68 /* SelectBar.swift */,
 				04CEDFE029A2EADB00810005 /* SelectionBar.swift */,
-				04E0E91329EF717600EB08CC /* SearchView.swift */,
 				0416F155299E91B000B90E68 /* TrailsApp.swift */,
 				0416F192299EFB9C00B90E68 /* RootView.swift */,
 				0416F191299EFB9C00B90E68 /* MapView.swift */,
@@ -315,6 +320,7 @@
 				04626BFF29C25714004880E3 /* TrailRow.swift */,
 				04E0E90729EF2BBD00EB08CC /* TrailView.swift */,
 				04E0E91529F0302500EB08CC /* TrailImage.swift */,
+				04E0E91329EF717600EB08CC /* SearchView.swift */,
 				04CEDFDA29A2E60400810005 /* InfoView.swift */,
 				0421202729C91CDC003DE52F /* Web */,
 				0416F196299EFB9C00B90E68 /* Extra */,
@@ -570,6 +576,7 @@
 				04CEDFDB29A2E60400810005 /* InfoView.swift in Sources */,
 				0421202B29C929C1003DE52F /* CLLocation.swift in Sources */,
 				04626BFE29C24EE7004880E3 /* TrailsView.swift in Sources */,
+				04FCA9F32A1BFE50007B5817 /* Search.swift in Sources */,
 				0402C7252A1A7D8900238C51 /* TrailSort.swift in Sources */,
 				0402C7212A1A780400238C51 /* SizeDetector.swift in Sources */,
 				04FFC98B29CA6A4900BF77FD /* EmailView.swift in Sources */,
@@ -588,6 +595,7 @@
 				0402C71F2A1A755000238C51 /* String.swift in Sources */,
 				048E5F2229C38A930080355B /* WebVM.swift in Sources */,
 				04E0E91829F06CFD00EB08CC /* CarbonCopy.swift in Sources */,
+				04FCA9F52A1C090F007B5817 /* MKPointOfInterestCategory.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

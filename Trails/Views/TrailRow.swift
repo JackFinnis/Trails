@@ -74,4 +74,3 @@ struct TrailRow_Previews: PreviewProvider {
             .environmentObject(ViewModel())
     }
 }
-

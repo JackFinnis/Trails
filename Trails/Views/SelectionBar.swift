@@ -18,9 +18,9 @@ struct SelectionBar: View {
     
     var description: String {
         guard vm.selectPins.count == 2 else { return "" }
-        let start = vm.selectPins[0]
-        let end = vm.selectPins[1]
-        return (start.placemark.subLocality ?? start.placemark.name ?? "") + " to " + (end.placemark.subLocality ?? end.placemark.name ?? "")
+        let start = vm.selectPins[0].mapItem.placemark
+        let end = vm.selectPins[1].mapItem.placemark
+        return (start.subLocality ?? start.name ?? "") + " to " + (end.subLocality ?? end.name ?? "")
     }
     
     var body: some View {

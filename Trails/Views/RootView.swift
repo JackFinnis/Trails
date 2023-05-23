@@ -14,11 +14,22 @@ struct RootView: View {
     @StateObject var vm = ViewModel.shared
     @State var showInfoView = false
     @State var showWelcomeView = false
-
+    @GestureState var dragOffset = CGFloat.zero
+    
+    var mapDisabled: Bool {
+        vm.snapOffset == 0 && horizontalSizeClass == .compact
+    }
+    
     var body: some View {
         NavigationView {
             ZStack(alignment: .topTrailing) {
                 MapView()
+                    .disabled(mapDisabled)
+                    .overlay {
+                        if mapDisabled {
+                            Color.black.opacity(0.1)
+                        }
+                    }
                     .ignoresSafeArea()
                 
                 VStack(spacing: 0) {
@@ -30,7 +41,7 @@ struct RootView: View {
                         .layoutPriority(1)
                 }
                 
-                if vm.snapOffset != 0 || horizontalSizeClass == .regular {
+                if !mapDisabled {
                     MapButtons()
                 }
                 
@@ -38,7 +49,7 @@ struct RootView: View {
                     if vm.searchScope == .Trails || !vm.isSearching {
                         TrailsView()
                     } else {
-                        SearchList()
+                        SearchView()
                     }
                 } header: {
                     HStack {
@@ -64,7 +75,7 @@ struct RootView: View {
                         HStack(alignment: .firstTextBaseline) {
                             Text(trail.name)
                                 .font(.title2.weight(.semibold))
-                            Spacer(minLength: 0)
+                            Spacer()
                             Button {
                                 vm.selectTrail(nil)
                             } label: {
@@ -105,6 +116,7 @@ struct RootView: View {
         .sheet(isPresented: $showInfoView) {
             InfoView(welcome: false)
         }
+        .animation(.default, value: mapDisabled)
         .environmentObject(vm)
         .navigationViewStyle(.stack)
         .background {
