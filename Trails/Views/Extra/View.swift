@@ -42,6 +42,10 @@ extension View {
             .continuousRadius(16)
     }
     
+    func onDismiss(onDismiss: @escaping () -> Void) -> some View {
+        modifier(OnDismiss(onDismiss: onDismiss))
+    }
+    
     @ViewBuilder
     func `if`<Content: View>(_ applyModifier: Bool = true, @ViewBuilder content: (Self) -> Content) -> some View {
         if applyModifier {
@@ -59,5 +63,34 @@ struct RoundedCorners: Shape {
     func path(in rect: CGRect) -> Path {
         let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
         return Path(path.cgPath)
+    }
+}
+
+struct OnDismiss: ViewModifier {
+    @State var offset = 0.0
+    
+    let onDismiss: () -> Void
+    
+    func body(content: Content) -> some View {
+        content
+            .offset(y: offset)
+            .gesture(DragGesture(minimumDistance: 0)
+                .onChanged { gesture in
+                    let translation = gesture.translation.height
+                    if translation > 0 {
+                        offset = translation
+                    } else {
+                        offset = -sqrt(-translation)
+                    }
+                }
+                .onEnded { value in
+                    if value.predictedEndTranslation.height > 20 {
+                        onDismiss()
+                    }
+                    withAnimation {
+                        offset = 0
+                    }
+                }
+            )
     }
 }

@@ -12,35 +12,34 @@ struct SelectBar: View {
     @EnvironmentObject var vm: ViewModel
     
     var body: some View {
-        if vm.isSelecting {
-            Group {
-                if let polyline = vm.selectPolyline {
-                    SelectionBar(polyline: polyline)
-                } else if vm.isSelecting {
-                    HStack {
-                        VStack(alignment: .leading) {
-                            Text("Select a Section")
-                                .font(.headline)
-                            Text(vm.selectError ? "Unable to select section. Please try again." : ("Tap on the \(vm.selectPins.isEmpty ? "start" : "end") point"))
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                        }
-                        
-                        Spacer()
-                        Button {
-                            vm.stopSelecting()
-                        } label: {
-                            Image(systemName: "xmark")
-                                .font(.title2)
-                        }
-                    }
-                    .padding(10)
-                    .padding(.trailing, 5)
-                }
+        HStack {
+            VStack(alignment: .leading) {
+                Text("Select a Section")
+                    .font(.headline)
+                Text(vm.selectError ? "Select different start and end points." : ("Tap on the \(vm.startPin == nil ? "start" : "end") point"))
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
             }
-            .blurBackground(prominentShadow: false)
-            .padding(10)
+            Spacer(minLength: 0)
+            Button {
+                vm.stopSelecting()
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.icon)
+            }
+            .padding(.horizontal, 5)
         }
+        .padding(10)
+        .blurBackground(prominentShadow: true)
+        .offset(x: vm.shake ? 20 : 0)
+        .onTapGesture {
+            vm.zoomTo(vm.selectedTrail)
+        }
+        .onDismiss {
+            vm.stopSelecting()
+        }
+        .padding(10)
+        .transition(.move(edge: .bottom).combined(with: .opacity))
     }
 }
 

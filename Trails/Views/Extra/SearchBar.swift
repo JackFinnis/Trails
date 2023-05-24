@@ -15,7 +15,6 @@ struct SearchBar: UIViewRepresentable {
         searchBar.delegate = vm
         vm.searchBar = searchBar
         
-        searchBar.placeholder = "Search"
         searchBar.backgroundImage = UIImage()
         searchBar.autocorrectionType = .no
         searchBar.scopeButtonTitles = SearchScope.allCases.map(\.rawValue)
@@ -24,5 +23,11 @@ struct SearchBar: UIViewRepresentable {
         return searchBar
     }
     
-    func updateUIView(_ searchBar: UISearchBar, context: Context) {}
+    func updateUIView(_ searchBar: UISearchBar, context: Context) {
+        if vm.isSearching {
+            searchBar.placeholder = "Search \(vm.searchScope.rawValue)"
+        } else {
+            searchBar.placeholder = "Search Trails & Maps"
+        }
+    }
 }

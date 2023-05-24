@@ -50,23 +50,28 @@ class ViewModel: NSObject, ObservableObject {
     }}
     
     // Select Section
+    var selectBarSize = CGSize()
     @Published var isSelecting = false
     @Published var selectError = false
     @Published var canUncomplete = false
     @Published var canComplete = false
     @Published var selectMetres = 0.0
     @Published var selectPolyline: MKPolyline?
-    @Published var selectPins = [Annotation]()
+    @Published var startPin: Annotation?
+    @Published var endPin: Annotation?
     
     // Animations
     @Published var degrees = 0.0
     @Published var scale = 1.0
+    @Published var shake = false
     var animateDetentChange = false
     @Published var sheetDetent = SheetDetent.small
     @Published var safeAreaInset = 0.0
     @Published var dragOffset = 0.0
-    @Published var snapOffset = 0.0 { didSet {
-        mapView?.compass?.isHidden = mapDisabled
+    @Published var snapOffset = 5000.0 { didSet {
+        UIView.animate(withDuration: 0.5) {
+            self.mapView?.compass?.alpha = self.mapDisabled ? 0 : 1
+        }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             self.safeAreaInset = self.snapOffset
         }
@@ -92,13 +97,15 @@ class ViewModel: NSObject, ObservableObject {
     var horizontalPadding: CGFloat {
         compact ? 0 : 10
     }
+    var sheetHeight: CGFloat {
+        (mapView?.safeAreaLayoutGuide.layoutFrame.height ?? 0) - (topPadding + snapOffset)
+    }
+    var maxWidth: CGFloat {
+        compact ? .infinity : regularWidth
+    }
     
     // View State
     @Published var showCompletedAlert = false
-    @Published var showShareSheet = false
-    var shareItems = [Any]() { didSet {
-        showShareSheet = true
-    }}
     
     // Storage
     @Storage("favouriteTrails") var favouriteTrails = [Int16]() { didSet {
@@ -113,6 +120,7 @@ class ViewModel: NSObject, ObservableObject {
     @Storage("metric") var metric = true { didSet {
         objectWillChange.send()
     }}
+    @Storage("shownReviewPrompt") var shownReviewPrompt = false
     @Storage("ascending") var ascending = false
     @Storage("sortBy") var sortBy = TrailSort.name { didSet {
         if oldValue == sortBy {
@@ -124,6 +132,7 @@ class ViewModel: NSObject, ObservableObject {
     // MapView
     var mapView: _MKMapView?
     var annotationSelected = false
+    var pinAddedDate = Date.now
     @Published var trackingMode = MKUserTrackingMode.none
     @Published var mapType = MKMapType.standard
     
@@ -150,8 +159,7 @@ class ViewModel: NSObject, ObservableObject {
     
     @objc
     func orientationDidChange() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            self.animateDetentChange = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
             self.refreshSheetDetent()
         }
     }
@@ -180,11 +188,11 @@ class ViewModel: NSObject, ObservableObject {
             let polyline = features.first?.geometry.first as! MKPolyline
             trails.append(Trail(metadata: metadata, polyline: polyline))
         }
-        filterTrails()
         
         container.loadPersistentStores { description, error in
             self.trailsTrips = (try? self.container.viewContext.fetch(TrailTrips.fetchRequest()) as? [TrailTrips]) ?? []
             self.trailsTrips.forEach { $0.reload() }
+            self.filterTrails()
         }
     }
     
@@ -230,7 +238,7 @@ class ViewModel: NSObject, ObservableObject {
     func selectTrail(_ trail: Trail?) {
         stopEditing()
         selectedTrail = trail
-        refreshTrailOverlays()
+        refreshOverlays()
         if let trail {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 self.zoomTo(trail)
@@ -255,7 +263,7 @@ class ViewModel: NSObject, ObservableObject {
             return isSearching ? searching : filter
         }
         sortTrails()
-        refreshTrailOverlays()
+        refreshOverlays()
     }
     
     func sortTrails() {
@@ -264,7 +272,7 @@ class ViewModel: NSObject, ObservableObject {
             case .name:
                 return $0.name < $1.name
             case .ascent:
-                return $0.ascent ?? .greatestFiniteMagnitude < $1.ascent ?? .greatestFiniteMagnitude
+                return $0.ascent < $1.ascent
             case .distance:
                 return $0.metres < $1.metres
             case .completed:
@@ -316,7 +324,7 @@ extension ViewModel {
     
     func updateMapType(_ newType: MKMapType) {
         mapView?.mapType = newType
-        refreshTrailOverlays()
+        refreshOverlays()
         withAnimation(.easeInOut(duration: 0.25)) {
             degrees += 90
         }
@@ -328,7 +336,7 @@ extension ViewModel {
         }
     }
     
-    func refreshTrailOverlays() {
+    func refreshOverlays() {
         mapView?.removeOverlays(trails)
         mapView?.removeOverlays(trailsTrips)
         if let selectedTrail {
@@ -339,17 +347,20 @@ extension ViewModel {
         } else {
             mapView?.addOverlays(filteredTrails, level: .aboveRoads)
         }
+        refreshSelectPolyline()
     }
     
-    func zoomTo(_ overlay: MKOverlay, extraPadding: Bool = false) {
-        setRect(overlay.boundingMapRect, extraPadding: extraPadding)
+    func zoomTo(_ overlay: MKOverlay?, extraPadding: Bool = false) {
+        if let overlay {
+            setRect(overlay.boundingMapRect, extraPadding: extraPadding)
+        }
     }
     
     func setRect(_ rect: MKMapRect, extraPadding: Bool = false, animated: Bool = true) {
         guard let mapView else { return }
         let padding = extraPadding ? 40.0 : 20.0
-        let bottom = sheetDetent == .large || !compact ? 0 : mapView.safeAreaLayoutGuide.layoutFrame.height - (topPadding + snapOffset)
-        let left = compact ? 0.0 : horizontalPadding + regularWidth
+        let bottom = isSelecting ? selectBarSize.height - 10 : (sheetDetent == .large || !compact ? 0 : sheetHeight)
+        let left = compact || isSelecting ? 0.0 : horizontalPadding + regularWidth
         let insets = UIEdgeInsets(top: padding, left: padding + left, bottom: padding + bottom, right: padding)
         mapView.setVisibleMapRect(rect, edgePadding: insets, animated: animated)
     }
@@ -384,54 +395,94 @@ extension ViewModel {
 
 // MARK: - Select
 extension ViewModel {
-    func newSelectCoord(_ coord: CLLocationCoordinate2D) {
-        if selectPins.count < 2 {
-            reverseGeocode(coord: coord) { placemark in
-                self.newSelectPin(annotation: Annotation(type: .select, placemark: placemark))
-            }
-        }
-    }
-    
     func newSelectPin(annotation: Annotation) {
-        selectPins.append(annotation)
+        if startPin == nil {
+            startPin = annotation
+        } else if endPin == nil {
+            endPin = annotation
+        } else {
+            return
+        }
         mapView?.addAnnotation(annotation)
-        mapView?.deselectAnnotation(annotation, animated: false)
+        pinAddedDate = .now
         
-        if selectPins.count == 2 {
-            let coords = calculateLine(between: selectPins[0].coordinate, and: selectPins[1].coordinate)
+        if let startPin, let endPin {
+            let coords = calculateLine(between: startPin.coordinate, and: endPin.coordinate)
             
             selectError = coords.count < 2
-            guard !selectError else { return }
+            guard !selectError else {
+                removeSelectPins()
+                Haptics.error()
+                shake = true
+                withAnimation(.spring(response: 0.2, dampingFraction: 0.2, blendDuration: 0.2)) {
+                    shake = false
+                }
+                return
+            }
             
             if let selectedTrips {
                 canComplete = coords.contains { !selectedTrips.coordsSet.contains($0) }
                 canUncomplete = coords.contains { selectedTrips.coordsSet.contains($0) }
+            } else {
+                canComplete = true
+                canUncomplete = false
             }
             
-            selectPolyline = MKPolyline(coordinates: coords, count: coords.count)
-            mapView?.addOverlay(selectPolyline!, level: .aboveRoads)
+            let polyline = MKPolyline(coordinates: coords, count: coords.count)
+            selectPolyline = polyline
+            refreshSelectPolyline()
             selectMetres = coords.metres()
-            zoomTo(selectPolyline!, extraPadding: true)
             Haptics.tap()
+            DispatchQueue.main.async {
+                self.zoomTo(polyline, extraPadding: true)
+            }
         }
     }
     
     func startSelecting() {
-        isSelecting = true
+        withAnimation(.sheet) {
+            isSelecting = true
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            self.zoomTo(self.selectedTrail)
+        }
+    }
+    
+    func resetSelecting() {
+        selectError = false
+        removeSelectPins()
+        removeSelectPolyline()
+    }
+    
+    func removeSelectPins() {
+        if let startPin {
+            mapView?.removeAnnotation(startPin)
+            self.startPin = nil
+        }
+        if let endPin {
+            mapView?.removeAnnotation(endPin)
+            self.endPin = nil
+        }
     }
     
     func stopSelecting() {
-        isSelecting = false
-        selectError = false
-        mapView?.removeAnnotations(selectPins)
-        selectPins = []
-        removeSelectPolyline()
+        resetSelecting()
+        withAnimation(.sheet) {
+            isSelecting = false
+        }
     }
     
     func removeSelectPolyline() {
         if let selectPolyline {
             mapView?.removeOverlay(selectPolyline)
             self.selectPolyline = nil
+        }
+    }
+    
+    func refreshSelectPolyline() {
+        if let selectPolyline {
+            mapView?.removeOverlay(selectPolyline)
+            mapView?.addOverlay(selectPolyline, level: .aboveRoads)
         }
     }
     
@@ -533,7 +584,7 @@ extension ViewModel: UIGestureRecognizerDelegate {
     
     @objc
     func handlePress(_ press: UILongPressGestureRecognizer) {
-        guard !(isSelecting && selectPins.count < 2), press.state == .began, let coord = getCoord(from: press) else { return }
+        guard !(isSelecting && selectPolyline == nil), press.state == .began, let coord = getCoord(from: press) else { return }
         reverseGeocode(coord: coord) { placemark in
             Haptics.tap()
             let annotation = Annotation(type: .drop, placemark: placemark)
@@ -544,11 +595,13 @@ extension ViewModel: UIGestureRecognizerDelegate {
     
     @objc
     func handleTap(_ tap: UITapGestureRecognizer) {
-        guard let coord = getCoord(from: tap) else { return }
+        guard !annotationSelected, let coord = getCoord(from: tap) else { return }
 
         if isSelecting {
-            newSelectCoord(coord)
-        } else if !annotationSelected {
+            reverseGeocode(coord: coord) { placemark in
+                self.newSelectPin(annotation: Annotation(type: .select, placemark: placemark))
+            }
+        } else {
             let searchTrails = selectedTrail == nil ? trails : [selectedTrail!]
             let (_, trail) = getClosestTrail(to: coord, trails: searchTrails, maxDelta: tapDelta)
             selectTrail(trail)
@@ -649,9 +702,10 @@ extension ViewModel: MKMapViewDelegate {
             marker?.animatesWhenAdded = true
             marker?.rightCalloutAccessoryView = shareMenu
             marker?.canShowCallout = true
-            let category = annotation.mapItem.pointOfInterestCategory
-            marker?.glyphImage = UIImage(systemName: category?.systemName ?? "mappin")
-            marker?.markerTintColor = UIColor(category?.color ?? .red)
+            if let category = annotation.mapItem.pointOfInterestCategory {
+                marker?.glyphImage = UIImage(systemName: category.systemName)
+                marker?.markerTintColor = UIColor(category.color)
+            }
             if annotation.type == .drop {
                 marker?.leftCalloutAccessoryView = removeButton
             }
@@ -660,13 +714,13 @@ extension ViewModel: MKMapViewDelegate {
     }
     
     func mapView(_ mapView: MKMapView, didAdd views: [MKAnnotationView]) {
-        guard let view = mapView.view(for: mapView.userLocation),
-              let user = view.annotation
-        else { return }
-        reverseGeocode(coord: user.coordinate) { placemark in
-            let mapItem = MKMapItem(placemark: MKPlacemark(placemark: placemark))
-            mapItem.name = "My Location"
-            view.rightCalloutAccessoryView = self.getShareMenu(mapItem: mapItem, allowsDirections: false)
+        if let view = mapView.view(for: mapView.userLocation),
+           let user = view.annotation {
+            reverseGeocode(coord: user.coordinate) { placemark in
+                let mapItem = MKMapItem(placemark: MKPlacemark(placemark: placemark))
+                mapItem.name = "My Location"
+                view.rightCalloutAccessoryView = self.getShareMenu(mapItem: mapItem, allowsDirections: false)
+            }
         }
     }
     
@@ -675,8 +729,12 @@ extension ViewModel: MKMapViewDelegate {
     }
     
     func shareCoord(_ coord: CLLocationCoordinate2D) {
-        guard let url = URL(string: "https://maps.apple.com/?ll=\(coord.latitude),\(coord.longitude)") else { return }
-        shareItems = [url]
+        guard let mapView, let url = URL(string: "https://maps.apple.com/?ll=\(coord.latitude),\(coord.longitude)") else { return }
+        let point = mapView.convert(coord, toPointTo: mapView)
+        let shareVC = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+        shareVC.popoverPresentationController?.sourceView = mapView
+        shareVC.popoverPresentationController?.sourceRect = CGRect(origin: point, size: .zero)
+        mapView.window?.rootViewController?.present(shareVC, animated: true)
     }
     
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
@@ -686,7 +744,12 @@ extension ViewModel: MKMapViewDelegate {
             mapView.deselectAnnotation(annotation, animated: true)
             mapView.removeAnnotation(annotation)
         case .select:
-            selectPins.removeAll { $0 == annotation }
+            if startPin == annotation {
+                startPin = nil
+            }
+            if endPin == annotation {
+                endPin = nil
+            }
             mapView.removeAnnotation(annotation)
             removeSelectPolyline()
         default: break
@@ -701,9 +764,8 @@ extension ViewModel: MKMapViewDelegate {
     
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
         annotationSelected = true
-        guard let annotation = view.annotation else { return }
-        if isSelecting && selectPins.count < 2 {
-            mapView.deselectAnnotation(annotation, animated: false)
+        if Date.now.timeIntervalSince(pinAddedDate) < 0.5 {
+            mapView.deselectAnnotation(view.annotation, animated: false)
         }
     }
     
@@ -783,13 +845,13 @@ extension ViewModel: UISearchBarDelegate {
     }
     
     func stopSearching() {
-        sheetDetent = .medium
         searchText = ""
         resetSearching()
         stopEditing()
         searchBar?.setShowsCancelButton(false, animated: false)
         searchBar?.setShowsScope(false, animated: false)
         isSearching = false
+        sheetDetent = .medium
     }
     
     func stopSearchRequest() {
@@ -857,6 +919,7 @@ extension ViewModel: UISearchBarDelegate {
     }
 }
 
+// MARK: - MKLocalSearchCompleterDelegate
 extension ViewModel: MKLocalSearchCompleterDelegate {
     func completerDidUpdateResults(_ completer: MKLocalSearchCompleter) {
         searchCompletions = completer.results

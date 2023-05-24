@@ -96,6 +96,7 @@ struct InfoView: View {
                 }
                 .sharePopover(items: [Constants.appUrl], showsSharedAlert: true, isPresented: $showShareSheet)
                 .padding()
+                .background(Color(.systemBackground))
                 .frame(maxWidth: 450)
                 .horizontallyCentred()
             }

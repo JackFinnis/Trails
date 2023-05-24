@@ -24,11 +24,6 @@ struct Sheet<Content: View, Header: View>: View {
     var body: some View {
         HStack {
             GeometryReader { geo in
-                let height = geo.size.height
-                let medium = height - vm.mediumSheetHeight
-                let bottom = height - headerSize.height
-                let detents = [(0, SheetDetent.large), (medium, .medium), (bottom, .small)]
-                
                 ZStack(alignment: .top) {
                     RoundedCorners(radius: 10, corners: [.topLeft, .topRight])
                         .fill(.thickMaterial)
@@ -47,17 +42,19 @@ struct Sheet<Content: View, Header: View>: View {
                         .detectSize($headerSize)
                         
                         content()
-                            .opacity((bottom - (vm.snapOffset + vm.dragOffset))/50.0)
+                            .opacity(((geo.size.height - headerSize.height) - (vm.snapOffset + vm.dragOffset))/50.0)
                     }
                 }
                 .safeAreaInset(edge: .bottom, spacing: 0) {
                     Spacer(minLength: 0)
                         .frame(height: vm.safeAreaInset)
                 }
-                .offset(x: 0, y: vm.snapOffset + vm.dragOffset)
+                .opacity(vm.isSelecting ? 0 : 1)
+                .offset(y: (vm.isSelecting ? vm.sheetHeight : 0) + vm.snapOffset + vm.dragOffset)
                 .gesture(DragGesture(minimumDistance: 1)
                     .onChanged { gesture in
                         let end = vm.snapOffset + gesture.translation.height
+                        let bottom = geo.size.height - headerSize.height
                         if end < 0 {
                             vm.dragOffset = -vm.snapOffset - sqrt(-end)
                         } else if vm.isEditing {
@@ -70,18 +67,22 @@ struct Sheet<Content: View, Header: View>: View {
                     }
                     .onEnded { gesture in
                         let end = vm.snapOffset + gesture.predictedEndTranslation.height
+                        let height = geo.size.height
+                        let detents = [(0, SheetDetent.large), (height - vm.mediumSheetHeight, .medium), (height - headerSize.height, .small)]
                         let closest = detents.min { $0.0.distance(to: end).magnitude < $1.0.distance(to: end).magnitude }!.1
                         vm.sheetDetent = vm.isEditing ? .large : closest
                     }
                 )
                 .onReceive(vm.$sheetDetent) { detent in
                     withAnimation(vm.animateDetentChange ? .sheet : .none) {
-                        vm.dragOffset = 0
+                        let height = geo.size.height
+                        let detents = [(0, SheetDetent.large), (height - vm.mediumSheetHeight, .medium), (height - headerSize.height, .small)]
                         vm.snapOffset = detents.first { $0.1 == detent }!.0
+                        vm.dragOffset = 0
                     }
                 }
             }
-            .frame(maxWidth: vm.compact ? .infinity : vm.regularWidth)
+            .frame(maxWidth: vm.maxWidth)
             Spacer(minLength: 0)
         }
         .padding(.top, vm.topPadding)

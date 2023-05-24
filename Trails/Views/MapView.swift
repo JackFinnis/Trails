@@ -33,7 +33,7 @@ struct MapView: UIViewRepresentable {
         let mapView = _MKMapView()
         mapView.delegate = vm
         vm.mapView = mapView
-        vm.refreshTrailOverlays()
+        vm.refreshOverlays()
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             vm.zoomToFilteredTrails(animated: false)
         }

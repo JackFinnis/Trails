@@ -19,7 +19,7 @@ class Trail: NSObject, Identifiable {
     let days: Int
     let colour: Int
     let cycleStatus: TrailCycleStatus
-    let ascent: Double?
+    let ascent: Double
     let country: TrailCountry
     
     let coords: [CLLocationCoordinate2D]
@@ -62,7 +62,7 @@ struct TrailMetadata: Codable {
     let days: Int
     let colour: Int
     let cycleStatus: TrailCycleStatus
-    let ascent: Double?
+    let ascent: Double
     let country: TrailCountry
 }
 

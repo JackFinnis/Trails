@@ -14,27 +14,29 @@ struct TrailView: View {
     let trail: Trail
     
     var body: some View {
-        ScrollView {
+        ScrollView(showsIndicators: false) {
             LazyVStack(alignment: .leading, spacing: 15) {
                 Text(trail.headline)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
+                    .padding(.horizontal)
                 
-                HStack(spacing: 10) {
-                    TrailViewStat(name: "Distance", value: vm.formatDistance(trail.metres, showUnit: true, round: true), systemName: "point.topleft.down.curvedto.point.bottomright.up.fill")
-                    Divider().frame(height: 20)
-                    TrailViewStat(name: "Duration", value: "\(trail.days) days", systemName: "clock")
-                    if let ascent = trail.ascent {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 10) {
+                        TrailViewStat(name: "Distance", value: vm.formatDistance(trail.metres, showUnit: true, round: true), systemName: "point.topleft.down.curvedto.point.bottomright.up.fill")
                         Divider().frame(height: 20)
-                        TrailViewStat(name: "Ascent", value: vm.formatDistance(ascent, showUnit: true, round: false), systemName: "arrow.up")
-                    }
-                    if let metres = vm.getTrips(trail: trail)?.metres, metres > 0 {
+                        TrailViewStat(name: "Duration", value: "\(trail.days) days", systemName: "clock")
                         Divider().frame(height: 20)
-                        let percentageCompleted = Int(trail.metres / metres * 100)
-                        let completed = vm.isCompleted(trail)
-                        TrailViewStat(name: "Completed", value: "\(percentageCompleted)%", systemName: completed ? "checkmark.circle.fill" : "checkmark.circle", tint: completed ? .accentColor : .secondary)
+                        TrailViewStat(name: "Ascent", value: vm.formatDistance(trail.ascent, showUnit: true, round: false), systemName: "arrow.up")
+                        if let metres = vm.getTrips(trail: trail)?.metres, metres > 0 {
+                            Divider().frame(height: 20)
+                            let percentageCompleted = Int(round((metres / trail.metres) * 100))
+                            let completed = vm.isCompleted(trail)
+                            TrailViewStat(name: "Completed", value: "\(percentageCompleted)%", systemName: completed ? "checkmark.circle.fill" : "checkmark.circle", tint: completed ? .accentColor : .secondary)
+                        }
                     }
+                    .padding(.horizontal)
                 }
                 
                 GeometryReader { geo in
@@ -65,12 +67,13 @@ struct TrailView: View {
                     .font(.subheadline.bold())
                 }
                 .frame(height: 60)
+                .padding(.horizontal)
                 
                 TrailImage(trail: trail)
                     .continuousRadius(10)
+                    .padding(.horizontal)
                 Spacer()
             }
-            .padding(.horizontal)
             .onTapGesture {}
             .background {
                 NavigationLink("", isActive: $showWebView) {

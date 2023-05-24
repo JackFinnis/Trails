@@ -18,7 +18,7 @@ struct RootView: View {
     
     var body: some View {
         NavigationView {
-            ZStack(alignment: .topTrailing) {
+            ZStack {
                 MapView()
                     .disabled(vm.mapDisabled)
                     .overlay {
@@ -27,6 +27,7 @@ struct RootView: View {
                         }
                     }
                     .ignoresSafeArea()
+                    .animation(.default, value: vm.mapDisabled)
                 
                 VStack(spacing: 0) {
                     CarbonCopy()
@@ -37,9 +38,16 @@ struct RootView: View {
                         .layoutPriority(1)
                 }
                 
-                if !vm.mapDisabled {
-                    MapButtons()
+                VStack {
+                    HStack {
+                        Spacer()
+                        if !vm.mapDisabled {
+                            MapButtons()
+                        }
+                    }
+                    Spacer()
                 }
+                .animation(.default, value: vm.mapDisabled)
                 
                 Sheet {
                     if vm.searchScope == .Trails || !vm.isSearching {
@@ -63,7 +71,6 @@ struct RootView: View {
                         }
                     }
                 }
-                .sharePopover(items: vm.shareItems, showsSharedAlert: false, isPresented: $vm.showShareSheet)
                 
                 if let trail = vm.selectedTrail {
                     Sheet {
@@ -85,7 +92,23 @@ struct RootView: View {
                             vm.zoomTo(trail)
                         }
                     }
-                    .zIndex(1)
+                }
+                
+                HStack {
+                    VStack {
+                        Spacer()
+                        Group {
+                            if let polyline = vm.selectPolyline {
+                                SelectionBar(polyline: polyline)
+                            } else if vm.isSelecting {
+                                SelectBar()
+                            }
+                        }
+                        .detectSize($vm.selectBarSize)
+                        .frame(maxWidth: vm.maxWidth)
+                        .animation(.sheet, value: vm.selectPolyline)
+                    }
+                    Spacer(minLength: 0)
                 }
             }
             .navigationTitle("Map")
@@ -97,28 +120,20 @@ struct RootView: View {
             }
         }
         .animation(.sheet, value: vm.selectedTrail)
-        .animation(.default, value: vm.mapDisabled)
         .onChange(of: colorScheme) { _ in
-            vm.refreshTrailOverlays()
+            vm.refreshOverlays()
         }
         .onChange(of: horizontalSizeClass) { _ in
             vm.refreshSheetDetent()
         }
         .task {
             vm.refreshSheetDetent()
+            vm.animateDetentChange = true
             if !launchedBefore {
                 launchedBefore = true
                 showWelcomeView = true
             }
         }
-        .sheet(isPresented: $showWelcomeView) {
-            InfoView(welcome: true)
-        }
-        .sheet(isPresented: $showInfoView) {
-            InfoView(welcome: false)
-        }
-        .environmentObject(vm)
-        .navigationViewStyle(.stack)
         .background {
             Text("")
                 .alert("Access Denied", isPresented: $vm.showAuthAlert) {
@@ -129,18 +144,30 @@ struct RootView: View {
                 } message: {
                     Text("\(Constants.name) needs access to your location to show where you are on the map. Please go to Settings > \(Constants.name) > Location and allow access while using the app.")
                 }
+                .sheet(isPresented: $showWelcomeView) {
+                    InfoView(welcome: true)
+                }
             Text("")
                 .alert("🎉 Congratulations! 🎉", isPresented: $vm.showCompletedAlert) {
-                    Button("Review \(Constants.name)") {
-                        Store.writeReview()
-                    }
-                    Button("Rate \(Constants.name)") {
-                        Store.requestRating()
+                    if !vm.shownReviewPrompt {
+                        Button("Review \(Constants.name)") {
+                            vm.shownReviewPrompt = true
+                            Store.writeReview()
+                        }
+                        Button("Rate \(Constants.name)") {
+                            vm.shownReviewPrompt = true
+                            Store.requestRating()
+                        }
                     }
                     Button("Maybe Later") {}
                 } message: {
-                    Text("You have walked the entire length of \(vm.selectedTrail?.name ?? ""); that's over \(vm.formatDistance(vm.selectMetres, showUnit: true, round: true))! Please consider leaving a review or rating \(Constants.name) if the app helped you navigate.")
+                    Text("You have walked the entire length of \(vm.selectedTrail?.name ?? "")! That's over \(vm.formatDistance(vm.selectMetres, showUnit: true, round: true))!\n\(vm.shownReviewPrompt ? "" : "Please consider leaving a review or rating \(Constants.name) if the app helped you navigate.")")
+                }
+                .sheet(isPresented: $showInfoView) {
+                    InfoView(welcome: false)
                 }
         }
+        .environmentObject(vm)
+        .navigationViewStyle(.stack)
     }
 }

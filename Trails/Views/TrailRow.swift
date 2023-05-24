@@ -22,28 +22,30 @@ struct TrailRow: View {
                 TrailImage(trail: trail)
                 
                 VStack(alignment: .leading, spacing: 0) {
-                    Text(trail.name)
-                        .fixedSize(horizontal: false, vertical: true)
-                        .font(.headline)
+                    HStack(alignment: .top, spacing: 5) {
+                        Text(trail.name)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .font(.headline)
+                        Spacer(minLength: 0)
+                        if vm.isFavourite(trail) {
+                            Image(systemName: "bookmark.fill")
+                                .foregroundColor(.secondary)
+                                .font(.subheadline)
+                        }
+                    }
                     
                     HStack(spacing: 0) {
                         if vm.isCompleted(trail) {
                             Image(systemName: "checkmark.circle.fill")
                                 .foregroundColor(.accentColor)
                                 .padding(.trailing, 5)
-                        } else if let metres = vm.getTrips(trail: trail)?.metres, metres > 0 {
-                            Text("\(vm.formatDistance(metres, showUnit: false, round: true))/")
                         }
                         Text("\(vm.formatDistance(trail.metres, showUnit: true, round: true)) • \(trail.days) days")
-                        
-                        if let ascent = trail.ascent {
-                            Text(" • ")
-                            Image(systemName: "arrow.up")
-                                .padding(.trailing, 2)
-                                .font(.caption2.weight(.bold))
-                            Text("\(vm.formatDistance(ascent, showUnit: true, round: false))")
-                        }
-                        Spacer(minLength: 0)
+                        Text(" • ")
+                        Image(systemName: "arrow.up")
+                            .padding(.trailing, 2)
+                            .font(.caption2.weight(.bold))
+                        Text("\(vm.formatDistance(trail.ascent, showUnit: true, round: false))")
                     }
                     .font(.subheadline.bold())
                     .foregroundColor(.secondary)
@@ -52,13 +54,6 @@ struct TrailRow: View {
                     Text(trail.headline)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
-                }
-                .overlay(alignment: .topTrailing) {
-                    if vm.isFavourite(trail) {
-                        Image(systemName: "bookmark.fill")
-                            .foregroundColor(.secondary)
-                            .font(.subheadline)
-                    }
                 }
                 .padding(10)
             }

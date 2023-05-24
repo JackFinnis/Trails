@@ -17,10 +17,13 @@ struct SelectionBar: View {
     let polyline: MKPolyline
     
     var description: String {
-        guard vm.selectPins.count == 2 else { return "" }
-        let start = vm.selectPins[0].mapItem.placemark
-        let end = vm.selectPins[1].mapItem.placemark
-        return (start.subLocality ?? start.name ?? "") + " to " + (end.subLocality ?? end.name ?? "")
+        guard let startPin = vm.startPin, let endPin = vm.endPin else { return "" }
+        let start = startPin.subtitle ?? startPin.title ?? ""
+        let end = endPin.subtitle ?? endPin.title ?? ""
+        if start.isEmpty { return end }
+        if end.isEmpty { return start }
+        if start == end { return start }
+        return start + " to " + end
     }
     
     var body: some View {
@@ -54,47 +57,53 @@ struct SelectionBar: View {
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             }
-            
-            Spacer()
-            HStack(spacing: 15) {
-                Menu {
-                    if vm.canComplete {
-                        Button {
-                            vm.completeSelectPolyline()
-                        } label: {
-                            Label("Mark as Completed", systemImage: "checkmark.circle")
-                        }
+            Spacer(minLength: 0)
+            Menu {
+                if vm.canComplete {
+                    Button {
+                        vm.completeSelectPolyline()
+                    } label: {
+                        Label("Mark as Completed", systemImage: "checkmark.circle")
                     }
-                    if vm.canUncomplete {
-                        Button(role: .destructive) {
-                            vm.uncompleteSelectPolyline()
-                        } label: {
-                            Label("Remove from Completed", systemImage: "xmark")
-                        }
+                }
+                if vm.canUncomplete {
+                    Button(role: .destructive) {
+                        vm.uncompleteSelectPolyline()
+                    } label: {
+                        Label("Remove from Completed", systemImage: "minus.circle")
                     }
-                } label: {
-                    Image(systemName: "ellipsis.circle")
-                        .font(.icon)
                 }
-                .onTapGesture {
-                    tappedMenu = .now
-                }
-                
-                Button {
+                Divider()
+                Button(role: .destructive) {
                     vm.stopSelecting()
                 } label: {
-                    Image(systemName: "xmark")
-                        .font(.icon)
+                    Label("Stop Selecting", systemImage: "xmark")
                 }
+                Button {
+                    vm.resetSelecting()
+                } label: {
+                    Label("Select New Section", systemImage: "point.topleft.down.curvedto.point.bottomright.up")
+                }
+            } label: {
+                Image(systemName: "ellipsis.circle")
+                    .font(.icon)
             }
+            .onTapGesture {
+                tappedMenu = .now
+            }
+            .padding(.horizontal, 5)
         }
         .padding(10)
-        .padding(.trailing, 5)
-        .contentShape(Rectangle())
+        .blurBackground(prominentShadow: true)
         .onTapGesture {
             guard tappedMenu.distance(to: .now) > 1 else { return }
             vm.zoomTo(polyline, extraPadding: true)
         }
+        .onDismiss {
+            vm.resetSelecting()
+        }
+        .padding(10)
+        .transition(.move(edge: .bottom).combined(with: .opacity))
     }
 }
 

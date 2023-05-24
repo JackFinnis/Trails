@@ -310,8 +310,6 @@
 		0416F18F299EFB9C00B90E68 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				0416F190299EFB9C00B90E68 /* SelectBar.swift */,
-				04CEDFE029A2EADB00810005 /* SelectionBar.swift */,
 				0416F155299E91B000B90E68 /* TrailsApp.swift */,
 				0416F192299EFB9C00B90E68 /* RootView.swift */,
 				0416F191299EFB9C00B90E68 /* MapView.swift */,
@@ -321,6 +319,8 @@
 				04E0E90729EF2BBD00EB08CC /* TrailView.swift */,
 				04E0E91529F0302500EB08CC /* TrailImage.swift */,
 				04E0E91329EF717600EB08CC /* SearchView.swift */,
+				0416F190299EFB9C00B90E68 /* SelectBar.swift */,
+				04CEDFE029A2EADB00810005 /* SelectionBar.swift */,
 				04CEDFDA29A2E60400810005 /* InfoView.swift */,
 				04E0E90029EEDF9D00EB08CC /* Sheet.swift */,
 				0421202729C91CDC003DE52F /* Web */,
