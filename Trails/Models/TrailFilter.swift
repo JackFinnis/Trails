@@ -8,7 +8,7 @@
 import Foundation
 
 enum TrailFilter: Hashable {
-    static let allCases = [TrailFilter.completed, .favourite, .country(.england), .country(.ni), .country(.wales), .country(.scotland)]
+    static let allCases = [TrailFilter.completed, .favourite] + TrailCountry.allCases.map { .country($0) }
     
     case completed
     case favourite

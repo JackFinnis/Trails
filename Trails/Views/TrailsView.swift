@@ -18,7 +18,6 @@ struct TrailsView: View {
                     .font(.headline)
                     .animation(.none, value: vm.filteredTrails.count)
                     .onTapGesture {
-                        vm.setRect(vm.filteredTrails.rect)
                         withAnimation(.sheet) {
                             vm.sheetDetent = .medium
                         }

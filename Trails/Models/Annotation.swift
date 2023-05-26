@@ -32,7 +32,7 @@ class Annotation: NSObject {
 extension Annotation: MKAnnotation {
     var placemark: CLPlacemark { mapItem.placemark }
     var title: String? { placemark.thoroughfare ?? placemark.name }
-    var subtitle: String? { [placemark.subLocality, placemark.locality, placemark.subAdministrativeArea].compactMap { $0 }.joined(separator: ", ") }
+    var subtitle: String? { [placemark.subLocality, placemark.locality].compactMap { $0 }.joined(separator: ", ") }
     var coordinate: CLLocationCoordinate2D { mapItem.placemark.coordinate }
 }
 
