@@ -37,6 +37,7 @@ class ViewModel: NSObject, ObservableObject {
     }}
     
     // Filter
+    var isFiltering: Bool { trailFilter != nil || isSearching }
     @Published var filteredTrails = [Trail]()
     @Published var trailFilter: TrailFilter? { didSet {
         filterTrails()
@@ -52,6 +53,7 @@ class ViewModel: NSObject, ObservableObject {
     
     // Search
     var searchBar: UISearchBar?
+    var isEditing = false
     @Published var isSearching = false
     @Published var searchText = "" { didSet {
         searchBar?.text = searchText
@@ -60,7 +62,9 @@ class ViewModel: NSObject, ObservableObject {
     
     // Select Section
     var selectBarSize = CGSize()
-    @Published var isSelecting = false
+    @Published var isSelecting = false { didSet {
+        refreshCompass()
+    }}
     @Published var selectError = false
     @Published var canUncomplete = false
     @Published var canComplete = false
@@ -76,16 +80,24 @@ class ViewModel: NSObject, ObservableObject {
     
     // Sheet
     @Published var headerSize = CGSize()
-    @Published var sheetDetent = SheetDetent.small
+    @Published var sheetDetent = SheetDetent.small { didSet {
+        refreshCompass()
+        if sheetDetent != .large && isEditing {
+            stopSearching()
+        }
+    }}
     
     // Dimensions
     let mediumDetentHeight = 270.0
     let regularSheetWidth = 320.0
+    var unsafeWindowSize: CGSize {
+        mapView?.layoutMarginsGuide.layoutFrame.size ?? .zero
+    }
     func isCompact(_ size: CGSize) -> Bool {
         size.width < 500
     }
     func isMapDisabled(_ size: CGSize) -> Bool {
-        sheetDetent == .large && isCompact(size)
+        sheetDetent == .large && isCompact(size) && !isSelecting
     }
     func getMaxSheetWidth(_ size: CGSize) -> CGFloat {
         isCompact(size) ? .infinity : regularSheetWidth
@@ -107,6 +119,11 @@ class ViewModel: NSObject, ObservableObject {
             return mediumDetentHeight
         case .small:
             return headerSize.height
+        }
+    }
+    func refreshCompass() {
+        UIView.animate(withDuration: 0.3) {
+            self.mapView?.compass?.alpha = self.isMapDisabled(self.unsafeWindowSize) ? 0 : 1
         }
     }
     
@@ -206,7 +223,8 @@ class ViewModel: NSObject, ObservableObject {
         let geometry = collection.features.first!.geometry!
         switch geometry {
         case .lineString(let lineString):
-            let n = Int(max(1, lineString.coordinates.count / 100))
+            let maxPoints = 200
+            let n = max(1, Int(lineString.coordinates.count / maxPoints))
             let locations = lineString.coordinates.map(\.location).enumerated().compactMap { index, element in index % n == 0 ? element : nil }
             trail.elevationProfile = getElevationProfile(locations: locations, distance: trail.metres)
         default: return
@@ -264,14 +282,7 @@ class ViewModel: NSObject, ObservableObject {
         refreshOverlays()
         if let trail {
             loadElevationProfile(trail: trail)
-            stopEditing()
-            if animated {
-                withAnimation(.sheet) {
-                    sheetDetent = .medium
-                }
-            } else {
-                sheetDetent = .medium
-            }
+            stopEditing(animated: animated)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 self.zoomTo(trail, animated: animated)
             }
@@ -498,6 +509,7 @@ extension ViewModel {
     }
     
     func newSelectCoord(coord: CLLocationCoordinate2D) {
+        guard Date.now.timeIntervalSince(annotationAddedDate) > 0.5 else { return }
         reverseGeocode(coord: coord) { placemark in
             self.newSelectPin(annotation: Annotation(type: .select, placemark: placemark))
         }
@@ -850,11 +862,8 @@ extension ViewModel: MKMapViewDelegate {
 // MARK: - UISearchBarDelegate
 extension ViewModel: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        stopEditing()
         zoomToFilteredTrails()
-        withAnimation(.sheet) {
-            sheetDetent = .medium
-        }
+        stopEditing()
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
@@ -874,6 +883,7 @@ extension ViewModel: UISearchBarDelegate {
     }
     
     func startEditing() {
+        isEditing = true
         searchBar?.becomeFirstResponder()
         searchBar?.setShowsCancelButton(true, animated: true)
         withAnimation(.sheet) {
@@ -882,10 +892,18 @@ extension ViewModel: UISearchBarDelegate {
         }
     }
     
-    func stopEditing() {
+    func stopEditing(animated: Bool = true) {
+        isEditing = false
         searchBar?.resignFirstResponder()
         if let cancelButton = searchBar?.value(forKey: "cancelButton") as? UIButton {
             cancelButton.isEnabled = true
+        }
+        if animated {
+            withAnimation(.sheet) {
+                sheetDetent = .medium
+            }
+        } else {
+            sheetDetent = .medium
         }
     }
     
@@ -894,7 +912,6 @@ extension ViewModel: UISearchBarDelegate {
         stopEditing()
         searchBar?.setShowsCancelButton(false, animated: false)
         withAnimation(.sheet) {
-            sheetDetent = .medium
             isSearching = false
         }
     }

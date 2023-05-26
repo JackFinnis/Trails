@@ -14,6 +14,8 @@ struct TrailView: View {
     let trail: Trail
     
     var body: some View {
+        Divider()
+            .padding(.leading)
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 15) {
                 Text(trail.headline)
@@ -77,9 +79,9 @@ struct TrailView: View {
                     ElevationChart(profile: profile)
                         .padding(.horizontal)
                 }
-                
-                Spacer()
             }
+            .padding(.vertical)
+            .contentShape(Rectangle())
             .onTapGesture {}
             .background {
                 NavigationLink("", isActive: $showWebView) {

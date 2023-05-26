@@ -17,14 +17,11 @@ class Annotation: NSObject {
     let type: AnnotationType
     let mapItem: MKMapItem
     
-    var placemark: CLPlacemark { mapItem.placemark }
-    var name: String { placemark.thoroughfare ?? placemark.subLocality ?? placemark.name ?? "" }
-    
     init(type: AnnotationType, mapItem: MKMapItem) {
         self.type = type
         self.mapItem = mapItem
         super.init()
-        mapItem.name = name
+        mapItem.name = title ?? ""
     }
     
     convenience init(type: AnnotationType, placemark: CLPlacemark) {
@@ -33,7 +30,24 @@ class Annotation: NSObject {
 }
 
 extension Annotation: MKAnnotation {
-    var title: String? { name }
-    var subtitle: String? { placemark.thoroughfare == nil ? placemark.locality : placemark.subLocality }
+    var placemark: CLPlacemark { mapItem.placemark }
+    var title: String? { placemark.thoroughfare ?? placemark.name }
+    var subtitle: String? { [placemark.subLocality, placemark.locality, placemark.subAdministrativeArea].compactMap { $0 }.joined(separator: ", ") }
     var coordinate: CLLocationCoordinate2D { mapItem.placemark.coordinate }
 }
+
+//    print("name", placemark.name)
+//    print("thoroughfare", placemark.thoroughfare)
+//    print("subThoroughfare", placemark.subThoroughfare)
+//    print("locality", placemark.locality)
+//    print("subLocality", placemark.subLocality)
+//    print("administrativeArea", placemark.administrativeArea)
+//    print("subAdministrativeArea", placemark.subAdministrativeArea)
+//
+//    name Optional("Northumberland National Park")
+//    thoroughfare Optional("Old Church")
+//    subThoroughfare nil
+//    locality Optional("Morpeth")
+//    subLocality Optional("Harbottle CP")
+//    administrativeArea Optional("England")
+//    subAdministrativeArea Optional("Northumberland")

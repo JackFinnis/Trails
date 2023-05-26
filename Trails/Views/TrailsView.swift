@@ -14,7 +14,7 @@ struct TrailsView: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 15) {
-                Text(vm.filteredTrails.count.formatted(singular: "Trail") + (vm.trailFilter == nil ? "" : " Found"))
+                Text(vm.filteredTrails.count.formatted(singular: "Trail") + (vm.isFiltering ? " Found" : ""))
                     .font(.headline)
                     .animation(.none, value: vm.filteredTrails.count)
                     .onTapGesture {
