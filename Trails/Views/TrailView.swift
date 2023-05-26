@@ -14,7 +14,7 @@ struct TrailView: View {
     let trail: Trail
     
     var body: some View {
-        ScrollView(showsIndicators: false) {
+        ScrollView {
             LazyVStack(alignment: .leading, spacing: 15) {
                 Text(trail.headline)
                     .font(.subheadline)
@@ -72,6 +72,12 @@ struct TrailView: View {
                 TrailImage(trail: trail)
                     .continuousRadius(10)
                     .padding(.horizontal)
+                
+                if let profile = trail.elevationProfile {
+                    ElevationChart(profile: profile)
+                        .padding(.horizontal)
+                }
+                
                 Spacer()
             }
             .onTapGesture {}
@@ -106,7 +112,7 @@ struct TrailViewButton: View {
             Text(title)
                 .font(.footnote.bold())
         }
-        .frame(width: (geo.size.width - 30)/4, height: geo.size.height)
+        .frame(width: (max(0, geo.size.width - 30))/4, height: geo.size.height)
         .background(Color(colorScheme == .light ? .tertiarySystemFill : .quaternarySystemFill))
         .continuousRadius(10)
     }

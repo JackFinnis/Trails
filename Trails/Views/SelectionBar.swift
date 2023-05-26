@@ -18,8 +18,8 @@ struct SelectionBar: View {
     
     var description: String {
         guard let startPin = vm.startPin, let endPin = vm.endPin else { return "" }
-        let start = startPin.subtitle ?? startPin.title ?? ""
-        let end = endPin.subtitle ?? endPin.title ?? ""
+        let start = startPin.title ?? startPin.subtitle ?? ""
+        let end = endPin.title ?? endPin.subtitle ?? ""
         if start.isEmpty { return end }
         if end.isEmpty { return start }
         if start == end { return start }

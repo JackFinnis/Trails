@@ -10,12 +10,12 @@ import MapKit
 
 extension CLLocationCoordinate2D: Equatable, Hashable {
     public static func == (lhs: CLLocationCoordinate2D, rhs: CLLocationCoordinate2D) -> Bool {
-        lhs.latitude.equalTo(rhs.latitude, to: 5) && lhs.longitude.equalTo(rhs.longitude, to: 5)
+        lhs.latitude.equalTo(rhs.latitude, to: 4) && lhs.longitude.equalTo(rhs.longitude, to: 4)
     }
     
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(latitude.rounded(to: 5))
-        hasher.combine(longitude.rounded(to: 5))
+        hasher.combine(latitude.rounded(to: 4))
+        hasher.combine(longitude.rounded(to: 4))
     }
     
     var location: CLLocation {

@@ -9,11 +9,7 @@ import UIKit
 
 struct Haptics {
     static func tap() {
-        UIImpactFeedbackGenerator(style: .light).impactOccurred()
-    }
-    
-    static func impact() {
-        UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
     }
     
     static func success() {

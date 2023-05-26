@@ -25,6 +25,7 @@ class Trail: NSObject, Identifiable {
     let coords: [CLLocationCoordinate2D]
     let locations: [CLLocation]
     let polyline: MKPolyline
+    var elevationProfile: ElevationProfile?
     
     init(metadata: TrailMetadata, polyline: MKPolyline) {
         self.polyline = polyline
@@ -77,4 +78,12 @@ enum TrailCycleStatus: String, Codable {
     case no
     case yes
     case sections
+}
+
+struct ElevationProfile {
+    let points: [CGPoint]
+    let locations: [CLLocation]
+    let maxElevation: Double
+    let minElevation: Double
+    let distance: Double
 }

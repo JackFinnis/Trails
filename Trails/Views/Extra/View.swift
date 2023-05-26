@@ -67,28 +67,26 @@ struct RoundedCorners: Shape {
 }
 
 struct OnDismiss: ViewModifier {
-    @State var offset = 0.0
+    @GestureState var translation = 0.0
     
     let onDismiss: () -> Void
     
     func body(content: Content) -> some View {
         content
-            .offset(y: offset)
+            .offset(y: translation)
+            .animation(.sheet, value: translation == 0)
             .gesture(DragGesture(minimumDistance: 0)
-                .onChanged { gesture in
+                .updating($translation) { gesture, state, transaction in
                     let translation = gesture.translation.height
                     if translation > 0 {
-                        offset = translation
+                        state = translation
                     } else {
-                        offset = -sqrt(-translation)
+                        state = -sqrt(-translation)
                     }
                 }
                 .onEnded { value in
                     if value.predictedEndTranslation.height > 20 {
                         onDismiss()
-                    }
-                    withAnimation {
-                        offset = 0
                     }
                 }
             )

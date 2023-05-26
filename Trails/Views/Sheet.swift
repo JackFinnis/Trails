@@ -8,7 +8,7 @@
 import SwiftUI
 import MapKit
 
-enum SheetDetent {
+enum SheetDetent: CaseIterable {
     case large
     case medium
     case small
@@ -16,77 +16,77 @@ enum SheetDetent {
 
 struct Sheet<Content: View, Header: View>: View {
     @EnvironmentObject var vm: ViewModel
-    @State var headerSize = CGSize()
+    @GestureState var translation = 0.0
+    
+    let isPresented: Bool
     
     @ViewBuilder let content: () -> Content
     @ViewBuilder let header: () -> Header
     
     var body: some View {
-        HStack {
-            GeometryReader { geo in
-                ZStack(alignment: .top) {
-                    RoundedCorners(radius: 10, corners: [.topLeft, .topRight])
-                        .fill(.thickMaterial)
-                        .ignoresSafeArea()
-                        .shadow(color: Color.black.opacity(0.1), radius: 5)
+        GeometryReader { geo in
+            HStack(spacing: 0) {
+                VStack(spacing: 0) {
+                    let spacerHeight = vm.getSpacerHeight(geo.size, detent: vm.sheetDetent)
+                    Spacer()
+                        .frame(height: max(isPresented ? 1 : geo.size.height, spacerHeight + translation))
                     
-                    VStack(spacing: 0) {
-                        VStack(spacing: 0) {
-                            DraggableBar()
-                                .padding(.top, 5)
-                                .padding(.bottom, 7)
-                            header()
-                                .padding(.horizontal)
-                                .padding(.bottom, 17)
-                        }
-                        .detectSize($headerSize)
+                    ZStack(alignment: .top) {
+                        RoundedCorners(radius: 10, corners: [.topLeft, .topRight])
+                            .fill(.thickMaterial)
+                            .ignoresSafeArea()
+                            .shadow(color: Color.black.opacity(0.1), radius: 5)
                         
-                        content()
-                            .opacity(((geo.size.height - headerSize.height) - (vm.snapOffset + vm.dragOffset))/50.0)
+                        VStack(spacing: 0) {
+                            VStack(spacing: 0) {
+                                DraggableBar()
+                                    .padding(.top, 5)
+                                    .padding(.bottom, 7)
+                                header()
+                                    .padding(.horizontal)
+                                    .padding(.bottom, 17)
+                            }
+                            .detectSize($vm.headerSize)
+                            
+                            content()
+                                .opacity((vm.getSpacerHeight(geo.size, detent: .small) - (spacerHeight + translation))/50.0)
+                        }
                     }
                 }
-                .safeAreaInset(edge: .bottom, spacing: 0) {
-                    Spacer(minLength: 0)
-                        .frame(height: vm.safeAreaInset)
-                }
-                .opacity(vm.isSelecting ? 0 : 1)
-                .offset(y: (vm.isSelecting ? vm.sheetHeight : 0) + vm.snapOffset + vm.dragOffset)
+                .animation(.sheet, value: translation == 0)
                 .gesture(DragGesture(minimumDistance: 1)
-                    .onChanged { gesture in
-                        let end = vm.snapOffset + gesture.translation.height
-                        let bottom = geo.size.height - headerSize.height
-                        if end < 0 {
-                            vm.dragOffset = -vm.snapOffset - sqrt(-end)
-                        } else if vm.isEditing {
-                            vm.dragOffset = vm.snapOffset + sqrt(end)
-                        } else if end > bottom {
-                            vm.dragOffset = bottom - vm.snapOffset + sqrt(end - bottom)
+                    .updating($translation) { gesture, state, transaction in
+                        let current = vm.getSpacerHeight(geo.size, detent: vm.sheetDetent)
+                        let end = current + gesture.translation.height
+                        let min = vm.getSpacerHeight(geo.size, detent: .large)
+                        let max = vm.getSpacerHeight(geo.size, detent: .small)
+                        if end < min {
+                            state = (min - sqrt(min.distance(to: end).magnitude)) - current
+                        } else if end > max {
+                            state = (max + sqrt(max.distance(to: end).magnitude)) - current
                         } else {
-                            vm.dragOffset = gesture.translation.height
+                            state = gesture.translation.height
                         }
                     }
                     .onEnded { gesture in
-                        let end = vm.snapOffset + gesture.predictedEndTranslation.height
-                        let height = geo.size.height
-                        let detents = [(0, SheetDetent.large), (height - vm.mediumSheetHeight, .medium), (height - headerSize.height, .small)]
-                        let closest = detents.min { $0.0.distance(to: end).magnitude < $1.0.distance(to: end).magnitude }!.1
-                        vm.sheetDetent = vm.isEditing ? .large : closest
+                        let current = vm.getSpacerHeight(geo.size, detent: vm.sheetDetent)
+                        let end = current + gesture.predictedEndTranslation.height
+                        let spacerHeights = SheetDetent.allCases.map { ($0, vm.getSpacerHeight(geo.size, detent: $0)) }
+                        withAnimation(.sheet) {
+                            vm.sheetDetent = spacerHeights.min {
+                                $0.1.distance(to: end).magnitude < $1.1.distance(to: end).magnitude
+                            }!.0
+                        }
                     }
                 )
-                .onReceive(vm.$sheetDetent) { detent in
-                    withAnimation(vm.animateDetentChange ? .sheet : .none) {
-                        let height = geo.size.height
-                        let detents = [(0, SheetDetent.large), (height - vm.mediumSheetHeight, .medium), (height - headerSize.height, .small)]
-                        vm.snapOffset = detents.first { $0.1 == detent }!.0
-                        vm.dragOffset = 0
-                    }
-                }
+                .frame(maxWidth: vm.getMaxSheetWidth(geo.size))
+                .padding(.horizontal, vm.getHorizontalSheetPadding(geo.size))
+                Spacer(minLength: 0)
             }
-            .frame(maxWidth: vm.maxWidth)
-            Spacer(minLength: 0)
         }
-        .padding(.top, vm.topPadding)
-        .padding(.horizontal, vm.horizontalPadding)
         .transition(.move(edge: .bottom))
+        .onChange(of: vm.headerSize) { newValue in
+            print(newValue.height)
+        }
     }
 }

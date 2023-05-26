@@ -16,7 +16,6 @@ struct TrailRow: View {
     var body: some View {
         Button {
             vm.selectTrail(trail)
-            vm.sheetDetent = .medium
         } label: {
             VStack(alignment: .leading, spacing: 0) {
                 TrailImage(trail: trail)

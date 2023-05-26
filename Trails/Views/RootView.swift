@@ -8,8 +8,7 @@
 import SwiftUI
 
 struct RootView: View {
-    @Environment(\.horizontalSizeClass) var horizontalSizeClass
-    @Environment(\.scenePhase) var scenePhase
+    @Environment(\.scenePhase) var scenePhase//todo
     @Environment(\.colorScheme) var colorScheme
     @AppStorage("launchedBefore") var launchedBefore = false
     @StateObject var vm = ViewModel.shared
@@ -19,15 +18,13 @@ struct RootView: View {
     var body: some View {
         NavigationView {
             ZStack {
-                MapView()
-                    .disabled(vm.mapDisabled)
-                    .overlay {
-                        if vm.mapDisabled {
-                            Color.black.opacity(0.1)
-                        }
-                    }
-                    .ignoresSafeArea()
-                    .animation(.default, value: vm.mapDisabled)
+                GeometryReader { geo in
+                    let disabled = vm.isMapDisabled(geo.size)
+                    MapView()
+                        .disabled(disabled)
+                    Color.black.opacity(disabled ? 0.1 : 0)
+                }
+                .ignoresSafeArea()
                 
                 VStack(spacing: 0) {
                     CarbonCopy()
@@ -38,23 +35,21 @@ struct RootView: View {
                         .layoutPriority(1)
                 }
                 
-                VStack {
-                    HStack {
-                        Spacer()
-                        if !vm.mapDisabled {
-                            MapButtons()
+                GeometryReader { geo in
+                    let disabled = vm.isMapDisabled(geo.size)
+                    VStack {
+                        HStack {
+                            Spacer()
+                            if !disabled {
+                                MapButtons()
+                            }
                         }
+                        Spacer()
                     }
-                    Spacer()
                 }
-                .animation(.default, value: vm.mapDisabled)
                 
-                Sheet {
-                    if vm.searchScope == .Trails || !vm.isSearching {
-                        TrailsView()
-                    } else {
-                        SearchView()
-                    }
+                Sheet(isPresented: vm.selectedTrail == nil) {
+                    TrailsView()
                 } header: {
                     HStack {
                         SearchBar()
@@ -73,11 +68,12 @@ struct RootView: View {
                 }
                 
                 if let trail = vm.selectedTrail {
-                    Sheet {
+                    Sheet(isPresented: !vm.isSelecting) {
                         TrailView(trail: trail)
                     } header: {
                         HStack(alignment: .firstTextBaseline) {
                             Text(trail.name)
+                                .fixedSize(horizontal: false, vertical: true)
                                 .font(.title2.weight(.semibold))
                             Spacer()
                             Button {
@@ -94,21 +90,23 @@ struct RootView: View {
                     }
                 }
                 
-                HStack {
-                    VStack {
-                        Spacer()
-                        Group {
-                            if let polyline = vm.selectPolyline {
-                                SelectionBar(polyline: polyline)
-                            } else if vm.isSelecting {
-                                SelectBar()
+                GeometryReader { geo in
+                    HStack {
+                        VStack {
+                            Spacer()
+                            Group {
+                                if let polyline = vm.selectPolyline {
+                                    SelectionBar(polyline: polyline)
+                                } else if vm.isSelecting {
+                                    SelectBar()
+                                }
                             }
+                            .detectSize($vm.selectBarSize)
+                            .frame(maxWidth: vm.getMaxSheetWidth(geo.size))
+                            .animation(.sheet, value: vm.selectPolyline)
                         }
-                        .detectSize($vm.selectBarSize)
-                        .frame(maxWidth: vm.maxWidth)
-                        .animation(.sheet, value: vm.selectPolyline)
+                        Spacer(minLength: 0)
                     }
-                    Spacer(minLength: 0)
                 }
             }
             .navigationTitle("Map")
@@ -119,16 +117,12 @@ struct RootView: View {
                 }
             }
         }
+        .animation(.sheet, value: vm.isSelecting)
         .animation(.sheet, value: vm.selectedTrail)
         .onChange(of: colorScheme) { _ in
             vm.refreshOverlays()
         }
-        .onChange(of: horizontalSizeClass) { _ in
-            vm.refreshSheetDetent()
-        }
         .task {
-            vm.refreshSheetDetent()
-            vm.animateDetentChange = true
             if !launchedBefore {
                 launchedBefore = true
                 showWelcomeView = true
@@ -144,27 +138,38 @@ struct RootView: View {
                 } message: {
                     Text("\(Constants.name) needs access to your location to show where you are on the map. Please go to Settings > \(Constants.name) > Location and allow access while using the app.")
                 }
-                .sheet(isPresented: $showWelcomeView) {
-                    InfoView(welcome: true)
-                }
             Text("")
-                .alert("🎉 Congratulations! 🎉", isPresented: $vm.showCompletedAlert) {
+                .alert("Congratulations!", isPresented: $vm.showCompletedAlert) {
                     if !vm.shownReviewPrompt {
                         Button("Review \(Constants.name)") {
-                            vm.shownReviewPrompt = true
                             Store.writeReview()
                         }
                         Button("Rate \(Constants.name)") {
-                            vm.shownReviewPrompt = true
                             Store.requestRating()
                         }
                     }
                     Button("Maybe Later") {}
                 } message: {
-                    Text("You have walked the entire length of \(vm.selectedTrail?.name ?? "")! That's over \(vm.formatDistance(vm.selectMetres, showUnit: true, round: true))!\n\(vm.shownReviewPrompt ? "" : "Please consider leaving a review or rating \(Constants.name) if the app helped you navigate.")")
+                    Text("You have walked the entire length of \(vm.selectedTrail?.name ?? "")! That's over \(vm.formatDistance(vm.selectMetres, showUnit: true, round: true))!\(vm.shownReviewPrompt ? "" : "\nPlease consider leaving a review or rating \(Constants.name) if the app helped you navigate.")")
                 }
+            Text("")
+                .alert("No Connection", isPresented: $vm.showWiFiAlert) {
+                    Button("Dismiss", role: .cancel) {}
+                    Button("Open Settings") {
+                        vm.openSettings()
+                    }
+                } message: {
+                    Text("Check your internet connection and try again")
+                }
+        }
+        .background {
+            Text("")
                 .sheet(isPresented: $showInfoView) {
                     InfoView(welcome: false)
+                }
+            Text("")
+                .sheet(isPresented: $showWelcomeView) {
+                    InfoView(welcome: true)
                 }
         }
         .environmentObject(vm)

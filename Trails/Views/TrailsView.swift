@@ -13,52 +13,54 @@ struct TrailsView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            if !vm.isSearching {
-                HStack(spacing: 15) {
-                    Text(vm.filteredTrails.count.formatted(singular: "Trail") + (vm.trailFilter == nil ? "" : " Found"))
-                        .font(.headline)
-                        .onTapGesture {
-                            vm.setRect(vm.filteredTrails.rect)
+            HStack(spacing: 15) {
+                Text(vm.filteredTrails.count.formatted(singular: "Trail") + (vm.trailFilter == nil ? "" : " Found"))
+                    .font(.headline)
+                    .animation(.none, value: vm.filteredTrails.count)
+                    .onTapGesture {
+                        vm.setRect(vm.filteredTrails.rect)
+                        withAnimation(.sheet) {
+                            vm.sheetDetent = .medium
                         }
-                    Spacer()
-                    Menu {
-                        Picker("", selection: $vm.trailFilter.animation()) {
-                            Text("No Filter")
-                                .tag(nil as TrailFilter?)
-                            ForEach(TrailFilter.allCases, id: \.self) { filter in
-                                Label(filter.name, systemImage: filter.systemName ?? "")
-                                    .tag(filter as TrailFilter?)
+                    }
+                Spacer()
+                Menu {
+                    Picker("", selection: $vm.trailFilter.animation()) {
+                        Text("No Filter")
+                            .tag(nil as TrailFilter?)
+                        ForEach(TrailFilter.allCases, id: \.self) { filter in
+                            Label(filter.name, systemImage: filter.systemName ?? "")
+                                .tag(filter as TrailFilter?)
+                        }
+                    }
+                } label: {
+                    Image(systemName: "line.3.horizontal.decrease.circle" + (vm.trailFilter == nil ? "" : ".fill"))
+                        .font(.icon)
+                }
+                Menu {
+                    Picker("", selection: $vm.sortBy.animation()) {
+                        ForEach(TrailSort.allCases, id: \.self) { sortBy in
+                            if sortBy == vm.sortBy {
+                                Label(sortBy.rawValue, systemImage: vm.ascending ? "chevron.up" : "chevron.down")
+                            } else {
+                                Text(sortBy.rawValue)
                             }
                         }
-                    } label: {
-                        Image(systemName: "line.3.horizontal.decrease.circle" + (vm.trailFilter == nil ? "" : ".fill"))
-                            .font(.icon)
                     }
-                    Menu {
-                        Picker("", selection: $vm.sortBy.animation()) {
-                            ForEach(TrailSort.allCases, id: \.self) { sortBy in
-                                if sortBy == vm.sortBy {
-                                    Label(sortBy.rawValue, systemImage: vm.ascending ? "chevron.up" : "chevron.down")
-                                } else {
-                                    Text(sortBy.rawValue)
-                                }
-                            }
-                        }
-                    } label: {
-                        Image(systemName: "arrow.up.arrow.down")
-                            .font(.icon)
-                            .rotationEffect(angle)
-                            .rotation3DEffect(vm.ascending ? .zero : .radians(.pi), axis: (1, 0, 0))
-                    }
-                    .onChange(of: vm.sortBy) { _ in
-                        withAnimation {
-                            angle += .radians(.pi)
-                        }
+                } label: {
+                    Image(systemName: "arrow.up.arrow.down")
+                        .font(.icon)
+                        .rotationEffect(angle)
+                        .rotation3DEffect(vm.ascending ? .zero : .radians(.pi), axis: (1, 0, 0))
+                }
+                .onChange(of: vm.sortBy) { _ in
+                    withAnimation {
+                        angle += .radians(.pi)
                     }
                 }
-                .padding(.horizontal)
-                .frame(height: 35, alignment: .top)
             }
+            .padding(.horizontal)
+            .frame(height: 35, alignment: .top)
             
             Divider()
                 .padding(.leading)

@@ -35,7 +35,7 @@ struct InfoView: View {
                     VStack(alignment: .leading, spacing: 15) {
                         InfoRow(systemName: "figure.walk", title: "Adventure Awaits", description: "Discover 44 long-distance walking trails through the UK's most breathtaking landscapes.")
                         InfoRow(systemName: "point.topleft.down.curvedto.point.bottomright.up", title: "Plan Your Trip", description: "Measure the length of your next trip.")
-                        InfoRow(systemName: "magnifyingglass", title: "Locate Amenities", description: "Find B&Bs, cafés and shops en route.")
+                        InfoRow(systemName: "arrow.triangle.turn.up.right.circle", title: "Get Directions", description: "Long press on the map location.")
                         InfoRow(systemName: "checkmark.circle", title: "Track Your Progress", description: "Mark sections of a trail as completed.")
                         InfoRow(systemName: "ruler", title: "Distance Unit") {
                             Picker("", selection: $vm.metric) {
@@ -104,7 +104,8 @@ struct InfoView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    if welcome || !vm.compact {
+                    let size = vm.mapView?.safeAreaLayoutGuide.layoutFrame.size ?? .zero
+                    if welcome || !vm.isCompact(size) {
                         Text("")
                     } else {
                         DraggableTitle()

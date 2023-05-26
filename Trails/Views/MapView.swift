@@ -34,8 +34,12 @@ struct MapView: UIViewRepresentable {
         mapView.delegate = vm
         vm.mapView = mapView
         vm.refreshOverlays()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            vm.zoomToFilteredTrails(animated: false)
+        if let trail = vm.selectedTrail {
+            vm.selectTrail(trail, animated: false)
+        } else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                vm.zoomToFilteredTrails(animated: false)
+            }
         }
         
         mapView.showsUserLocation = true
@@ -45,7 +49,7 @@ struct MapView: UIViewRepresentable {
         
         mapView.register(MKPinAnnotationView.self, forAnnotationViewWithReuseIdentifier: MKPinAnnotationView.id)
         mapView.register(MKMarkerAnnotationView.self, forAnnotationViewWithReuseIdentifier: MKMarkerAnnotationView.id)
-        mapView.register(MKUserLocationView.self, forAnnotationViewWithReuseIdentifier: MKUserLocationView.id)
+        mapView.register(WaypointView.self, forAnnotationViewWithReuseIdentifier: WaypointView.id)
         
         let tapRecognizer = UITapGestureRecognizer(target: vm, action: #selector(ViewModel.handleTap))
         let pressRecognizer = UILongPressGestureRecognizer(target: vm, action: #selector(ViewModel.handlePress))

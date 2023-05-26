@@ -31,7 +31,7 @@ struct WiFiError: View {
             .transition(.move(edge: .bottom).combined(with: .opacity))
         } else {
             VStack(spacing: 20) {
-                BigLabel(systemName: "wifi.slash", title: "No", message: "Check your internet connection\nand try again.")
+                BigLabel(systemName: "wifi.slash", title: "No Connection", message: "Check your internet connection\nand try again.")
                 Button("Open Settings") {
                     vm.openSettings()
                 }

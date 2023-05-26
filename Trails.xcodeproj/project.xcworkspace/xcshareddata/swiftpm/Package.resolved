@@ -10,12 +10,30 @@
       }
     },
     {
+      "identity" : "anycodable",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/flight-school/AnyCodable.git",
+      "state" : {
+        "revision" : "862808b2070cd908cb04f9aafe7de83d35f81b05",
+        "version" : "0.6.7"
+      }
+    },
+    {
       "identity" : "firebase-ios-sdk",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/firebase/firebase-ios-sdk.git",
       "state" : {
         "revision" : "4961c0b7eb5d794e47a58dbfdd258b4beca4263a",
         "version" : "10.9.0"
+      }
+    },
+    {
+      "identity" : "geojson",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/kiliankoe/GeoJSON",
+      "state" : {
+        "revision" : "ad151210f505181e9e8112b81aefc5f54383f4c2",
+        "version" : "0.6.2"
       }
     },
     {
