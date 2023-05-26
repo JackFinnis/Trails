@@ -37,9 +37,7 @@ struct MapView: UIViewRepresentable {
         if let trail = vm.selectedTrail {
             vm.selectTrail(trail, animated: false)
         } else {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                vm.zoomToFilteredTrails(animated: false)
-            }
+            vm.zoomToFilteredTrails(animated: false)
         }
         
         mapView.showsUserLocation = true

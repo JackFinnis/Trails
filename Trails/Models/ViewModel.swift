@@ -40,6 +40,7 @@ class ViewModel: NSObject, ObservableObject {
     @Published var filteredTrails = [Trail]()
     @Published var trailFilter: TrailFilter? { didSet {
         filterTrails()
+        zoomToFilteredTrails()
     }}
     @Storage("ascending") var ascending = false
     @Storage("sortBy") var sortBy = TrailSort.name { didSet {
@@ -315,7 +316,9 @@ class ViewModel: NSObject, ObservableObject {
     
     func zoomToFilteredTrails(animated: Bool = true) {
         if filteredTrails.isNotEmpty {
-            setRect(filteredTrails.rect, animated: animated)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                self.setRect(self.filteredTrails.rect, animated: animated)
+            }
         }
     }
 }
@@ -405,7 +408,16 @@ extension ViewModel {
         guard let mapView else { return }
         let size = mapView.safeAreaLayoutGuide.layoutFrame.size
         let compact = isCompact(size)
-        let bottom = isSelecting ? selectBarSize.height - 10 : (sheetDetent == .large || !compact ? 0 : getDetentHeight(size, detent: sheetDetent))
+        let bottom: CGFloat
+        if isSelecting {
+            bottom = selectBarSize.height - 10
+        } else if !compact {
+            bottom = 0
+        } else if sheetDetent == .large {
+            bottom = mediumDetentHeight
+        } else {
+            bottom = getDetentHeight(size, detent: sheetDetent)
+        }
         let left = compact || isSelecting ? 0.0 : getHorizontalSheetPadding(size) + regularSheetWidth
         let padding = extraPadding ? 40.0 : 20.0
         let insets = UIEdgeInsets(top: padding, left: padding + left, bottom: padding + bottom, right: padding)
@@ -838,8 +850,11 @@ extension ViewModel: MKMapViewDelegate {
 // MARK: - UISearchBarDelegate
 extension ViewModel: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        zoomToFilteredTrails()
         stopEditing()
+        zoomToFilteredTrails()
+        withAnimation(.sheet) {
+            sheetDetent = .medium
+        }
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
