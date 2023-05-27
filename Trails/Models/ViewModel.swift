@@ -79,6 +79,7 @@ class ViewModel: NSObject, ObservableObject {
     @Published var shake = false
     
     // Sheet
+    @Published var showTrailsView = true
     @Published var headerSize = CGSize()
     @Published var sheetDetent = SheetDetent.medium { didSet {
         refreshCompass()
@@ -182,7 +183,7 @@ class ViewModel: NSObject, ObservableObject {
         }
     }
     
-    func deleteAll(_ entity: NSObject.Type) {
+    func deleteAll(_ entity: NSManagedObject.Type) {
         let fetchRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: entity.id)
         let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
         try! container.viewContext.execute(deleteRequest)
@@ -281,6 +282,7 @@ class ViewModel: NSObject, ObservableObject {
     }
     
     func setSheetDetent(_ detent: SheetDetent) {
+        guard detent != sheetDetent else { return }
         withAnimation(.sheet) {
             sheetDetent = detent
         }
@@ -293,7 +295,8 @@ class ViewModel: NSObject, ObservableObject {
     }
     
     func selectTrail(_ trail: Trail?, animated: Bool = true) {
-        withAnimation(animated ? .sheet : .none) {
+        guard trail != selectedTrail else { return }
+        withAnimation(animated && trail != nil ? .sheet : .none) {
             selectedTrail = trail
         }
         refreshOverlays()
@@ -301,6 +304,21 @@ class ViewModel: NSObject, ObservableObject {
             loadElevationProfile(trail: trail)
             stopEditing()
             zoomTo(trail, animated: animated)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                self.setShowTrailsView(self.selectedTrail == nil)
+            }
+        } else {
+            setShowTrailsView(true)
+        }
+    }
+    
+    func setShowTrailsView(_ value: Bool) {
+        if value {
+            showTrailsView = true
+        } else {
+            withAnimation(.sheet) {
+                showTrailsView = false
+            }
         }
     }
     

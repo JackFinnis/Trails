@@ -32,6 +32,9 @@ struct WebView: View {
                     ProgressView()
                 }
             }
+            .task {
+                webVM.load()
+            }
             .animation(.default, value: webVM.error)
             .navigationTitle(trail.name)
             .navigationBarTitleDisplayMode(.inline)

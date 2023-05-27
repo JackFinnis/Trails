@@ -21,7 +21,8 @@ struct TrailRow: View {
                     .overlay(alignment: .bottomTrailing) {
                         if trail.cycleway {
                             Image(systemName: "bicycle")
-                                .padding(5)
+                                .font(.subheadline)
+                                .padding(4)
                                 .background(.thickMaterial)
                                 .continuousRadius(5)
                                 .padding(5)
@@ -43,26 +44,23 @@ struct TrailRow: View {
                     }
                     .padding(.horizontal, padding)
                     
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 0) {
-                            if vm.isCompleted(trail) {
-                                Image(systemName: "checkmark.circle.fill")
-                                    .foregroundColor(.accentColor)
-                                    .padding(.trailing, 5)
-                            } else if let metres = vm.getTrips(trail)?.metres, metres != 0 {
-                                Text("\(vm.formatDistance(metres, unit: false, round: true))/")
-                            }
-                            Text("\(vm.formatDistance(trail.metres, unit: true, round: true)) • \(trail.days) days")
-                            Text(" • ")
-                            Image(systemName: "arrow.up")
-                                .padding(.trailing, 2)
-                                .font(.caption2.weight(.bold))
-                            Text("\(vm.formatDistance(trail.ascent, unit: true, round: false))")
+                    HStack(spacing: 0) {
+                        if vm.isCompleted(trail) {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundColor(.accentColor)
+                                .padding(.trailing, 5)
+                        } else if let metres = vm.getTrips(trail)?.metres, metres != 0 {
+                            Text("\(vm.formatDistance(metres, unit: false, round: true))/")
                         }
-                        .font(.subheadline.bold())
-                        .foregroundColor(.secondary)
-                        .padding(.horizontal, padding)
+                        Text("\(vm.formatDistance(trail.metres, unit: true, round: true)) • \(trail.days) days • ")
+                        Image(systemName: "arrow.up.forward")
+                            .padding(.trailing, 2)
+                            .font(.caption.weight(.bold))
+                        Text("\(vm.formatDistance(trail.ascent, unit: true, round: false))")
                     }
+                    .font(.subheadline.bold())
+                    .foregroundColor(.secondary)
+                    .padding(.horizontal, padding)
                     .padding(.bottom, 5)
                     
                     Text(trail.headline)

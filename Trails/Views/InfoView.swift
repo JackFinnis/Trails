@@ -9,8 +9,9 @@ import SwiftUI
 import MessageUI
 
 struct InfoView: View {
-    @EnvironmentObject var vm: ViewModel
+    @Environment(\.verticalSizeClass) var verticalSizeClass
     @Environment(\.dismiss) var dismiss
+    @EnvironmentObject var vm: ViewModel
     @State var showShareSheet = false
     @State var showEmailSheet = false
     
@@ -104,8 +105,7 @@ struct InfoView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    let size = vm.mapView?.safeAreaLayoutGuide.layoutFrame.size ?? .zero
-                    if welcome || !vm.isCompact(size) {
+                    if welcome || verticalSizeClass == .compact {
                         Text("")
                     } else {
                         DraggableTitle()

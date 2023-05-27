@@ -7,6 +7,30 @@
 
 import SwiftUI
 
+struct TrailSheet: View {
+    @EnvironmentObject var vm: ViewModel
+    @State var trail: Trail?
+    
+    var body: some View {
+        Sheet(isPresented: !vm.isSelecting && vm.selectedTrail != nil) {
+            if let trail {
+                TrailView(trail: trail)
+            }
+        } header: {
+            if let trail {
+                TrailView.Header(trail: trail)
+            }
+        }
+        .animation(.sheet, value: vm.isSelecting)
+        .animation(.sheet, value: vm.selectedTrail)
+        .onChange(of: vm.selectedTrail) { newTrail in
+            if let newTrail {
+                trail = newTrail
+            }
+        }
+    }
+}
+
 struct TrailView: View {
     struct Header: View {
         @EnvironmentObject var vm: ViewModel
@@ -43,7 +67,7 @@ struct TrailView: View {
             Divider()
                 .padding(.leading)
             ScrollView {
-                LazyVStack(alignment: .leading, spacing: 15) {
+                VStack(alignment: .leading, spacing: 15) {
                     Text(trail.headline)
                         .font(.subheadline)
                         .fixedSize(horizontal: false, vertical: true)
@@ -56,16 +80,16 @@ struct TrailView: View {
                             if let metres = vm.getTrips(trail)?.metres, metres > 0 {
                                 let percentageCompleted = Int(round((metres / trail.metres) * 100))
                                 let completed = vm.isCompleted(trail)
-                                let value = "\(percentageCompleted)%\(completed ? "" : ", \(vm.formatDistance(metres, unit: true, round: true))")"
+                                let value = "\(completed ? "" : "\(vm.formatDistance(metres, unit: true, round: true)), ")\(percentageCompleted)%"
                                 divider
                                 SheetStat(name: "Completed", value: value, systemName: completed ? "checkmark.circle.fill" : "checkmark.circle", tint: completed ? .accentColor : .secondary)
                             }
                             divider
                             SheetStat(name: "Duration", value: "\(trail.days) days", systemName: "clock")
                             divider
-                            SheetStat(name: "Ascent", value: vm.formatDistance(trail.ascent, unit: true, round: false), systemName: "arrow.up")
+                            SheetStat(name: "Ascent", value: vm.formatDistance(trail.ascent, unit: true, round: false), systemName: "arrow.up.forward")
                             divider
-                            SheetStat(name: "Descent", value: vm.formatDistance(trail.descent, unit: true, round: false), systemName: "arrow.down")
+                            SheetStat(name: "Descent", value: vm.formatDistance(trail.descent, unit: true, round: false), systemName: "arrow.down.forward")
                             if trail.cycleway {
                                 divider
                                 SheetStat(name: "Cycleway", value: trail.cycleStatus.name, systemName: "bicycle")

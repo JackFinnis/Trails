@@ -16,7 +16,6 @@ struct WebUIView: UIViewRepresentable {
         webView.isOpaque = false
         webView.navigationDelegate = webVM
         webVM.webView = webView
-        webVM.load()
         
         let refresh = UIRefreshControl()
         refresh.addTarget(webVM, action: #selector(WebVM.load), for: .valueChanged)

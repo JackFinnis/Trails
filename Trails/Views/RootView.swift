@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct RootView: View {
-    @Environment(\.scenePhase) var scenePhase//todo
+    @Environment(\.scenePhase) var scenePhase
     @Environment(\.colorScheme) var colorScheme
     @AppStorage("launchedBefore") var launchedBefore = false
     @StateObject var vm = ViewModel.shared
@@ -21,7 +21,7 @@ struct RootView: View {
                     let disabled = vm.isMapDisabled(geo.size)
                     MapView()
                         .disabled(disabled)
-                    Color.black.opacity(disabled ? 0.1 : 0)
+                    Color.black.opacity(disabled ? 0.15 : 0)
                 }
                 .ignoresSafeArea()
                 .sheet(isPresented: $showWelcomeView) {
@@ -49,27 +49,23 @@ struct RootView: View {
                     }
                 }
                 
-                Sheet(isPresented: vm.selectedTrail == nil) {
+                Sheet {
                     TrailsView()
                 } header: {
                     TrailsView.Header()
                 }
+                .opacity(vm.showTrailsView ? 1 : 0)
                 
-                if let trail = vm.selectedTrail {
-                    Sheet(isPresented: !vm.isSelecting) {
-                        TrailView(trail: trail)
-                    } header: {
-                        TrailView.Header(trail: trail)
-                    }
-                }
+                TrailSheet()
                 
                 if let profile = vm.selectionProfile {
-                    Sheet(isPresented: true) {
+                    Sheet {
                         SelectionView(profile: profile)
                     } header: {
                         SelectionView.Header(profile: profile)
                     }
                 }
+                
                 GeometryReader { geo in
                     HStack {
                         VStack {
@@ -93,7 +89,6 @@ struct RootView: View {
             }
         }
         .animation(.sheet, value: vm.selectionProfile)
-        .animation(.sheet, value: vm.isSelecting)
         .onChange(of: colorScheme) { _ in
             vm.refreshOverlays()
         }

@@ -18,7 +18,7 @@ struct Sheet<Content: View, Header: View>: View {
     @EnvironmentObject var vm: ViewModel
     @GestureState var translation = 0.0
     
-    let isPresented: Bool
+    var isPresented = true
     
     @ViewBuilder let content: () -> Content
     @ViewBuilder let header: () -> Header
