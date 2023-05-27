@@ -20,7 +20,10 @@ class Trail: NSObject, Identifiable {
     let colour: Int
     let cycleStatus: TrailCycleStatus
     let ascent: Double
+    let descent: Double
     let country: TrailCountry
+    
+    var cycleway: Bool { cycleStatus != .no }
     
     let coords: [CLLocationCoordinate2D]
     let locations: [CLLocation]
@@ -29,7 +32,7 @@ class Trail: NSObject, Identifiable {
     
     init(metadata: TrailMetadata, polyline: MKPolyline) {
         self.polyline = polyline
-        coords = polyline.coordinates
+        coords = polyline.coordinates.map(\.rounded)
         locations = coords.map { $0.location }
         
         id = metadata.id
@@ -42,10 +45,11 @@ class Trail: NSObject, Identifiable {
         colour = metadata.colour
         cycleStatus = metadata.cycleStatus
         ascent = metadata.ascent
+        descent = metadata.descent
         country = metadata.country
     }
     
-    static let example = Trail(metadata: .init(id: 0, name: "Cleveland Way", description: "Experience the varied landscape of the North York Moors National Park on a journey across breathtaking heather moorland and dramatic coastline.", url: URL(string: "https://www.nationaltrail.co.uk/trails/cleveland-way/")!, photoUrl: URL(string: "https://nationaltrails.s3.eu-west-2.amazonaws.com/uploads/Cleveland-Way-Home-2000x600.jpg")!, metres: 170813, days: 9, colour: 1, cycleStatus: .no, ascent: 5031, country: .england), polyline: MKPolyline())
+    static let example = Trail(metadata: .init(id: 0, name: "Cleveland Way", description: "Experience the varied landscape of the North York Moors National Park on a journey across breathtaking heather moorland and dramatic coastline.", url: URL(string: "https://www.nationaltrail.co.uk/trails/cleveland-way/")!, photoUrl: URL(string: "https://nationaltrails.s3.eu-west-2.amazonaws.com/uploads/Cleveland-Way-Home-2000x600.jpg")!, metres: 170813, days: 9, colour: 1, cycleStatus: .sections, ascent: 5031, descent: 4032, country: .england), polyline: MKPolyline())
 }
 
 extension Trail: MKOverlay {
@@ -64,6 +68,7 @@ struct TrailMetadata: Codable {
     let colour: Int
     let cycleStatus: TrailCycleStatus
     let ascent: Double
+    let descent: Double
     let country: TrailCountry
 }
 
@@ -78,12 +83,15 @@ enum TrailCycleStatus: String, Codable {
     case no
     case yes
     case sections
-}
-
-struct ElevationProfile {
-    let points: [CGPoint]
-    let locations: [CLLocation]
-    let maxElevation: Double
-    let minElevation: Double
-    let distance: Double
+    
+    var name: String {
+        switch self {
+        case .no:
+            return "None"
+        case .yes:
+            return "All"
+        case .sections:
+            return "Parts"
+        }
+    }
 }

@@ -5,19 +5,27 @@
 //  Created by Jack Finnis on 25/05/2023.
 //
 
-import Foundation
+import SwiftUI
 import MapKit
 
+enum WaypointType: String {
+    case start = "Start"
+    case end = "End"
+    case middle = "Waypoint"
+}
+
 class Waypoint: NSObject {
+    let type: WaypointType
     let coordinate: CLLocationCoordinate2D
     
-    init(coordinate: CLLocationCoordinate2D) {
+    init(type: WaypointType, coordinate: CLLocationCoordinate2D) {
         self.coordinate = coordinate
+        self.type = type
     }
 }
 
 extension Waypoint: MKAnnotation {
-    var title: String? { "Waypoint" }
+    var title: String? { type.rawValue }
 }
 
 class WaypointView: MKAnnotationView {
@@ -29,15 +37,19 @@ class WaypointView: MKAnnotationView {
     
     override func prepareForDisplay() {
         super.prepareForDisplay()
+        guard let annotation else { return }
         
         let size = 10.0
+        canShowCallout = true
+        zPriority = .min
+        rightCalloutAccessoryView = vm?.getShareMenu(mapItem: nil, coord: annotation.coordinate, allowsDirections: true)
         frame = CGRect(origin: .zero, size: CGSize(width: size * 2, height: size * 2))
-        let config = UIImage.SymbolConfiguration(font: .systemFont(ofSize: size))
-        let image = UIImage(systemName: "circle.fill", withConfiguration: config)
+        
+        let font = UIImage.SymbolConfiguration(font: .systemFont(ofSize: size))
+        let image = UIImage(systemName: "circle.fill", withConfiguration: font)
         let imageView = UIImageView(image: image)
         imageView.tintColor = vm?.trailOverlayColor ?? .link
         imageView.center = center
-        
         addSubview(imageView)
     }
     

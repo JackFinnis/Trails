@@ -29,7 +29,7 @@ struct Sheet<Content: View, Header: View>: View {
                 VStack(spacing: 0) {
                     let spacerHeight = vm.getSpacerHeight(geo.size, detent: vm.sheetDetent)
                     Spacer()
-                        .frame(height: max(isPresented ? 1 : geo.size.height, spacerHeight + translation))
+                        .frame(height: max(isPresented ? 1 : geo.size.height + geo.safeAreaInsets.bottom, spacerHeight + translation))
                     
                     ZStack(alignment: .top) {
                         RoundedCorners(radius: 10, corners: [.topLeft, .topRight])
@@ -72,11 +72,10 @@ struct Sheet<Content: View, Header: View>: View {
                         let current = vm.getSpacerHeight(geo.size, detent: vm.sheetDetent)
                         let end = current + gesture.predictedEndTranslation.height
                         let spacerHeights = SheetDetent.allCases.map { ($0, vm.getSpacerHeight(geo.size, detent: $0)) }
-                        withAnimation(.sheet) {
-                            vm.sheetDetent = spacerHeights.min {
-                                $0.1.distance(to: end).magnitude < $1.1.distance(to: end).magnitude
-                            }!.0
-                        }
+                        let detent = spacerHeights.min {
+                            $0.1.distance(to: end).magnitude < $1.1.distance(to: end).magnitude
+                        }!.0
+                        vm.setSheetDetent(detent)
                     }
                 )
                 .frame(maxWidth: vm.getMaxSheetWidth(geo.size))
@@ -85,5 +84,28 @@ struct Sheet<Content: View, Header: View>: View {
             }
         }
         .transition(.move(edge: .bottom))
+    }
+}
+
+struct SheetStat: View {
+    let name: String
+    let value: String
+    let systemName: String
+    var tint: Color = .secondary
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(name)
+                .textCase(.uppercase)
+                .foregroundColor(.secondary)
+                .font(.caption2.weight(.bold))
+            HStack(spacing: 5) {
+                Image(systemName: systemName)
+                    .font(.footnote.weight(.bold))
+                    .foregroundColor(tint)
+                Text(value)
+                    .font(.subheadline.bold())
+            }
+        }
     }
 }

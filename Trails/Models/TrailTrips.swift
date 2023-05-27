@@ -14,12 +14,13 @@ class TrailTrips: NSManagedObject {
     @NSManaged var id: Int16
     @NSManaged var lines: [[[Double]]]
     
+    var linesCoords = [[CLLocationCoordinate2D]]()
     var coordsSet = Set<CLLocationCoordinate2D>()
     var multiPolyline = MKMultiPolyline()
     var metres = 0.0
     
     func reload() {
-        let linesCoords = lines.map { $0.map { CLLocationCoordinate2DMake($0[0], $0[1]) } }
+        linesCoords = lines.map { $0.map { CLLocationCoordinate2DMake($0[0], $0[1]) } }
         coordsSet = Set(linesCoords.concat())
         multiPolyline = MKMultiPolyline(linesCoords.map { MKPolyline(coordinates: $0, count: $0.count) })
         metres = linesCoords.map { $0.metres() }.sum()

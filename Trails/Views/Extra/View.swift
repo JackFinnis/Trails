@@ -15,6 +15,10 @@ extension View {
             .shadow(color: Color.black.opacity(prominentShadow ? 0.2 : 0.1), radius: 5)
     }
     
+    func containerBackground(light: Bool) -> some View {
+        modifier(ContainerBackground(light: light))
+    }
+    
     func horizontallyCentred() -> some View {
         HStack {
             Spacer(minLength: 0)
@@ -85,10 +89,26 @@ struct OnDismiss: ViewModifier {
                     }
                 }
                 .onEnded { value in
-                    if value.predictedEndTranslation.height > 20 {
+                    if value.predictedEndTranslation.height > 30 {
                         onDismiss()
                     }
                 }
             )
+    }
+}
+
+struct ContainerBackground: ViewModifier {
+    @Environment(\.colorScheme) var colorScheme
+    
+    let light: Bool
+    
+    func body(content: Content) -> some View {
+        content.background {
+            if light {
+                Color(colorScheme == .light ? .white : .secondarySystemBackground)
+            } else {
+                Color(colorScheme == .light ? .tertiarySystemFill : .quaternarySystemFill)
+            }
+        }
     }
 }

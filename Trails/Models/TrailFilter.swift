@@ -8,10 +8,11 @@
 import Foundation
 
 enum TrailFilter: Hashable {
-    static let allCases = [TrailFilter.completed, .favourite] + TrailCountry.allCases.map { .country($0) }
+    static let allCases = [TrailFilter.completed, .favourite, .cycleway] + TrailCountry.allCases.map { .country($0) }
     
     case completed
     case favourite
+    case cycleway
     case country(TrailCountry)
     
     var name: String {
@@ -20,6 +21,8 @@ enum TrailFilter: Hashable {
             return "Completed"
         case .favourite:
             return "Saved"
+        case .cycleway:
+            return "Cycleways"
         case .country(let country):
             return country.rawValue
         }
@@ -31,7 +34,10 @@ enum TrailFilter: Hashable {
             return "checkmark.circle"
         case .favourite:
             return "bookmark"
-        default: return nil
+        case .cycleway:
+            return "bicycle"
+        case .country(_):
+            return nil
         }
     }
 }

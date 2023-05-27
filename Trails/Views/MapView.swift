@@ -35,7 +35,7 @@ struct MapView: UIViewRepresentable {
         vm.mapView = mapView
         vm.refreshOverlays()
         if let trail = vm.selectedTrail {
-            vm.selectTrail(trail, animated: false)
+            vm.zoomTo(trail, animated: false)
         } else {
             vm.zoomToFilteredTrails(animated: false)
         }

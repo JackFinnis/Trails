@@ -8,21 +8,19 @@
 import Foundation
 
 extension Double {
-    var formattedInterval: String {
+    func formattedInterval() -> String {
         let formatter = DateComponentsFormatter()
         formatter.allowedUnits = [.hour, .minute]
         formatter.unitsStyle = .abbreviated
         return formatter.string(from: self) ?? ""
     }
     
-    func equalTo(_ other: Double, to decimalPlaces: Int) -> Bool {
-        rounded(to: decimalPlaces) == other.rounded(to: decimalPlaces)
+    func equalTo(_ other: Double, to places: Int) -> Bool {
+        rounded(to: places) == other.rounded(to: places)
     }
     
-    func rounded(to decimalPlaces: Int) -> Decimal {
-        var original = Decimal(self)
-        var rounded = Decimal()
-        NSDecimalRound(&rounded, &original, decimalPlaces, .plain)
-        return rounded
+    func rounded(to places: Int) -> Double {
+        let shift = pow(10, Double(places))
+        return (self * shift).rounded() / shift
     }
 }

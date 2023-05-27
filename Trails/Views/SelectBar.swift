@@ -29,7 +29,8 @@ struct SelectBar: View {
             }
             .padding(.horizontal, 5)
         }
-        .padding(10)
+        .padding(.horizontal, 15)
+        .padding(.vertical, 10)
         .blurBackground(prominentShadow: true)
         .offset(x: vm.shake ? 20 : 0)
         .onTapGesture {
@@ -38,14 +39,17 @@ struct SelectBar: View {
         .onDismiss {
             vm.stopSelecting()
         }
-        .padding(10)
         .transition(.move(edge: .bottom).combined(with: .opacity))
     }
 }
 
 struct SelectBar_Previews: PreviewProvider {
     static var previews: some View {
-        SelectBar()
-            .environmentObject(ViewModel())
+        ZStack(alignment: .bottom) {
+            Map(mapRect: .constant(.world))
+                .ignoresSafeArea()
+            SelectBar()
+        }
+        .environmentObject(ViewModel())
     }
 }

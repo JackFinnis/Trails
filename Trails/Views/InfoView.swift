@@ -33,8 +33,8 @@ struct InfoView: View {
                     .horizontallyCentred()
                     
                     VStack(alignment: .leading, spacing: 15) {
-                        InfoRow(systemName: "figure.walk", title: "Adventure Awaits", description: "Discover 44 long-distance walking trails through the UK's most breathtaking landscapes.")
-                        InfoRow(systemName: "point.topleft.down.curvedto.point.bottomright.up", title: "Plan Your Trip", description: "Measure the length of your next trip.")
+                        InfoRow(systemName: "signpost.right", title: "Adventure Awaits", description: "Discover 44 long-distance walking trails through the UK's most breathtaking landscapes.")
+                        InfoRow(systemName: "point.topleft.down.curvedto.point.bottomright.up", title: "Plan Your Trip", description: "Measure the length of your next trip and view its elevation profile.")
                         InfoRow(systemName: "arrow.triangle.turn.up.right.circle", title: "Get Directions", description: "Long press on your destination.")
                         InfoRow(systemName: "checkmark.circle", title: "Track Your Progress", description: "Mark sections of a trail as completed.")
                         InfoRow(systemName: "ruler", title: "Distance Unit") {
@@ -74,12 +74,12 @@ struct InfoView: View {
                                 }
                             }
                             Button {
-                                Store.writeReview()
+                                vm.writeReview()
                             } label: {
                                 Label("Write a Review", systemImage: "quote.bubble")
                             }
                             Button {
-                                Store.requestRating()
+                                vm.requestRating()
                             } label: {
                                 Label("Rate \(Constants.name)", systemImage: "star")
                             }

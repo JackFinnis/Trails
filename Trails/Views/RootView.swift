@@ -12,7 +12,6 @@ struct RootView: View {
     @Environment(\.colorScheme) var colorScheme
     @AppStorage("launchedBefore") var launchedBefore = false
     @StateObject var vm = ViewModel.shared
-    @State var showInfoView = false
     @State var showWelcomeView = false
     
     var body: some View {
@@ -25,6 +24,9 @@ struct RootView: View {
                     Color.black.opacity(disabled ? 0.1 : 0)
                 }
                 .ignoresSafeArea()
+                .sheet(isPresented: $showWelcomeView) {
+                    InfoView(welcome: true)
+                }
                 
                 VStack(spacing: 0) {
                     CarbonCopy()
@@ -36,11 +38,10 @@ struct RootView: View {
                 }
                 
                 GeometryReader { geo in
-                    let disabled = vm.isMapDisabled(geo.size)
                     VStack {
                         HStack {
                             Spacer()
-                            if !disabled {
+                            if !vm.isMapDisabled(geo.size) {
                                 MapButtons()
                             }
                         }
@@ -51,59 +52,33 @@ struct RootView: View {
                 Sheet(isPresented: vm.selectedTrail == nil) {
                     TrailsView()
                 } header: {
-                    HStack {
-                        SearchBar()
-                            .padding(.vertical, -10)
-                            .padding(.horizontal, -8)
-                        
-                        if !vm.isSearching {
-                            Button {
-                                showInfoView = true
-                            } label: {
-                                Image(systemName: "info.circle")
-                                    .font(.icon)
-                            }
-                        }
-                    }
+                    TrailsView.Header()
                 }
                 
                 if let trail = vm.selectedTrail {
                     Sheet(isPresented: !vm.isSelecting) {
                         TrailView(trail: trail)
                     } header: {
-                        HStack(alignment: .firstTextBaseline) {
-                            Text(trail.name)
-                                .fixedSize(horizontal: false, vertical: true)
-                                .font(.title2.weight(.semibold))
-                            Spacer()
-                            Button {
-                                vm.selectTrail(nil)
-                            } label: {
-                                DismissCross(toolbar: false)
-                            }
-                            .buttonStyle(.plain)
-                        }
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            vm.zoomTo(trail)
-                        }
+                        TrailView.Header(trail: trail)
                     }
                 }
                 
+                if let profile = vm.selectionProfile {
+                    Sheet(isPresented: true) {
+                        SelectionView(profile: profile)
+                    } header: {
+                        SelectionView.Header(profile: profile)
+                    }
+                }
                 GeometryReader { geo in
                     HStack {
                         VStack {
                             Spacer()
-                            Group {
-                                if let polyline = vm.selectPolyline {
-                                    SelectionBar(polyline: polyline)
-                                } else if vm.isSelecting {
-                                    SelectBar()
-                                }
+                            if vm.selectionProfile == nil && vm.isSelecting {
+                                SelectBar()
+                                    .frame(maxWidth: vm.getMaxSheetWidth(geo.size))
+                                    .padding(10)
                             }
-                            .detectSize($vm.selectBarSize)
-                            .frame(maxWidth: vm.getMaxSheetWidth(geo.size))
-                            .animation(.sheet, value: vm.selectPolyline)
                         }
                         Spacer(minLength: 0)
                     }
@@ -117,6 +92,7 @@ struct RootView: View {
                 }
             }
         }
+        .animation(.sheet, value: vm.selectionProfile)
         .animation(.sheet, value: vm.isSelecting)
         .animation(.sheet, value: vm.selectedTrail)
         .onChange(of: colorScheme) { _ in
@@ -140,17 +116,21 @@ struct RootView: View {
                 }
             Text("")
                 .alert("Congratulations!", isPresented: $vm.showCompletedAlert) {
-                    if !vm.shownReviewPrompt {
+                    Button("Dismiss", role: .cancel) {}
+                    if !vm.tappedReviewBefore {
+                        Button("Maybe Later", role: .cancel) {}
                         Button("Review \(Constants.name)") {
-                            Store.writeReview()
+                            vm.writeReview()
                         }
                         Button("Rate \(Constants.name)") {
-                            Store.requestRating()
+                            vm.requestRating()
                         }
                     }
-                    Button("Maybe Later") {}
                 } message: {
-                    Text("You have walked the entire length of \(vm.selectedTrail?.name ?? "")! That's over \(vm.formatDistance(vm.selectMetres, showUnit: true, round: true))!\(vm.shownReviewPrompt ? "" : "\nPlease consider leaving a review or rating \(Constants.name) if the app helped you navigate.")")
+                    if let trail = vm.selectedTrail {
+                        let prompt = vm.tappedReviewBefore ? "" : "\n\nPlease consider leaving a review or rating \(Constants.name) if the app helped you navigate."
+                        Text("You have walked the entire length of \(trail.name) - that's over \(vm.formatDistance(trail.metres, unit: true, round: true))!\(prompt)")
+                    }
                 }
             Text("")
                 .alert("No Connection", isPresented: $vm.showWiFiAlert) {
@@ -160,16 +140,6 @@ struct RootView: View {
                     }
                 } message: {
                     Text("Check your internet connection and try again")
-                }
-        }
-        .background {
-            Text("")
-                .sheet(isPresented: $showInfoView) {
-                    InfoView(welcome: false)
-                }
-            Text("")
-                .sheet(isPresented: $showWelcomeView) {
-                    InfoView(welcome: true)
                 }
         }
         .environmentObject(vm)

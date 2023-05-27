@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct TrailRow: View {
-    @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var vm: ViewModel
     
     let trail: Trail
@@ -19,7 +18,17 @@ struct TrailRow: View {
         } label: {
             VStack(alignment: .leading, spacing: 0) {
                 TrailImage(trail: trail)
+                    .overlay(alignment: .bottomTrailing) {
+                        if trail.cycleway {
+                            Image(systemName: "bicycle")
+                                .padding(5)
+                                .background(.thickMaterial)
+                                .continuousRadius(5)
+                                .padding(5)
+                        }
+                    }
                 
+                let padding = 10.0
                 VStack(alignment: .leading, spacing: 0) {
                     HStack(alignment: .top, spacing: 5) {
                         Text(trail.name)
@@ -32,31 +41,38 @@ struct TrailRow: View {
                                 .font(.subheadline)
                         }
                     }
+                    .padding(.horizontal, padding)
                     
-                    HStack(spacing: 0) {
-                        if vm.isCompleted(trail) {
-                            Image(systemName: "checkmark.circle.fill")
-                                .foregroundColor(.accentColor)
-                                .padding(.trailing, 5)
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 0) {
+                            if vm.isCompleted(trail) {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .foregroundColor(.accentColor)
+                                    .padding(.trailing, 5)
+                            } else if let metres = vm.getTrips(trail)?.metres, metres != 0 {
+                                Text("\(vm.formatDistance(metres, unit: false, round: true))/")
+                            }
+                            Text("\(vm.formatDistance(trail.metres, unit: true, round: true)) • \(trail.days) days")
+                            Text(" • ")
+                            Image(systemName: "arrow.up")
+                                .padding(.trailing, 2)
+                                .font(.caption2.weight(.bold))
+                            Text("\(vm.formatDistance(trail.ascent, unit: true, round: false))")
                         }
-                        Text("\(vm.formatDistance(trail.metres, showUnit: true, round: true)) • \(trail.days) days")
-                        Text(" • ")
-                        Image(systemName: "arrow.up")
-                            .padding(.trailing, 2)
-                            .font(.caption2.weight(.bold))
-                        Text("\(vm.formatDistance(trail.ascent, showUnit: true, round: false))")
+                        .font(.subheadline.bold())
+                        .foregroundColor(.secondary)
+                        .padding(.horizontal, padding)
                     }
-                    .font(.subheadline.bold())
-                    .foregroundColor(.secondary)
                     .padding(.bottom, 5)
                     
                     Text(trail.headline)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
+                        .padding(.horizontal, padding)
                 }
-                .padding(10)
+                .padding(.vertical, padding)
             }
-            .background(Color(colorScheme == .light ? .white : .secondarySystemBackground))
+            .containerBackground(light: true)
             .continuousRadius(10)
         }
         .buttonStyle(.plain)

@@ -8,6 +8,31 @@
 import SwiftUI
 
 struct TrailsView: View {
+    struct Header: View {
+        @EnvironmentObject var vm: ViewModel
+        @State var showInfoView = false
+        
+        var body: some View {
+            HStack {
+                SearchBar()
+                    .padding(.vertical, -10)
+                    .padding(.horizontal, -8)
+                
+                if !vm.isSearching {
+                    Button {
+                        showInfoView = true
+                    } label: {
+                        Image(systemName: "info.circle")
+                            .font(.icon)
+                    }
+                }
+            }
+            .sheet(isPresented: $showInfoView) {
+                InfoView(welcome: false)
+            }
+        }
+    }
+    
     @EnvironmentObject var vm: ViewModel
     @State var angle = Angle.zero
     
@@ -18,9 +43,7 @@ struct TrailsView: View {
                     .font(.headline)
                     .animation(.none, value: vm.filteredTrails.count)
                     .onTapGesture {
-                        withAnimation(.sheet) {
-                            vm.sheetDetent = .medium
-                        }
+                        vm.zoomToFilteredTrails()
                     }
                 Spacer()
                 Menu {
@@ -28,8 +51,13 @@ struct TrailsView: View {
                         Text("No Filter")
                             .tag(nil as TrailFilter?)
                         ForEach(TrailFilter.allCases, id: \.self) { filter in
-                            Label(filter.name, systemImage: filter.systemName ?? "")
-                                .tag(filter as TrailFilter?)
+                            if let systemName = filter.systemName {
+                                Label(filter.name, systemImage: systemName)
+                                    .tag(filter as TrailFilter?)
+                            } else {
+                                Text(filter.name)
+                                    .tag(filter as TrailFilter?)
+                            }
                         }
                     }
                 } label: {

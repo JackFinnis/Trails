@@ -10,6 +10,6 @@ import Foundation
 enum TrailSort: String, CaseIterable, Codable {
     case name = "Name"
     case distance = "Length"
-    case ascent = "Total Ascent"
-    case completed = "Percentage Completed"
+    case ascent = "Ascent"
+    case completed = "Completed"
 }

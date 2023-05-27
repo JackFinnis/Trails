@@ -21,7 +21,7 @@ class ViewModel: NSObject, ObservableObject {
     // Trails
     var trails = [Trail]()
     var trailsTrips = [TrailTrips]()
-    var selectedTrips: TrailTrips? { getTrips(trail: selectedTrail) }
+    var selectedTrips: TrailTrips? { getTrips(selectedTrail) }
     @Published var selectedTrail: Trail? { didSet {
         selectedTrailId = selectedTrail?.id ?? -1
         if selectedTrail == nil {
@@ -61,15 +61,13 @@ class ViewModel: NSObject, ObservableObject {
     }}
     
     // Select Section
-    var selectBarSize = CGSize()
     @Published var isSelecting = false { didSet {
         refreshCompass()
     }}
     @Published var selectError = false
     @Published var canUncomplete = false
     @Published var canComplete = false
-    @Published var selectMetres = 0.0
-    @Published var selectPolyline: MKPolyline?
+    @Published var selectionProfile: ElevationProfile?
     @Published var startPin: Annotation?
     @Published var endPin: Annotation?
     
@@ -80,27 +78,39 @@ class ViewModel: NSObject, ObservableObject {
     
     // Sheet
     @Published var headerSize = CGSize()
-    @Published var sheetDetent = SheetDetent.small { didSet {
+    @Published var sheetDetent = SheetDetent.medium { didSet {
         refreshCompass()
         if sheetDetent != .large && isEditing {
             stopSearching()
         }
     }}
+    func setSheetDetent(_ detent: SheetDetent) {
+        if sheetDetent != detent {
+            withAnimation(.sheet) {
+                sheetDetent = detent
+            }
+        }
+    }
+    func ensureMapVisible() {
+        if isCompact(unsafeWindowSize) {
+            setSheetDetent(.medium)
+        }
+    }
     
     // Dimensions
+    let selectBarHeight = 60.0
     let mediumDetentHeight = 270.0
-    let regularSheetWidth = 320.0
     var unsafeWindowSize: CGSize {
         mapView?.layoutMarginsGuide.layoutFrame.size ?? .zero
     }
     func isCompact(_ size: CGSize) -> Bool {
-        size.width < 500
+        WindowSize(size) == .compact
     }
     func isMapDisabled(_ size: CGSize) -> Bool {
-        sheetDetent == .large && isCompact(size) && !isSelecting
+        sheetDetent == .large && isCompact(size) && !(isSelecting && selectionProfile == nil)
     }
     func getMaxSheetWidth(_ size: CGSize) -> CGFloat {
-        isCompact(size) ? .infinity : regularSheetWidth
+        WindowSize(size).maxSheetWidth
     }
     func getTopSheetPadding(_ size: CGSize) -> CGFloat {
         isCompact(size) ? 20 : 10
@@ -128,12 +138,16 @@ class ViewModel: NSObject, ObservableObject {
     }
     
     // Completed Alert
-    @Storage("shownReviewPrompt") var shownReviewPrompt = false
-    @Published var showCompletedAlert = false { didSet {
-        if !showCompletedAlert {
-            shownReviewPrompt = true
-        }
-    }}
+    @Storage("tappedReviewBefore") var tappedReviewBefore = false
+    @Published var showCompletedAlert = false
+    func requestRating() {
+        tappedReviewBefore = true
+        Store.requestRating()
+    }
+    func writeReview() {
+        tappedReviewBefore = true
+        Store.writeReview()
+    }
     
     // Preferences
     @Storage("metric") var metric = true { didSet {
@@ -206,16 +220,18 @@ class ViewModel: NSObject, ObservableObject {
         }
         
         container.loadPersistentStores { description, error in
+//            self.deleteAll(TrailTrips.self)
+//            self.completedTrails = []
             self.trailsTrips = (try? self.container.viewContext.fetch(TrailTrips.fetchRequest()) as? [TrailTrips]) ?? []
             self.trailsTrips.forEach { $0.reload() }
             self.filterTrails()
         }
     }
     
-    func deleteAll(entityName: String) {
-        let fetchRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: entityName)
+    func deleteAll(_ entity: NSObject.Type) {
+        let fetchRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: entity.id)
         let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
-        _ = try? container.viewContext.execute(deleteRequest)
+        try! container.viewContext.execute(deleteRequest)
     }
     
     func loadElevationProfile(trail: Trail) {
@@ -223,31 +239,18 @@ class ViewModel: NSObject, ObservableObject {
         let geometry = collection.features.first!.geometry!
         switch geometry {
         case .lineString(let lineString):
-            let maxPoints = 200
-            let n = max(1, Int(lineString.coordinates.count / maxPoints))
-            let locations = lineString.coordinates.map(\.location).enumerated().compactMap { index, element in index % n == 0 ? element : nil }
-            trail.elevationProfile = getElevationProfile(locations: locations, distance: trail.metres)
+            let allLocations = trail.coords.enumerated().map { index, coord in
+                CLLocation(coordinate: coord, altitude: lineString.coordinates[index].location.altitude, horizontalAccuracy: 0, verticalAccuracy: 0, timestamp: .now)
+            }
+            trail.elevationProfile = ElevationProfile(allLocations: allLocations, distance: trail.metres, polyline: trail.polyline, ascent: trail.ascent, descent: trail.descent)
         default: return
         }
     }
     
-    func getElevationProfile(locations: [CLLocation], distance: Double) -> ElevationProfile? {
-        guard locations.isNotEmpty else { return nil }
-        let points = locations.enumerated().map { index, location in
-            CGPoint(x: distance * (Double(index) / Double(locations.count)), y: locations[index].altitude)
-        }
-        let minElevation = points.map(\.y).min()!
-        let shift = CGAffineTransform(translationX: 0, y: -minElevation)
-        let maxElevation = points.map(\.y).max()! - minElevation
-        let scale = CGAffineTransform(scaleX: 1/distance, y: 1/maxElevation)
-        let normalised = points.map { $0.applying(shift).applying(scale) }
-        return ElevationProfile(points: normalised, locations: locations, maxElevation: maxElevation, minElevation: minElevation, distance: distance)
-    }
-    
     // MARK: - General
-    func formatDistance(_ metres: Double, showUnit: Bool, round: Bool) -> String {
+    func formatDistance(_ metres: Double, unit: Bool, round: Bool) -> String {
         let value = metres / (metric ? 1000 : 1609.34)
-        return String(format: "%.\(round ? 0 : 1)f", max(0.1, value)) + (showUnit ? (metric ? " km" : " miles") : "")
+        return String(format: "%.\(round ? 0 : 1)f", max(0.1, value)) + (unit ? (metric ? " km" : " miles") : "")
     }
     
     func openSettings() {
@@ -256,7 +259,7 @@ class ViewModel: NSObject, ObservableObject {
         }
     }
     
-    func getTrips(trail: Trail?) -> TrailTrips? {
+    func getTrips(_ trail: Trail?) -> TrailTrips? {
         trailsTrips.first { $0.id == trail?.id }
     }
     
@@ -278,14 +281,13 @@ class ViewModel: NSObject, ObservableObject {
     }
     
     func selectTrail(_ trail: Trail?, animated: Bool = true) {
+        guard selectedTrail != trail else { return }
         selectedTrail = trail
         refreshOverlays()
         if let trail {
             loadElevationProfile(trail: trail)
-            stopEditing(animated: animated)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                self.zoomTo(trail, animated: animated)
-            }
+            stopEditing()
+            zoomTo(trail, animated: animated)
         }
     }
     
@@ -300,6 +302,8 @@ class ViewModel: NSObject, ObservableObject {
                 filter = isFavourite(trail)
             case .completed:
                 filter = isCompleted(trail)
+            case .cycleway:
+                filter = trail.cycleway
             case .country(let country):
                 filter = country == trail.country
             }
@@ -319,18 +323,10 @@ class ViewModel: NSObject, ObservableObject {
             case .distance:
                 return $0.metres < $1.metres
             case .completed:
-                return getTrips(trail: $0)?.metres ?? 0 < getTrips(trail: $1)?.metres ?? 0
+                return getTrips($0)?.metres ?? 0 < getTrips($1)?.metres ?? 0
             }
         }
         filteredTrails = ascending ? sorted : sorted.reversed()
-    }
-    
-    func zoomToFilteredTrails(animated: Bool = true) {
-        if filteredTrails.isNotEmpty {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                self.setRect(self.filteredTrails.rect, animated: animated)
-            }
-        }
     }
 }
 
@@ -387,31 +383,44 @@ extension ViewModel {
     func refreshWaypoints() {
         guard let mapView else { return }
         mapView.removeAnnotations(mapView.annotations.filter { $0 is Waypoint })
-        if let selectedTrail {
-            var waypoints = Set<CLLocationCoordinate2D>()
-            addWaypoints(of: selectedTrail.polyline, to: &waypoints)
+        if let selectedTrail, selectionProfile == nil {
+            var waypoints = [Waypoint]()
+            if let first = selectedTrail.coords.first {
+                waypoints.append(Waypoint(type: .start, coordinate: first))
+            }
+            if let last = selectedTrail.coords.last {
+                waypoints.append(Waypoint(type: .end, coordinate: last))
+            }
             if let selectedTrips {
-                selectedTrips.multiPolyline.polylines.forEach { polyline in
-                    addWaypoints(of: polyline, to: &waypoints)
+                let ends = waypoints.map(\.coordinate)
+                var coords = Set(ends)
+                selectedTrips.linesCoords.forEach { line in
+                    coords.formUnion([line.first, line.last].compactMap { $0 })
                 }
+                waypoints.append(contentsOf: coords.subtracting(ends).map { Waypoint(type: .middle, coordinate: $0) })
             }
             annotationAddedDate = .now
-            mapView.addAnnotations(waypoints.map(Waypoint.init))
-        }
-    }
-    
-    func addWaypoints(of polyline: MKPolyline, to waypoints: inout Set<CLLocationCoordinate2D>) {
-        if let coord = polyline.coordinates.first {
-            waypoints.insert(coord)
-        }
-        if let coord = polyline.coordinates.last {
-            waypoints.insert(coord)
+            mapView.addAnnotations(waypoints)
         }
     }
     
     func zoomTo(_ overlay: MKOverlay?, extraPadding: Bool = false, animated: Bool = true) {
         if let overlay {
-            setRect(overlay.boundingMapRect, extraPadding: extraPadding, animated: animated)
+            ensureMapVisible()
+            setRectAfterDelay(overlay.boundingMapRect, extraPadding: extraPadding, animated: animated)
+        }
+    }
+    
+    func zoomToFilteredTrails(animated: Bool = true) {
+        if filteredTrails.isNotEmpty {
+            ensureMapVisible()
+            setRectAfterDelay(filteredTrails.rect, animated: animated)
+        }
+    }
+    
+    func setRectAfterDelay(_ rect: MKMapRect, extraPadding: Bool = false, animated: Bool = true) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            self.setRect(rect, extraPadding: extraPadding, animated: animated)
         }
     }
     
@@ -419,9 +428,10 @@ extension ViewModel {
         guard let mapView else { return }
         let size = mapView.safeAreaLayoutGuide.layoutFrame.size
         let compact = isCompact(size)
+        let selecting = isSelecting && selectionProfile == nil
         let bottom: CGFloat
-        if isSelecting {
-            bottom = selectBarSize.height - 10
+        if selecting {
+            bottom = selectBarHeight + 10
         } else if !compact {
             bottom = 0
         } else if sheetDetent == .large {
@@ -429,7 +439,7 @@ extension ViewModel {
         } else {
             bottom = getDetentHeight(size, detent: sheetDetent)
         }
-        let left = compact || isSelecting ? 0.0 : getHorizontalSheetPadding(size) + regularSheetWidth
+        let left = compact || selecting ? 0.0 : getHorizontalSheetPadding(size) + WindowSize(size).maxSheetWidth
         let padding = extraPadding ? 40.0 : 20.0
         let insets = UIEdgeInsets(top: padding, left: padding + left, bottom: padding + bottom, right: padding)
         mapView.setVisibleMapRect(rect, edgePadding: insets, animated: animated)
@@ -447,11 +457,14 @@ extension ViewModel {
     
     func getClosestTrail(to targetCoord: CLLocationCoordinate2D, trails: [Trail], maxDelta: Double) -> (CLLocationCoordinate2D?, Trail?) {
         let targetLocation = targetCoord.location
+        let targetPoint = MKMapPoint(targetCoord)
+        let filteredTrails = trails.filter { $0.boundingMapRect.padded.contains(targetPoint) }
+        
         var shortestDistance = Double.infinity
         var closestCoord: CLLocationCoordinate2D?
         var closestTrail: Trail?
         
-        for trail in trails {
+        for trail in filteredTrails {
             for location in trail.locations {
                 let delta = location.distance(from: targetLocation)
                 
@@ -473,14 +486,15 @@ extension ViewModel {
     }
     
     func resetSelecting() {
-        selectError = false
         removeSelectPins()
-        removeSelectPolyline()
+        removeSelectionProfile()
     }
     
     func stopSelecting() {
-        resetSelecting()
         isSelecting = false
+        resetSelecting()
+        refreshWaypoints()
+        ensureMapVisible()
     }
     
     func removeSelectPins() {
@@ -494,17 +508,18 @@ extension ViewModel {
         }
     }
     
-    func removeSelectPolyline() {
-        if let selectPolyline {
-            mapView?.removeOverlay(selectPolyline)
-            self.selectPolyline = nil
+    func removeSelectionProfile() {
+        if let selectionProfile {
+            mapView?.removeOverlay(selectionProfile.polyline)
         }
+        selectionProfile = nil
+        selectError = false
     }
     
     func refreshSelectPolyline() {
-        if let selectPolyline {
-            mapView?.removeOverlay(selectPolyline)
-            mapView?.addOverlay(selectPolyline, level: .aboveRoads)
+        if let selectionProfile {
+            mapView?.removeOverlay(selectionProfile.polyline)
+            mapView?.addOverlay(selectionProfile.polyline, level: .aboveRoads)
         }
     }
     
@@ -525,79 +540,86 @@ extension ViewModel {
         }
         annotationAddedDate = .now
         mapView?.addAnnotation(annotation)
-        
-        if let startPin, let endPin {
-            let coords = calculateLine(between: startPin.coordinate, and: endPin.coordinate)
-            
-            selectError = coords.count < 2
-            guard !selectError else {
-                removeSelectPins()
-                Haptics.error()
-                shake = true
-                withAnimation(.spring(response: 0.2, dampingFraction: 0.2, blendDuration: 0.2)) {
-                    shake = false
-                }
-                return
-            }
-            
-            if let selectedTrips {
-                canComplete = coords.contains { !selectedTrips.coordsSet.contains($0) }
-                canUncomplete = coords.contains { selectedTrips.coordsSet.contains($0) }
-            } else {
-                canComplete = true
-                canUncomplete = false
-            }
-            
-            let polyline = MKPolyline(coordinates: coords, count: coords.count)
-            selectPolyline = polyline
-            refreshSelectPolyline()
-            selectMetres = coords.metres()
-            Haptics.tap()
-            DispatchQueue.main.async {
-                self.zoomTo(polyline, extraPadding: true)
-            }
-        }
+        calculateSelection()
     }
     
-    func calculateLine(between coord1: CLLocationCoordinate2D, and coord2: CLLocationCoordinate2D) -> [CLLocationCoordinate2D] {
-        guard let selectedTrail else { return [] }
-        let (startCoord, _) = getClosestTrail(to: coord1, trails: [selectedTrail], maxDelta: .infinity)
-        let (endCoord, _) = getClosestTrail(to: coord2, trails: [selectedTrail], maxDelta: .infinity)
-        guard let startCoord, let endCoord else { return [] }
+    func reverseSelection() {
+        guard let startPin, let endPin else { return }
+        removeSelectionProfile()
+        self.startPin = endPin
+        self.endPin = startPin
+        calculateSelection()
+    }
+    
+    func calculateSelection() {
+        guard let selectedTrail, let trailProfile = selectedTrail.elevationProfile, let startPin, let endPin else { return }
         
-        let coords = selectedTrail.coords
-        guard let startIndex = coords.firstIndex(of: startCoord),
-              let endIndex = coords.firstIndex(of: endCoord)
-        else { return [] }
+        let (startCoord, _) = getClosestTrail(to: startPin.coordinate, trails: [selectedTrail], maxDelta: .infinity)
+        let (endCoord, _) = getClosestTrail(to: endPin.coordinate, trails: [selectedTrail], maxDelta: .infinity)
+        guard let startCoord, let endCoord,
+              let startIndex = selectedTrail.coords.firstIndex(of: startCoord),
+              let endIndex = selectedTrail.coords.firstIndex(of: endCoord),
+              trailProfile.allLocations.count == selectedTrail.coords.count
+        else { return }
         
-        return Array(coords[min(startIndex, endIndex)...max(startIndex, endIndex)])
+        let allLocations: [CLLocation]
+        if startIndex < endIndex {
+            allLocations = Array(trailProfile.allLocations[startIndex...endIndex])
+        } else {
+            allLocations = Array(trailProfile.allLocations[endIndex...startIndex]).reversed()
+        }
+        
+        let coords = allLocations.map(\.coordinate)
+        let polyline = MKPolyline(coordinates: coords, count: coords.count)
+        
+        selectError = coords.count < 2
+        guard !selectError else {
+            removeSelectPins()
+            Haptics.error()
+            shake = true
+            withAnimation(.spring(response: 0.2, dampingFraction: 0.2, blendDuration: 0.2)) {
+                shake = false
+            }
+            return
+        }
+        
+        if let selectedTrips {
+            canComplete = coords.contains { !selectedTrips.coordsSet.contains($0) }
+            canUncomplete = coords.contains { selectedTrips.coordsSet.contains($0) }
+        } else {
+            canComplete = true
+            canUncomplete = false
+        }
+        
+        selectionProfile = ElevationProfile(allLocations: allLocations, distance: allLocations.metres(), polyline: polyline, ascent: allLocations.ascent(), descent: allLocations.descent())
+        refreshSelectPolyline()
+        refreshWaypoints()
+        Haptics.tap()
+        zoomTo(polyline, extraPadding: true)
     }
     
     func completeSelectPolyline() {
-        guard let selectedTrail,
-              let selectedCoords = selectPolyline?.coordinates
-        else { return }
+        guard let selectedTrail, let selectionProfile else { return }
+        let selectionCoords = selectionProfile.allLocations.map(\.coordinate)
         
         if let selectedTrips {
             var newCoords = Set(selectedTrips.coordsSet)
-            newCoords.formUnion(selectedCoords)
+            newCoords.formUnion(selectionCoords)
             update(trips: selectedTrips, with: newCoords)
         } else {
             let trips = TrailTrips(context: container.viewContext)
             trips.id = selectedTrail.id
             trailsTrips.append(trips)
-            update(trips: trips, with: Set(selectedCoords))
+            update(trips: trips, with: Set(selectionCoords))
         }
-        Haptics.success()
     }
     
     func uncompleteSelectPolyline() {
-        guard let selectedTrips,
-              let selectedCoords = selectPolyline?.coordinates
-        else { return }
-
+        guard let selectedTrips, let selectionProfile else { return }
+        let selectionCoords = selectionProfile.allLocations.map(\.coordinate)
+        
         var newCoords = Set(selectedTrips.coordsSet)
-        newCoords.subtract(selectedCoords)
+        newCoords.subtract(selectionCoords)
         
         update(trips: selectedTrips, with: newCoords)
     }
@@ -624,7 +646,7 @@ extension ViewModel {
         mapView?.removeOverlay(trips)
         mapView?.addOverlay(trips, level: .aboveRoads)
         stopSelecting()
-        refreshWaypoints()
+        Haptics.success()
         
         if trips.metres.equalTo(selectedTrail.metres, to: -4) {
             if !completedTrails.contains(selectedTrail.id) {
@@ -658,9 +680,9 @@ extension ViewModel: UIGestureRecognizerDelegate {
     
     @objc
     func handlePress(_ press: UILongPressGestureRecognizer) {
-        guard !(isSelecting && selectPolyline == nil), press.state == .began, let coord = getCoord(from: press) else { return }
+        guard !(isSelecting && selectionProfile == nil), press.state == .began, let coord = getCoord(from: press) else { return }
         reverseGeocode(coord: coord) { placemark in
-            Haptics.tap()
+            Haptics.impact()
             let annotation = Annotation(type: .drop, placemark: placemark)
             self.mapView?.addAnnotation(annotation)
             self.mapView?.selectAnnotation(annotation, animated: true)
@@ -691,10 +713,15 @@ extension ViewModel: UIGestureRecognizerDelegate {
 extension ViewModel: CLLocationManagerDelegate {
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         authStatus = manager.authorizationStatus
-        if authStatus == .denied {
-            showAuthAlert = true
-        } else if authStatus == .notDetermined {
+        switch authStatus {
+        case .notDetermined:
             manager.requestWhenInUseAuthorization()
+        case .authorizedWhenInUse:
+            return
+        case .denied:
+            showAuthAlert = true
+        default:
+            return
         }
     }
     
@@ -793,10 +820,8 @@ extension ViewModel: MKMapViewDelegate {
                 return marker
             }
         } else if let waypoint = annotation as? Waypoint {
-            let view = mapView.dequeueReusableAnnotationView(withIdentifier: WaypointView.id, for: annotation) as? WaypointView
+            let view = mapView.dequeueReusableAnnotationView(withIdentifier: WaypointView.id, for: waypoint) as? WaypointView
             view?.vm = self
-            view?.canShowCallout = true
-            view?.rightCalloutAccessoryView = getShareMenu(mapItem: nil, coord: waypoint.coordinate, allowsDirections: true)
             return view
         }
         return nil
@@ -832,7 +857,7 @@ extension ViewModel: MKMapViewDelegate {
                 endPin = nil
             }
             mapView.removeAnnotation(annotation)
-            removeSelectPolyline()
+            removeSelectionProfile()
         }
     }
     
@@ -845,12 +870,12 @@ extension ViewModel: MKMapViewDelegate {
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
         guard let annotation = view.annotation else { return }
         annotationSelected = true
-        if isSelecting && selectPolyline == nil {
-            mapView.deselectAnnotation(annotation, animated: false)
-            newSelectCoord(coord: annotation.coordinate)
-        }
         if Date.now.timeIntervalSince(annotationAddedDate) < 0.5 {
             mapView.deselectAnnotation(annotation, animated: false)
+        }
+        if (annotation as? Annotation)?.type != .select && isSelecting && selectionProfile == nil {
+            mapView.deselectAnnotation(annotation, animated: false)
+            newSelectCoord(coord: annotation.coordinate)
         }
     }
     
@@ -886,33 +911,23 @@ extension ViewModel: UISearchBarDelegate {
         isEditing = true
         searchBar?.becomeFirstResponder()
         searchBar?.setShowsCancelButton(true, animated: true)
-        withAnimation(.sheet) {
-            isSearching = true
-            sheetDetent = .large
-        }
+        isSearching = true
+        setSheetDetent(.large)
     }
     
-    func stopEditing(animated: Bool = true) {
+    func stopEditing() {
         isEditing = false
+        ensureMapVisible()
         searchBar?.resignFirstResponder()
         if let cancelButton = searchBar?.value(forKey: "cancelButton") as? UIButton {
             cancelButton.isEnabled = true
-        }
-        if animated {
-            withAnimation(.sheet) {
-                sheetDetent = .medium
-            }
-        } else {
-            sheetDetent = .medium
         }
     }
     
     func stopSearching() {
         searchText = ""
+        isSearching = false
         stopEditing()
         searchBar?.setShowsCancelButton(false, animated: false)
-        withAnimation(.sheet) {
-            isSearching = false
-        }
     }
 }
