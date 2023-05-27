@@ -8,23 +8,35 @@
 import SwiftUI
 
 struct TrailImage: View {
+    @State var uiImage: UIImage?
+    
     let trail: Trail
     
     var body: some View {
         GeometryReader { geo in
-            AsyncImage(url: trail.photoUrl, transaction: Transaction(animation: .default)) { phase in
-                if let image = phase.image {
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                } else {
-                    Color(.systemFill)
-                }
+            if let uiImage {
+                Image(uiImage: uiImage)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: geo.size.width, height: geo.size.height)
+                    .clipped()
+            } else {
+                Color(.systemFill)
             }
-            .frame(width: geo.size.width, height: geo.size.height)
-            .clipped()
         }
+        .animation(.default, value: uiImage)
         .frame(height: 120)
+        .task {
+            await fetchImage()
+        }
+    }
+    
+    func fetchImage() async {
+        guard uiImage == nil else { return }
+        do {
+            let (data, _) = try await URLSession.shared.data(from: trail.photoUrl)
+            uiImage = UIImage(data: data)
+        } catch {}
     }
 }
 

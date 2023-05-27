@@ -22,10 +22,12 @@ class ViewModel: NSObject, ObservableObject {
     var trails = [Trail]()
     var trailsTrips = [TrailTrips]()
     var selectedTrips: TrailTrips? { getTrips(selectedTrail) }
+    @Published var startWaypoint: Waypoint?
+    @Published var endWaypoint: Waypoint?
     @Published var selectedTrail: Trail? { didSet {
         selectedTrailId = selectedTrail?.id ?? -1
         if selectedTrail == nil {
-            headerSize.height = 73
+            headerSize.height = searchBarDefaultHeight
         }
     }}
     @Storage("selectedTrailId") var selectedTrailId = Int16(-1)
@@ -84,57 +86,12 @@ class ViewModel: NSObject, ObservableObject {
             stopSearching()
         }
     }}
-    func setSheetDetent(_ detent: SheetDetent) {
-        if sheetDetent != detent {
-            withAnimation(.sheet) {
-                sheetDetent = detent
-            }
-        }
-    }
-    func ensureMapVisible() {
-        if isCompact(unsafeWindowSize) {
-            setSheetDetent(.medium)
-        }
-    }
     
     // Dimensions
     let selectBarHeight = 60.0
-    let mediumDetentHeight = 270.0
+    let searchBarDefaultHeight = 73.0
     var unsafeWindowSize: CGSize {
         mapView?.layoutMarginsGuide.layoutFrame.size ?? .zero
-    }
-    func isCompact(_ size: CGSize) -> Bool {
-        WindowSize(size) == .compact
-    }
-    func isMapDisabled(_ size: CGSize) -> Bool {
-        sheetDetent == .large && isCompact(size) && !(isSelecting && selectionProfile == nil)
-    }
-    func getMaxSheetWidth(_ size: CGSize) -> CGFloat {
-        WindowSize(size).maxSheetWidth
-    }
-    func getTopSheetPadding(_ size: CGSize) -> CGFloat {
-        isCompact(size) ? 20 : 10
-    }
-    func getHorizontalSheetPadding(_ size: CGSize) -> CGFloat {
-        isCompact(size) ? 0 : 10
-    }
-    func getSpacerHeight(_ size: CGSize, detent: SheetDetent) -> CGFloat {
-        size.height - getDetentHeight(size, detent: detent)
-    }
-    func getDetentHeight(_ size: CGSize, detent: SheetDetent) -> CGFloat {
-        switch detent {
-        case .large:
-            return size.height - getTopSheetPadding(size)
-        case .medium:
-            return mediumDetentHeight
-        case .small:
-            return headerSize.height
-        }
-    }
-    func refreshCompass() {
-        UIView.animate(withDuration: 0.3) {
-            self.mapView?.compass?.alpha = self.isMapDisabled(self.unsafeWindowSize) ? 0 : 1
-        }
     }
     
     // Completed Alert
@@ -190,7 +147,6 @@ class ViewModel: NSObject, ObservableObject {
         super.init()
         locationManager.delegate = self
         loadData()
-        selectedTrail = trails.first { $0.id == selectedTrailId }
     }
     
     // MARK: - Load Data
@@ -220,8 +176,6 @@ class ViewModel: NSObject, ObservableObject {
         }
         
         container.loadPersistentStores { description, error in
-//            self.deleteAll(TrailTrips.self)
-//            self.completedTrails = []
             self.trailsTrips = (try? self.container.viewContext.fetch(TrailTrips.fetchRequest()) as? [TrailTrips]) ?? []
             self.trailsTrips.forEach { $0.reload() }
             self.filterTrails()
@@ -243,6 +197,7 @@ class ViewModel: NSObject, ObservableObject {
                 CLLocation(coordinate: coord, altitude: lineString.coordinates[index].location.altitude, horizontalAccuracy: 0, verticalAccuracy: 0, timestamp: .now)
             }
             trail.elevationProfile = ElevationProfile(allLocations: allLocations, distance: trail.metres, polyline: trail.polyline, ascent: trail.ascent, descent: trail.descent)
+            objectWillChange.send()
         default: return
         }
     }
@@ -267,10 +222,6 @@ class ViewModel: NSObject, ObservableObject {
         favouriteTrails.contains(trail.id)
     }
     
-    func isCompleted(_ trail: Trail) -> Bool {
-        completedTrails.contains(trail.id)
-    }
-    
     func toggleFavourite(_ trail: Trail) {
         if favouriteTrails.contains(trail.id) {
             favouriteTrails.removeAll(trail.id)
@@ -280,9 +231,71 @@ class ViewModel: NSObject, ObservableObject {
         }
     }
     
+    func isCompleted(_ trail: Trail) -> Bool {
+        completedTrails.contains(trail.id)
+    }
+    
+    func isCompact(_ size: CGSize) -> Bool {
+        HorizontalSizeClass(size) == .compact
+    }
+    
+    func isMapDisabled(_ size: CGSize) -> Bool {
+        sheetDetent == .large && isCompact(size) && !(isSelecting && selectionProfile == nil)
+    }
+    
+    func getMaxSheetWidth(_ size: CGSize) -> CGFloat {
+        HorizontalSizeClass(size).maxSheetWidth
+    }
+    
+    func getTopSheetPadding(_ size: CGSize) -> CGFloat {
+        isCompact(size) ? 20 : 10
+    }
+    
+    func getHorizontalSheetPadding(_ size: CGSize) -> CGFloat {
+        isCompact(size) ? 0 : 10
+    }
+    
+    func getMediumSheetDetent(_ size: CGSize) -> CGFloat {
+        VerticalSizeClass(size).mediumSheetDetent
+    }
+    
+    func getSpacerHeight(_ size: CGSize, detent: SheetDetent) -> CGFloat {
+        size.height - getDetentHeight(size, detent: detent)
+    }
+    
+    func getDetentHeight(_ size: CGSize, detent: SheetDetent) -> CGFloat {
+        switch detent {
+        case .large:
+            return size.height - getTopSheetPadding(size)
+        case .medium:
+            return getMediumSheetDetent(size)
+        case .small:
+            return headerSize.height
+        }
+    }
+    
+    func refreshCompass() {
+        UIView.animate(withDuration: 0.3) {
+            self.mapView?.compass?.alpha = self.isMapDisabled(self.unsafeWindowSize) ? 0 : 1
+        }
+    }
+    
+    func setSheetDetent(_ detent: SheetDetent) {
+        withAnimation(.sheet) {
+            sheetDetent = detent
+        }
+    }
+    
+    func ensureMapVisible() {
+        if isCompact(unsafeWindowSize) {
+            setSheetDetent(.medium)
+        }
+    }
+    
     func selectTrail(_ trail: Trail?, animated: Bool = true) {
-        guard selectedTrail != trail else { return }
-        selectedTrail = trail
+        withAnimation(animated ? .sheet : .none) {
+            selectedTrail = trail
+        }
         refreshOverlays()
         if let trail {
             loadElevationProfile(trail: trail)
@@ -386,10 +399,12 @@ extension ViewModel {
         if let selectedTrail, selectionProfile == nil {
             var waypoints = [Waypoint]()
             if let first = selectedTrail.coords.first {
-                waypoints.append(Waypoint(type: .start, coordinate: first))
+                startWaypoint = Waypoint(type: .start, name: selectedTrail.start, coordinate: first)
+                waypoints.append(startWaypoint!)
             }
             if let last = selectedTrail.coords.last {
-                waypoints.append(Waypoint(type: .end, coordinate: last))
+                endWaypoint = Waypoint(type: .end, name: selectedTrail.end, coordinate: last)
+                waypoints.append(endWaypoint!)
             }
             if let selectedTrips {
                 let ends = waypoints.map(\.coordinate)
@@ -435,11 +450,11 @@ extension ViewModel {
         } else if !compact {
             bottom = 0
         } else if sheetDetent == .large {
-            bottom = mediumDetentHeight
+            bottom = getMediumSheetDetent(size)
         } else {
             bottom = getDetentHeight(size, detent: sheetDetent)
         }
-        let left = compact || selecting ? 0.0 : getHorizontalSheetPadding(size) + WindowSize(size).maxSheetWidth
+        let left = compact || selecting ? 0.0 : getHorizontalSheetPadding(size) + HorizontalSizeClass(size).maxSheetWidth
         let padding = extraPadding ? 40.0 : 20.0
         let insets = UIEdgeInsets(top: padding, left: padding + left, bottom: padding + bottom, right: padding)
         mapView.setVisibleMapRect(rect, edgePadding: insets, animated: animated)

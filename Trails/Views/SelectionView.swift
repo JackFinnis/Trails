@@ -94,13 +94,15 @@ struct SelectionView: View {
                         Text("Waypoints")
                             .font(.headline)
                         VStack(spacing: 0) {
-                            if let start = vm.startPin {
-                                WaypointButton(annotation: start, type: .start)
+                            if let start = vm.startPin,
+                               let address = start.mapItem.placemark.postalAddress {
+                                WaypointButton(annotation: start, title: address.formatted(), type: .start)
                             }
                             Divider()
                                 .padding(.leading, 15)
-                            if let end = vm.endPin {
-                                WaypointButton(annotation: end, type: .end)
+                            if let end = vm.endPin,
+                               let address = end.mapItem.placemark.postalAddress {
+                                WaypointButton(annotation: end, title: address.formatted(), type: .end)
                             }
                         }
                         .continuousRadius(10)
@@ -158,40 +160,5 @@ struct SelectionViewButton: View {
         }
         .containerBackground(light: false)
         .continuousRadius(10)
-    }
-}
-
-struct WaypointButton: View {
-    @EnvironmentObject var vm: ViewModel
-    
-    let annotation: Annotation
-    let type: WaypointType
-    
-    var body: some View {
-        Button {
-            vm.mapView?.selectAnnotation(annotation, animated: true)
-            vm.ensureMapVisible()
-        } label: {
-            HStack(alignment: .top) {
-                VStack(alignment: .leading) {
-                    Text(type.rawValue)
-                        .font(.footnote)
-                        .foregroundColor(.secondary)
-                    if let address = annotation.mapItem.placemark.postalAddress {
-                        Text(address.formatted())
-                            .multilineTextAlignment(.leading)
-                            .font(.subheadline)
-                    }
-                }
-                .foregroundColor(.primary)
-                Spacer(minLength: 0)
-                Image(systemName: "map")
-                    .font(.icon)
-                    .padding(.top, 5)
-            }
-            .padding(.vertical, 10)
-            .padding(.horizontal, 15)
-            .containerBackground(light: true)
-        }
     }
 }

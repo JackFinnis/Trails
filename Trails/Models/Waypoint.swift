@@ -16,16 +16,19 @@ enum WaypointType: String {
 
 class Waypoint: NSObject {
     let type: WaypointType
+    let name: String?
     let coordinate: CLLocationCoordinate2D
     
-    init(type: WaypointType, coordinate: CLLocationCoordinate2D) {
-        self.coordinate = coordinate
+    init(type: WaypointType, name: String? = nil, coordinate: CLLocationCoordinate2D) {
         self.type = type
+        self.name = name
+        self.coordinate = coordinate
     }
 }
 
 extension Waypoint: MKAnnotation {
     var title: String? { type.rawValue }
+    var subtitle: String? { name }
 }
 
 class WaypointView: MKAnnotationView {

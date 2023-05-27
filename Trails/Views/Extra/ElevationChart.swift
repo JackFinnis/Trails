@@ -18,6 +18,7 @@ struct ElevationChart: View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Elevation")
                 .font(.headline)
+                .padding(.leading, 5)
             HStack(alignment: .top) {
                 VStack(alignment: .trailing) {
                     Text(String(Int(profile.maxElevation)) + " m")

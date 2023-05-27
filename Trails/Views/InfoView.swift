@@ -33,7 +33,7 @@ struct InfoView: View {
                     .horizontallyCentred()
                     
                     VStack(alignment: .leading, spacing: 15) {
-                        InfoRow(systemName: "signpost.right", title: "Adventure Awaits", description: "Discover 44 long-distance walking trails through the UK's most breathtaking landscapes.")
+                        InfoRow(systemName: "signpost.right", title: "Adventure Awaits", description: "Discover \(vm.trails.count) long-distance walking trails through the UK's most breathtaking landscapes.")
                         InfoRow(systemName: "point.topleft.down.curvedto.point.bottomright.up", title: "Plan Your Trip", description: "Measure the length of your next trip and view its elevation profile.")
                         InfoRow(systemName: "arrow.triangle.turn.up.right.circle", title: "Get Directions", description: "Long press on your destination.")
                         InfoRow(systemName: "checkmark.circle", title: "Track Your Progress", description: "Mark sections of a trail as completed.")

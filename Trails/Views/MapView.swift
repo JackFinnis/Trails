@@ -33,12 +33,6 @@ struct MapView: UIViewRepresentable {
         let mapView = _MKMapView()
         mapView.delegate = vm
         vm.mapView = mapView
-        vm.refreshOverlays()
-        if let trail = vm.selectedTrail {
-            vm.zoomTo(trail, animated: false)
-        } else {
-            vm.zoomToFilteredTrails(animated: false)
-        }
         
         mapView.showsUserLocation = true
         mapView.showsScale = true

@@ -112,6 +112,24 @@ struct TrailView: View {
                         ElevationChart(profile: profile)
                             .padding(.horizontal)
                     }
+                    
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("Waypoints")
+                            .font(.headline)
+                            .padding(.leading, 5)
+                        VStack(spacing: 0) {
+                            if let start = vm.startWaypoint {
+                                WaypointButton(annotation: start, title: trail.start, type: .start)
+                            }
+                            Divider()
+                                .padding(.leading, 15)
+                            if let end = vm.endWaypoint {
+                                WaypointButton(annotation: end, title: trail.end, type: .end)
+                            }
+                        }
+                        .continuousRadius(10)
+                    }
+                    .padding(.horizontal)
                 }
                 .padding(.vertical)
                 .contentShape(Rectangle())

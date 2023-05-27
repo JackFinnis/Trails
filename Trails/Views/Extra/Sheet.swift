@@ -86,26 +86,3 @@ struct Sheet<Content: View, Header: View>: View {
         .transition(.move(edge: .bottom))
     }
 }
-
-struct SheetStat: View {
-    let name: String
-    let value: String
-    let systemName: String
-    var tint: Color = .secondary
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text(name)
-                .textCase(.uppercase)
-                .foregroundColor(.secondary)
-                .font(.caption2.weight(.bold))
-            HStack(spacing: 5) {
-                Image(systemName: systemName)
-                    .font(.footnote.weight(.bold))
-                    .foregroundColor(tint)
-                Text(value)
-                    .font(.subheadline.bold())
-            }
-        }
-    }
-}

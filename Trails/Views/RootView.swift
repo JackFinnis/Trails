@@ -94,7 +94,6 @@ struct RootView: View {
         }
         .animation(.sheet, value: vm.selectionProfile)
         .animation(.sheet, value: vm.isSelecting)
-        .animation(.sheet, value: vm.selectedTrail)
         .onChange(of: colorScheme) { _ in
             vm.refreshOverlays()
         }
@@ -102,6 +101,12 @@ struct RootView: View {
             if !launchedBefore {
                 launchedBefore = true
                 showWelcomeView = true
+            }
+            if let trail = vm.trails.first(where: { $0.id == vm.selectedTrailId }) {
+                vm.selectTrail(trail, animated: false)
+            } else {
+                vm.refreshOverlays()
+                vm.zoomToFilteredTrails(animated: false)
             }
         }
         .background {

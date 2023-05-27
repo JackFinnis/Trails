@@ -10,6 +10,8 @@
         "id": 0,
         "days": 19,
         "colour": 1,
+        "start": "Edale, Derbyshire",
+        "end": "Kirk Yetholm, Scottish Borders",
         "cycleStatus": "no",
         "country": "England"
     },
@@ -24,6 +26,8 @@
         "id": 1,
         "days": 9,
         "colour": 1,
+        "start": "Helmsley, North Yorkshire",
+        "end": "Filey Brigg, North Yorkshire",
         "cycleStatus": "no",
         "country": "England"
     },
@@ -38,6 +42,8 @@
         "photoUrl": "https://nationaltrails.s3.eu-west-2.amazonaws.com/uploads/NH_ODP_3.jpg",
         "days": 14,
         "colour": 2,
+        "start": "Sedbury, Gloucestershire",
+        "end": "Prestatyn, Denbighshire",
         "cycleStatus": "no",
         "country": "Wales"
     },
@@ -52,6 +58,8 @@
         "photoUrl": "https://nationaltrails.s3.eu-west-2.amazonaws.com/uploads/IL20220825142402-SDW_Header-2000x600.jpg",
         "days": 9,
         "colour": 2,
+        "start": "Winchester, Hampshire",
+        "end": "Eastbourne, East Sussex",
         "cycleStatus": "no",
         "country": "England"
     },
@@ -66,6 +74,8 @@
         "photoUrl": "https://nationaltrails.s3.eu-west-2.amazonaws.com/uploads/IL20190710144026-shutterstock_1404983168TRWa-2000x600.jpg",
         "days": 6,
         "colour": 3,
+        "start": "Avebury, Wiltshire",
+        "end": "Ivinghoe Beacon, Buckinghamshire",
         "cycleStatus": "yes",
         "country": "England"
     },
@@ -80,6 +90,8 @@
         "photoUrl": "https://nationaltrails.s3.eu-west-2.amazonaws.com/uploads/IL20190329152828-DSC08298-2000x600.jpg",
         "days": 52,
         "colour": 3,
+        "start": "Minehead, Somerset",
+        "end": "Poole Harbour, Dorset",
         "cycleStatus": "no",
         "country": "England"
     },
@@ -94,6 +106,8 @@
         "photoUrl": "https://nationaltrails.s3.eu-west-2.amazonaws.com/uploads/IL20190405101653-DSC4203-1-2000x600.jpg",
         "days": 12,
         "colour": 1,
+        "start": "Farnham, Surrey",
+        "end": "Dover, Kent",
         "cycleStatus": "no",
         "country": "England"
     },
@@ -108,6 +122,8 @@
         "photoUrl": "https://nationaltrails.s3.eu-west-2.amazonaws.com/uploads/NH_YWW.jpg",
         "days": 6,
         "colour": 2,
+        "start": "Hessle, East Riding of Yorkshire",
+        "end": "Filey, North Yorkshire",
         "cycleStatus": "no",
         "country": "England"
     },
@@ -122,6 +138,8 @@
         "photoUrl": "https://nationaltrails.s3.eu-west-2.amazonaws.com/uploads/IL20190409145648-DSC06455-2000x600.jpg",
         "days": 8,
         "colour": 3,
+        "start": "Knettishall Heath, Suffolk",
+        "end": "Hopton-on-Sea, Norfolk",
         "cycleStatus": "no",
         "country": "England"
     },
@@ -136,6 +154,8 @@
         "photoUrl": "https://nationaltrails.s3.eu-west-2.amazonaws.com/uploads/IL20210616162331-TP-open-field-towards-Henley-scaled-2000x600.jpg",
         "days": 14,
         "colour": 2,
+        "start": "Source of the Thames, Cotswolds",
+        "end": "Woolwich, London",
         "cycleStatus": "no",
         "country": "England"
     },
@@ -150,6 +170,8 @@
         "photoUrl": "https://nationaltrails.s3.eu-west-2.amazonaws.com/uploads/IL20220825130935-DSC1106-1-2000x600.jpg",
         "days": 7,
         "colour": 3,
+        "start": "Wallsend, Tyne and Wear",
+        "end": "Bowness-on-Solway, Cumbria",
         "cycleStatus": "no",
         "country": "England"
     },
@@ -164,6 +186,8 @@
         "photoUrl": "https://nationaltrails.s3.eu-west-2.amazonaws.com/uploads/IL20190329143018-DSC2961-2000x600.jpg",
         "days": 10,
         "colour": 1,
+        "start": "Chipping Campden, Gloucestershire",
+        "end": "Bath, Somerset",
         "cycleStatus": "no",
         "country": "England"
     },
@@ -178,6 +202,8 @@
         "photoUrl": "https://nationaltrails.s3.eu-west-2.amazonaws.com/uploads/PBW_Header.jpg",
         "days": 17,
         "colour": 2,
+        "start": "Middleton Top, Derbyshire",
+        "end": "Ravenstonedale, Cumbria",
         "cycleStatus": "yes",
         "country": "England"
     },
@@ -192,6 +218,8 @@
         "photoUrl": "https://nationaltrails.s3.eu-west-2.amazonaws.com/uploads/IL20190710111831-IMGP5701PCP-2000x600.jpg",
         "days": 12,
         "colour": 1,
+        "start": "St Dogmaels, Pembrokeshire",
+        "end": "Amroth, Pembrokeshire",
         "cycleStatus": "no",
         "country": "Wales"
     },
@@ -206,6 +234,8 @@
         "photoUrl": "https://nationaltrails.s3.eu-west-2.amazonaws.com/uploads/IL20190710085844-Nant-Fadian-4-2000x600.jpg",
         "days": 9,
         "colour": 3,
+        "start": "Knighton, Powys",
+        "end": "Welshpool, Powys",
         "cycleStatus": "no",
         "country": "Wales"
     },
@@ -220,6 +250,8 @@
         "days": 46,
         "photoUrl": "https://images.ctfassets.net/bth3mlrehms2/1PVHF6yurRbS9Iwdk4i6ZI/6a4a244f1238533ffafc59cb3b5b9352/iStock-987378554.jpg?w=2121&h=1414&fl=progressive&q=50&fm=jpg",
         "colour": 1,
+        "start": "Belfast, Antrim",
+        "end": "Lisburn, Antrim",
         "cycleStatus": "no",
         "country": "Northern Ireland"
     },
@@ -234,6 +266,8 @@
         "days": 4,
         "photoUrl": "https://www.scotlandsgreattrails.com/wp-content/uploads/2017/07/ANN-AnnanBridge-768x320.jpg",
         "colour": 1,
+        "start": "Moffat",
+        "end": "Newbiebarns, Solway Firth",
         "cycleStatus": "no",
         "country": "Scotland"
     },
@@ -248,6 +282,8 @@
         "days": 7,
         "photoUrl": "https://www.scotlandsgreattrails.com/wp-content/uploads/2017/07/ACW-MachrieBay-768x320.jpg",
         "colour": 2,
+        "start": "Brodick",
+        "end": "Brodick",
         "cycleStatus": "no",
         "country": "Scotland"
     },
@@ -262,6 +298,8 @@
         "days": 8,
         "photoUrl": "https://www.scotlandsgreattrails.com/wp-content/uploads/2017/03/Bracken-Bay-Heads-of-Ayr-e1494140923152-768x320.jpg",
         "colour": 3,
+        "start": "Glenapp Kirk",
+        "end": "Skelmorlie",
         "cycleStatus": "no",
         "country": "Scotland"
     },
@@ -276,6 +314,8 @@
         "days": 3,
         "photoUrl": "https://www.scotlandsgreattrails.com/wp-content/uploads/2017/02/Coldingham-BayCrop-e1497445222314-768x320.jpg",
         "colour": 1,
+        "start": "Berwick-upon-Tweed",
+        "end": "Cockburnspath",
         "cycleStatus": "no",
         "country": "Scotland"
     },
@@ -290,6 +330,8 @@
         "days": 5,
         "photoUrl": "https://www.scotlandsgreattrails.com/wp-content/uploads/2017/08/SCW-MELROSE-ABBEY-JOHN-BARKER-Abbey3-768x320.jpg",
         "colour": 2,
+        "start": "Melrose",
+        "end": "Melrose",
         "cycleStatus": "no",
         "country": "Scotland"
     },
@@ -304,6 +346,8 @@
         "days": 5,
         "photoUrl": "https://www.scotlandsgreattrails.com/wp-content/uploads/2017/05/Auchintaple-e1504356964696-768x320.jpg",
         "colour": 3,
+        "start": "Blairgowrie",
+        "end": "Blairgowrie",
         "cycleStatus": "no",
         "country": "Scotland"
     },
@@ -318,6 +362,8 @@
         "days": 4,
         "photoUrl": "https://www.scotlandsgreattrails.com/wp-content/uploads/2017/05/018-IMG_39121-e1495624371312-768x320.jpg",
         "colour": 1,
+        "start": "Glasgow",
+        "end": "New Lanark",
         "cycleStatus": "sections",
         "country": "Scotland"
     },
@@ -332,6 +378,8 @@
         "days": 5,
         "photoUrl": "https://www.scotlandsgreattrails.com/wp-content/uploads/2017/05/CW-4-Curra-Lochain-1-768x320.jpg",
         "colour": 2,
+        "start": "Portavadie, Loch Fyne",
+        "end": "Inveruglas, Loch Lomond",
         "cycleStatus": "no",
         "country": "Scotland"
     },
@@ -346,6 +394,8 @@
         "days": 4,
         "photoUrl": "https://www.scotlandsgreattrails.com/wp-content/uploads/2017/07/CBD-P8130591crop-768x320.jpg",
         "colour": 3,
+        "start": "Little Vantage",
+        "end": "Hawick",
         "cycleStatus": "yes",
         "country": "Scotland"
     },
@@ -360,6 +410,8 @@
         "days": 2,
         "photoUrl": "https://www.scotlandsgreattrails.com/wp-content/uploads/2017/06/DWay4crop-2000x836.jpg",
         "colour": 1,
+        "start": "Grantown-on-Spey",
+        "end": "Forres",
         "cycleStatus": "yes",
         "country": "Scotland"
     },
@@ -374,6 +426,8 @@
         "days": 9,
         "photoUrl": "https://www.scotlandsgreattrails.com/wp-content/uploads/2017/05/dykes-768x320.jpg",
         "colour": 2,
+        "start": "Kincardine-on-Forth",
+        "end": "Newburgh",
         "cycleStatus": "no",
         "country": "Scotland"
     },
@@ -388,6 +442,8 @@
         "days": 4,
         "photoUrl": "https://www.scotlandsgreattrails.com/wp-content/uploads/2017/06/Horse-RidingCrop-768x320.jpg",
         "colour": 3,
+        "start": "Dyce",
+        "end": "Fraserburgh",
         "cycleStatus": "yes",
         "country": "Scotland"
     },
@@ -402,6 +458,8 @@
         "days": 6,
         "photoUrl": "https://www.scotlandsgreattrails.com/wp-content/uploads/2017/02/P1070039c-1-768x320.jpg",
         "colour": 1,
+        "start": "Fort William",
+        "end": "Inverness",
         "cycleStatus": "sections",
         "country": "Scotland"
     },
@@ -416,6 +474,8 @@
         "days": 2,
         "photoUrl": "https://www.scotlandsgreattrails.com/wp-content/uploads/2017/08/IMG_7877-e1498236271776-768x320.jpg",
         "colour": 2,
+        "start": "Inversnaid",
+        "end": "Callander",
         "cycleStatus": "yes",
         "country": "Scotland"
     },
@@ -430,6 +490,8 @@
         "days": 10,
         "photoUrl": "https://www.scotlandsgreattrails.com/wp-content/uploads/2017/07/View-of-Loch-Lomondcrop-768x320.jpg",
         "colour": 3,
+        "start": "Helensburgh",
+        "end": "Dunbar",
         "cycleStatus": "yes",
         "country": "Scotland"
     },
@@ -444,6 +506,8 @@
         "days": 8,
         "photoUrl": "https://www.scotlandsgreattrails.com/wp-content/uploads/2017/07/KTW-JuraFromRonachan-768x320.jpg",
         "colour": 1,
+        "start": "Tarbert",
+        "end": "Machrihanish",
         "cycleStatus": "sections",
         "country": "Scotland"
     },
@@ -458,6 +522,8 @@
         "days": 4,
         "photoUrl": "https://www.scotlandsgreattrails.com/wp-content/uploads/2021/03/BowFiddle-e1615026672341.jpg",
         "colour": 2,
+        "start": "Forres",
+        "end": "Cullen",
         "cycleStatus": "no",
         "country": "Scotland"
     },
@@ -472,6 +538,8 @@
         "days": 3,
         "photoUrl": "https://www.scotlandsgreattrails.com/wp-content/uploads/2017/05/walker-768x320.jpg",
         "colour": 3,
+        "start": "Mull of Galloway",
+        "end": "Glenapp Kirk",
         "cycleStatus": "no",
         "country": "Scotland"
     },
@@ -486,6 +554,8 @@
         "days": 3,
         "photoUrl": "https://www.walkhighlands.co.uk/glasgow/7_3/7_3_2l.JPG",
         "colour": 1,
+        "start": "Glenbuck Loch",
+        "end": "Ayr",
         "cycleStatus": "no",
         "country": "Scotland"
     },
@@ -500,6 +570,8 @@
         "days": 6,
         "photoUrl": "https://www.scotlandsgreattrails.com/wp-content/uploads/2017/05/Lubnaigdreamstimeextralarge_51156300-768x320.jpg",
         "colour": 2,
+        "start": "Drymen",
+        "end": "Pitlochry",
         "cycleStatus": "sections",
         "country": "Scotland"
     },
@@ -514,6 +586,8 @@
         "days": 4,
         "photoUrl": "https://www.scotlandsgreattrails.com/wp-content/uploads/2017/08/CrookedRoad-768x320.jpg",
         "colour": 3,
+        "start": "Ae Forest",
+        "end": "Craik",
         "cycleStatus": "yes",
         "country": "Scotland"
     },
@@ -528,6 +602,8 @@
         "days": 17,
         "photoUrl": "https://www.scotlandsgreattrails.com/wp-content/uploads/2017/08/SUW-CraigmichenScar-EttrickHilsC-e1503415619135-768x320.jpg",
         "colour": 1,
+        "start": "Portpatrick",
+        "end": "Cockburnspath",
         "cycleStatus": "no",
         "country": "Scotland"
     },
@@ -542,6 +618,8 @@
         "days": 7,
         "photoUrl": "https://www.scotlandsgreattrails.com/wp-content/uploads/2017/05/P9110083crs-768x320.jpg",
         "colour": 2,
+        "start": "Buckie",
+        "end": "Kincraig",
         "cycleStatus": "no",
         "country": "Scotland"
     },
@@ -556,6 +634,8 @@
         "days": 5,
         "photoUrl": "https://www.scotlandsgreattrails.com/wp-content/uploads/2017/08/SCW-Lindisfarnemudflats-768x320.jpg",
         "colour": 3,
+        "start": "Melrose",
+        "end": "Lindisfarne",
         "cycleStatus": "no",
         "country": "Scotland"
     },
@@ -570,6 +650,8 @@
         "days": 3,
         "photoUrl": "https://www.scotlandsgreattrails.com/wp-content/uploads/2017/05/L-Lomond-from-Goukhill-1-768x320.jpg",
         "colour": 1,
+        "start": "Balloch",
+        "end": "Inveruglas",
         "cycleStatus": "no",
         "country": "Scotland"
     },
@@ -584,6 +666,8 @@
         "days": 5,
         "photoUrl": "https://www.scotlandsgreattrails.com/wp-content/uploads/2017/07/FCU-waterplayCrop-768x320.jpg",
         "colour": 2,
+        "start": "Bowling",
+        "end": "Edinburgh",
         "cycleStatus": "yes",
         "country": "Scotland"
     },
@@ -598,6 +682,8 @@
         "days": 6,
         "photoUrl": "https://www.scotlandsgreattrails.com/wp-content/uploads/2017/02/P1060026-72dpi-e1503562399499-768x320.jpg",
         "colour": 3,
+        "start": "Milngavie",
+        "end": "Fort William",
         "cycleStatus": "no",
         "country": "Scotland"
     },
@@ -612,7 +698,25 @@
         "days": 3,
         "photoUrl": "https://www.scotlandsgreattrails.com/wp-content/uploads/2017/05/IMG_1219-2000x833.jpg",
         "colour": 1,
+        "start": "Kilchattan Bay",
+        "end": "Port Bannatyne",
         "cycleStatus": "no",
         "country": "Scotland"
+    },
+    {
+        "id": 44,
+        "name": "Coast to Coast",
+        "descent": 8657,
+        "ascent": 8656,
+        "metres": 292187,
+        "description": "Walk through three national parks on the newest National Trail devised by renouned fell walker Alfred Wainwright.",
+        "url": "https://www.nationaltrail.co.uk/coast-to-coast/",
+        "days": 14,
+        "photoUrl": "https://nationaltrails.s3.eu-west-2.amazonaws.com/uploads/jonny-gios-DaCnc5ba-qw-unsplash.jpg",
+        "colour": 1,
+        "start": "St Bees, Cumbria",
+        "end": "Robin Hood's Bay, North Yorkshire",
+        "cycleStatus": "no",
+        "country": "England"
     }
 ]

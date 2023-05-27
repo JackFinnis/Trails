@@ -21,6 +21,8 @@ class Trail: NSObject, Identifiable {
     let cycleStatus: TrailCycleStatus
     let ascent: Double
     let descent: Double
+    let start: String
+    let end: String
     let country: TrailCountry
     
     var cycleway: Bool { cycleStatus != .no }
@@ -47,9 +49,11 @@ class Trail: NSObject, Identifiable {
         ascent = metadata.ascent
         descent = metadata.descent
         country = metadata.country
+        start = metadata.start
+        end = metadata.end
     }
     
-    static let example = Trail(metadata: .init(id: 0, name: "Cleveland Way", description: "Experience the varied landscape of the North York Moors National Park on a journey across breathtaking heather moorland and dramatic coastline.", url: URL(string: "https://www.nationaltrail.co.uk/trails/cleveland-way/")!, photoUrl: URL(string: "https://nationaltrails.s3.eu-west-2.amazonaws.com/uploads/Cleveland-Way-Home-2000x600.jpg")!, metres: 170813, days: 9, colour: 1, cycleStatus: .sections, ascent: 5031, descent: 4032, country: .england), polyline: MKPolyline())
+    static let example = Trail(metadata: .init(id: 0, name: "Cleveland Way", description: "Experience the varied landscape of the North York Moors National Park on a journey across breathtaking heather moorland and dramatic coastline.", url: URL(string: "https://www.nationaltrail.co.uk/trails/cleveland-way/")!, photoUrl: URL(string: "https://nationaltrails.s3.eu-west-2.amazonaws.com/uploads/Cleveland-Way-Home-2000x600.jpg")!, metres: 170813, days: 9, colour: 1, cycleStatus: .sections, ascent: 5031, descent: 4032, country: .england, start: "Helmsley", end: "Filey"), polyline: MKPolyline())
 }
 
 extension Trail: MKOverlay {
@@ -70,6 +74,8 @@ struct TrailMetadata: Codable {
     let ascent: Double
     let descent: Double
     let country: TrailCountry
+    let start: String
+    let end: String
 }
 
 enum TrailCountry: String, Codable, CaseIterable {
