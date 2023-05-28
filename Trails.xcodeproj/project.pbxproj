@@ -111,6 +111,7 @@
 		04E46CFC2A22656000B9E8CE /* SheetStat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E46CFB2A22656000B9E8CE /* SheetStat.swift */; };
 		04E46CFE2A22658100B9E8CE /* WaypointButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E46CFD2A22658100B9E8CE /* WaypointButton.swift */; };
 		04E46D002A2280FF00B9E8CE /* Coast to Coast.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04E46CFF2A2280FF00B9E8CE /* Coast to Coast.geojson */; };
+		04E46D022A22DFA600B9E8CE /* DistanceUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E46D012A22DFA600B9E8CE /* DistanceUnit.swift */; };
 		04E7185329C7CC0400876116 /* MKCoordinateRegion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E7185229C7CC0400876116 /* MKCoordinateRegion.swift */; };
 		04FCA9F32A1BFE50007B5817 /* Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04FCA9F22A1BFE50007B5817 /* Search.swift */; };
 		04FCA9FC2A1E9A50007B5817 /* GeoJSON in Frameworks */ = {isa = PBXBuildFile; productRef = 04FCA9FB2A1E9A50007B5817 /* GeoJSON */; };
@@ -223,6 +224,7 @@
 		04E46CFB2A22656000B9E8CE /* SheetStat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetStat.swift; sourceTree = "<group>"; };
 		04E46CFD2A22658100B9E8CE /* WaypointButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaypointButton.swift; sourceTree = "<group>"; };
 		04E46CFF2A2280FF00B9E8CE /* Coast to Coast.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Coast to Coast.geojson"; sourceTree = "<group>"; };
+		04E46D012A22DFA600B9E8CE /* DistanceUnit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DistanceUnit.swift; sourceTree = "<group>"; };
 		04E7185229C7CC0400876116 /* MKCoordinateRegion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MKCoordinateRegion.swift; sourceTree = "<group>"; };
 		04FCA9F22A1BFE50007B5817 /* Search.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Search.swift; sourceTree = "<group>"; };
 		04FCA9FD2A1EA323007B5817 /* ElevationChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElevationChart.swift; sourceTree = "<group>"; };
@@ -311,11 +313,12 @@
 				0402C7222A1A7D4300238C51 /* TrailTrips.swift */,
 				0402C7282A1A954300238C51 /* TrailFilter.swift */,
 				0402C7242A1A7D8900238C51 /* TrailSort.swift */,
-				04FCA9F22A1BFE50007B5817 /* Search.swift */,
-				04E0E91129EF704400EB08CC /* SearchScope.swift */,
 				04626BF929C24297004880E3 /* Annotation.swift */,
 				04E46CEF2A2005DC00B9E8CE /* Waypoint.swift */,
+				04FCA9F22A1BFE50007B5817 /* Search.swift */,
+				04E0E91129EF704400EB08CC /* SearchScope.swift */,
 				04E46CF92A224A9E00B9E8CE /* SizeClass.swift */,
+				04E46D012A22DFA600B9E8CE /* DistanceUnit.swift */,
 			);
 			name = Models;
 			path = Trails/Models;
@@ -604,6 +607,7 @@
 				04FCA9F32A1BFE50007B5817 /* Search.swift in Sources */,
 				0402C7252A1A7D8900238C51 /* TrailSort.swift in Sources */,
 				0402C7212A1A780400238C51 /* DetectSize.swift in Sources */,
+				04E46D022A22DFA600B9E8CE /* DistanceUnit.swift in Sources */,
 				04FFC98B29CA6A4900BF77FD /* EmailView.swift in Sources */,
 				0416F177299EF9FC00B90E68 /* Collection.swift in Sources */,
 				0416F179299EF9FC00B90E68 /* MKMultiPoint.swift in Sources */,

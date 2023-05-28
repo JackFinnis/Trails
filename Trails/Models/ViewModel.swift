@@ -108,7 +108,12 @@ class ViewModel: NSObject, ObservableObject {
     }
     
     // Preferences
-    @Storage("metric") var metric = true { didSet {
+    @Storage("distanceUnit") var distanceUnit = DistanceUnit.metric { didSet {
+        objectWillChange.send()
+    }}
+    @Published var newSpeed = 0.0
+    @Published var showSpeedInput = false
+    @Storage("speed") var speed = 4000.0 { didSet {
         objectWillChange.send()
     }}
     
@@ -205,8 +210,8 @@ class ViewModel: NSObject, ObservableObject {
     
     // MARK: - General
     func formatDistance(_ metres: Double, unit: Bool, round: Bool) -> String {
-        let value = metres / (metric ? 1000 : 1609.34)
-        return String(format: "%.\(round ? 0 : 1)f", max(0.1, value)) + (unit ? (metric ? " km" : " miles") : "")
+        let value = metres / distanceUnit.conversion
+        return String(format: "%.\(round ? 0 : 1)f", max(0.1, value)) + (unit ? (" " + distanceUnit.distanceUnit) : "")
     }
     
     func openSettings() {
@@ -289,7 +294,7 @@ class ViewModel: NSObject, ObservableObject {
     }
     
     func ensureMapVisible() {
-        if isCompact(unsafeWindowSize) {
+        if isCompact(unsafeWindowSize) && sheetDetent == .large {
             setSheetDetent(.medium)
         }
     }
@@ -515,7 +520,9 @@ extension ViewModel {
 // MARK: - Select
 extension ViewModel {
     func startSelecting() {
-        isSelecting = true
+        withAnimation(.sheet) {
+            isSelecting = true
+        }
     }
     
     func resetSelecting() {

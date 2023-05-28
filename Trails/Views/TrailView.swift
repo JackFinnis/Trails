@@ -21,7 +21,6 @@ struct TrailSheet: View {
                 TrailView.Header(trail: trail)
             }
         }
-        .animation(.sheet, value: vm.isSelecting)
         .animation(.sheet, value: vm.selectedTrail)
         .onChange(of: vm.selectedTrail) { newTrail in
             if let newTrail {

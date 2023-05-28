@@ -13,6 +13,7 @@ struct RootView: View {
     @AppStorage("launchedBefore") var launchedBefore = false
     @StateObject var vm = ViewModel.shared
     @State var showWelcomeView = false
+    @FocusState var focused: Bool
     
     var body: some View {
         NavigationView {
@@ -57,14 +58,7 @@ struct RootView: View {
                 .opacity(vm.showTrailsView ? 1 : 0)
                 
                 TrailSheet()
-                
-                if let profile = vm.selectionProfile {
-                    Sheet {
-                        SelectionView(profile: profile)
-                    } header: {
-                        SelectionView.Header(profile: profile)
-                    }
-                }
+                SelectionSheet()
                 
                 GeometryReader { geo in
                     HStack {
@@ -76,7 +70,39 @@ struct RootView: View {
                                     .padding(10)
                             }
                         }
+                        .animation(.sheet, value: vm.selectionProfile)
                         Spacer(minLength: 0)
+                    }
+                }
+                
+                if vm.showSpeedInput {
+                    VStack(spacing: 0) {
+                        Color.black.opacity(0.15)
+                            .ignoresSafeArea()
+                        HStack(spacing: 15) {
+                            Button("Cancel") {
+                                vm.showSpeedInput = false
+                            }
+                            TextField("Enter speed in \(vm.distanceUnit.speedUnit)", value: $vm.newSpeed, formatter: vm.distanceUnit.formatter)
+                                .focused($focused)
+                                .keyboardType(.decimalPad)
+                                .textFieldStyle(.roundedBorder)
+                            Button("Submit") {
+                                vm.speed = vm.newSpeed * vm.distanceUnit.conversion
+                                vm.newSpeed = 0
+                                Haptics.tap()
+                                withAnimation {
+                                    vm.showSpeedInput = false
+                                }
+                            }
+                            .disabled(vm.newSpeed == 0)
+                        }
+                        .padding(.horizontal)
+                        .padding(.vertical, 10)
+                        .background(Color(.systemBackground))
+                    }
+                    .task {
+                        focused = true
                     }
                 }
             }
@@ -88,7 +114,6 @@ struct RootView: View {
                 }
             }
         }
-        .animation(.sheet, value: vm.selectionProfile)
         .onChange(of: colorScheme) { _ in
             vm.refreshOverlays()
         }

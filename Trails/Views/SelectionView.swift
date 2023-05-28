@@ -9,6 +9,29 @@ import SwiftUI
 import MapKit
 import CoreLocation
 
+struct SelectionSheet: View {
+    @EnvironmentObject var vm: ViewModel
+    @State var profile: ElevationProfile?
+    
+    var body: some View {
+        Sheet(isPresented: vm.isSelecting && vm.selectionProfile != nil) {
+            if let profile {
+                SelectionView(profile: profile)
+            }
+        } header: {
+            if let profile {
+                SelectionView.Header(profile: profile)
+            }
+        }
+        .animation(.sheet, value: vm.selectionProfile)
+        .onChange(of: vm.selectionProfile) { newProfile in
+            if let newProfile {
+                profile = newProfile
+            }
+        }
+    }
+}
+
 struct SelectionView: View {
     struct Header: View {
         @EnvironmentObject var vm: ViewModel
@@ -47,7 +70,6 @@ struct SelectionView: View {
     }
     
     @EnvironmentObject var vm: ViewModel
-    @AppStorage("speed") var speed = 4000.0
     
     let profile: ElevationProfile
     
@@ -63,26 +85,32 @@ struct SelectionView: View {
                             SheetStat(name: "Distance", value: vm.formatDistance(profile.distance, unit: true, round: false), systemName: "point.topleft.down.curvedto.point.bottomright.up.fill")
                             divider
                             Menu {
-                                Picker("", selection: $speed) {
-                                    if vm.metric {
-                                        ForEach([3.0, 3.5, 4.0, 4.5, 5.0], id: \.self) { kmh in
-                                            Text(String(format: "%.1f", kmh) + " kmh")
-                                                .tag(kmh * 1000)
-                                        }
-                                    } else {
-                                        ForEach([1.9, 2.2, 2.5, 2.8, 3.1], id: \.self) { mph in
-                                            Text(String(format: "%.1f", mph) + " mph")
-                                                .tag(mph * 1609.34)
-                                        }
+                                Picker("", selection: $vm.speed) {
+                                    let unit = vm.distanceUnit
+                                    ForEach(unit.speeds, id: \.self) { speed in
+                                        Text(unit.formatSpeed(speed))
+                                            .tag(speed * unit.conversion)
+                                    }
+                                    let speed = vm.speed / unit.conversion
+                                    if !unit.speeds.contains(speed) {
+                                        Text(unit.formatSpeed(speed, places: 2))
+                                            .tag(vm.speed)
                                     }
                                 }
+                                Button {
+                                    withAnimation {
+                                        vm.showSpeedInput = true
+                                    }
+                                } label: {
+                                    Label("Custom Speed", systemImage: "pencil")
+                                }
                             } label: {
-                                SheetStat(name: "Duration", value: (max(1, profile.distance / (speed / 3600))).formattedInterval(), systemName: "clock")
+                                SheetStat(name: "Duration", value: (max(1, profile.distance / (vm.speed / 3600))).formattedInterval(), systemName: "clock")
                             }
                             divider
-                            SheetStat(name: "Ascent", value: vm.formatDistance(profile.ascent, unit: true, round: false), systemName: "arrow.up")
+                            SheetStat(name: "Ascent", value: vm.formatDistance(profile.ascent, unit: true, round: false), systemName: "arrow.up.forward")
                             divider
-                            SheetStat(name: "Descent", value: vm.formatDistance(profile.descent, unit: true, round: false), systemName: "arrow.down")
+                            SheetStat(name: "Descent", value: vm.formatDistance(profile.descent, unit: true, round: false), systemName: "arrow.down.forward")
                         }
                         .padding(.horizontal)
                     }

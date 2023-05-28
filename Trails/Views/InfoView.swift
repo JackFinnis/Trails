@@ -39,11 +39,10 @@ struct InfoView: View {
                         InfoRow(systemName: "arrow.triangle.turn.up.right.circle", title: "Get Directions", description: "Long press on your destination.")
                         InfoRow(systemName: "checkmark.circle", title: "Track Your Progress", description: "Mark sections of a trail as completed.")
                         InfoRow(systemName: "ruler", title: "Distance Unit") {
-                            Picker("", selection: $vm.metric) {
-                                Text("Kilometres")
-                                    .tag(true)
-                                Text("Miles")
-                                    .tag(false)
+                            Picker("", selection: $vm.distanceUnit) {
+                                ForEach(DistanceUnit.allCases, id: \.self) { unit in
+                                    Text(unit.name)
+                                }
                             }
                             .frame(width: 250)
                             .pickerStyle(.segmented)
