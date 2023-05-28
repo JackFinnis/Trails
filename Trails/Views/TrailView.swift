@@ -7,29 +7,6 @@
 
 import SwiftUI
 
-struct TrailSheet: View {
-    @EnvironmentObject var vm: ViewModel
-    @State var trail: Trail?
-    
-    var body: some View {
-        Sheet(isPresented: !vm.isSelecting && vm.selectedTrail != nil) {
-            if let trail {
-                TrailView(trail: trail)
-            }
-        } header: {
-            if let trail {
-                TrailView.Header(trail: trail)
-            }
-        }
-        .animation(.sheet, value: vm.selectedTrail)
-        .onChange(of: vm.selectedTrail) { newTrail in
-            if let newTrail {
-                trail = newTrail
-            }
-        }
-    }
-}
-
 struct TrailView: View {
     struct Header: View {
         @EnvironmentObject var vm: ViewModel

@@ -9,29 +9,6 @@ import SwiftUI
 import MapKit
 import CoreLocation
 
-struct SelectionSheet: View {
-    @EnvironmentObject var vm: ViewModel
-    @State var profile: ElevationProfile?
-    
-    var body: some View {
-        Sheet(isPresented: vm.isSelecting && vm.selectionProfile != nil) {
-            if let profile {
-                SelectionView(profile: profile)
-            }
-        } header: {
-            if let profile {
-                SelectionView.Header(profile: profile)
-            }
-        }
-        .animation(.sheet, value: vm.selectionProfile)
-        .onChange(of: vm.selectionProfile) { newProfile in
-            if let newProfile {
-                profile = newProfile
-            }
-        }
-    }
-}
-
 struct SelectionView: View {
     struct Header: View {
         @EnvironmentObject var vm: ViewModel
@@ -85,16 +62,16 @@ struct SelectionView: View {
                             SheetStat(name: "Distance", value: vm.formatDistance(profile.distance, unit: true, round: false), systemName: "point.topleft.down.curvedto.point.bottomright.up.fill")
                             divider
                             Menu {
-                                Picker("", selection: $vm.speed) {
-                                    let unit = vm.distanceUnit
-                                    ForEach(unit.speeds, id: \.self) { speed in
-                                        Text(unit.formatSpeed(speed))
-                                            .tag(speed * unit.conversion)
+                                Picker("", selection: $vm.speedMetres) {
+                                    let system = vm.measurementSystem
+                                    ForEach(system.speeds, id: \.self) { speed in
+                                        Text(system.formatSpeed(speed))
+                                            .tag(speed * system.metres)
                                     }
-                                    let speed = vm.speed / unit.conversion
-                                    if !unit.speeds.contains(speed) {
-                                        Text(unit.formatSpeed(speed, places: 2))
-                                            .tag(vm.speed)
+                                    let speed = vm.speedMetres / system.metres
+                                    if !system.speeds.contains(speed) {
+                                        Text(system.formatSpeed(speed, decimalPlaces: 2))
+                                            .tag(vm.speedMetres)
                                     }
                                 }
                                 Button {
@@ -105,7 +82,8 @@ struct SelectionView: View {
                                     Label("Custom Speed", systemImage: "pencil")
                                 }
                             } label: {
-                                SheetStat(name: "Duration", value: (max(1, profile.distance / (vm.speed / 3600))).formattedInterval(), systemName: "clock")
+                                let duration = (max(1, profile.distance / (vm.speedMetres / 3600))).formattedInterval()
+                                SheetStat(name: "Duration", value: duration, systemName: "clock")
                             }
                             divider
                             SheetStat(name: "Ascent", value: vm.formatDistance(profile.ascent, unit: true, round: false), systemName: "arrow.up.forward")
@@ -182,6 +160,7 @@ struct SelectionViewButton: View {
     var body: some View {
         HStack(spacing: 0) {
             Image(systemName: systemName)
+                .font(.title3)
                 .squareButton()
             Text(title)
             Spacer(minLength: 0)

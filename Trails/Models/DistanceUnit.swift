@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum DistanceUnit: String, Codable, CaseIterable {
+enum MeasurementSystem: String, Codable, CaseIterable {
     case metric
     case imperial
     
@@ -47,7 +47,7 @@ enum DistanceUnit: String, Codable, CaseIterable {
         }
     }
     
-    var conversion: Double {
+    var metres: Double {
         switch self {
         case .metric:
             return 1000
@@ -56,14 +56,7 @@ enum DistanceUnit: String, Codable, CaseIterable {
         }
     }
     
-    func formatSpeed(_ speed: Double, places: Int = 1) -> String {
-        String(format: "%.\(places)f", speed) + " " + speedUnit
-    }
-    
-    var formatter: NumberFormatter {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        formatter.zeroSymbol = ""
-        return formatter
+    func formatSpeed(_ speed: Double, decimalPlaces: Int = 1) -> String {
+        String(format: "%.\(decimalPlaces)f", speed) + " " + speedUnit
     }
 }

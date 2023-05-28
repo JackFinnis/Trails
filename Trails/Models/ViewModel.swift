@@ -108,12 +108,11 @@ class ViewModel: NSObject, ObservableObject {
     }
     
     // Preferences
-    @Storage("distanceUnit") var distanceUnit = DistanceUnit.metric { didSet {
+    @Storage("measurementSystem") var measurementSystem = MeasurementSystem.metric { didSet {
         objectWillChange.send()
     }}
-    @Published var newSpeed = 0.0
     @Published var showSpeedInput = false
-    @Storage("speed") var speed = 4000.0 { didSet {
+    @Storage("speedMetres") var speedMetres = 4000.0 { didSet {
         objectWillChange.send()
     }}
     
@@ -210,8 +209,8 @@ class ViewModel: NSObject, ObservableObject {
     
     // MARK: - General
     func formatDistance(_ metres: Double, unit: Bool, round: Bool) -> String {
-        let value = metres / distanceUnit.conversion
-        return String(format: "%.\(round ? 0 : 1)f", max(0.1, value)) + (unit ? (" " + distanceUnit.distanceUnit) : "")
+        let value = metres / measurementSystem.metres
+        return String(format: "%.\(round ? 0 : 1)f", max(0.1, value)) + (unit ? (" " + measurementSystem.distanceUnit) : "")
     }
     
     func openSettings() {
@@ -294,6 +293,7 @@ class ViewModel: NSObject, ObservableObject {
     }
     
     func ensureMapVisible() {
+        stopEditing()
         if isCompact(unsafeWindowSize) && sheetDetent == .large {
             setSheetDetent(.medium)
         }
@@ -307,7 +307,6 @@ class ViewModel: NSObject, ObservableObject {
         refreshOverlays()
         if let trail {
             loadElevationProfile(trail: trail)
-            stopEditing()
             zoomTo(trail, animated: animated)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 self.setShowTrailsView(self.selectedTrail == nil)
@@ -520,9 +519,7 @@ extension ViewModel {
 // MARK: - Select
 extension ViewModel {
     func startSelecting() {
-        withAnimation(.sheet) {
-            isSelecting = true
-        }
+        isSelecting = true
     }
     
     func resetSelecting() {
@@ -928,7 +925,7 @@ extension ViewModel: MKMapViewDelegate {
 extension ViewModel: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         zoomToFilteredTrails()
-        stopEditing()
+        ensureMapVisible()
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
@@ -940,7 +937,7 @@ extension ViewModel: UISearchBarDelegate {
     }
     
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-        stopEditing()
+        ensureMapVisible()
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange text: String) {
@@ -957,7 +954,6 @@ extension ViewModel: UISearchBarDelegate {
     
     func stopEditing() {
         isEditing = false
-        ensureMapVisible()
         searchBar?.resignFirstResponder()
         if let cancelButton = searchBar?.value(forKey: "cancelButton") as? UIButton {
             cancelButton.isEnabled = true
@@ -967,7 +963,7 @@ extension ViewModel: UISearchBarDelegate {
     func stopSearching() {
         searchText = ""
         isSearching = false
-        stopEditing()
+        ensureMapVisible()
         searchBar?.setShowsCancelButton(false, animated: false)
     }
 }

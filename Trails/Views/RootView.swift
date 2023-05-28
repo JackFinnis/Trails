@@ -13,7 +13,6 @@ struct RootView: View {
     @AppStorage("launchedBefore") var launchedBefore = false
     @StateObject var vm = ViewModel.shared
     @State var showWelcomeView = false
-    @FocusState var focused: Bool
     
     var body: some View {
         NavigationView {
@@ -44,6 +43,7 @@ struct RootView: View {
                             Spacer()
                             if !vm.isMapDisabled(geo.size) {
                                 MapButtons()
+                                    .disabled(vm.showSpeedInput)
                             }
                         }
                         Spacer()
@@ -57,8 +57,8 @@ struct RootView: View {
                 }
                 .opacity(vm.showTrailsView ? 1 : 0)
                 
-                TrailSheet()
-                SelectionSheet()
+                SheetsView()
+                    .disabled(vm.showSpeedInput)
                 
                 GeometryReader { geo in
                     HStack {
@@ -70,42 +70,28 @@ struct RootView: View {
                                     .padding(10)
                             }
                         }
+                        .animation(.sheet, value: vm.isSelecting)
                         .animation(.sheet, value: vm.selectionProfile)
                         Spacer(minLength: 0)
                     }
                 }
                 
-                if vm.showSpeedInput {
-                    VStack(spacing: 0) {
+                GeometryReader { geo in
+                    if vm.showSpeedInput {
                         Color.black.opacity(0.15)
                             .ignoresSafeArea()
-                        HStack(spacing: 15) {
-                            Button("Cancel") {
-                                vm.showSpeedInput = false
-                            }
-                            TextField("Enter speed in \(vm.distanceUnit.speedUnit)", value: $vm.newSpeed, formatter: vm.distanceUnit.formatter)
-                                .focused($focused)
-                                .keyboardType(.decimalPad)
-                                .textFieldStyle(.roundedBorder)
-                            Button("Submit") {
-                                vm.speed = vm.newSpeed * vm.distanceUnit.conversion
-                                vm.newSpeed = 0
-                                Haptics.tap()
-                                withAnimation {
-                                    vm.showSpeedInput = false
-                                }
-                            }
-                            .disabled(vm.newSpeed == 0)
-                        }
-                        .padding(.horizontal)
-                        .padding(.vertical, 10)
-                        .background(Color(.systemBackground))
                     }
-                    .task {
-                        focused = true
+                    VStack {
+                        Spacer()
+                        if vm.showSpeedInput {
+                            SpeedInput()
+                                .frame(maxWidth: vm.getMaxSheetWidth(geo.size))
+                                .padding(.horizontal, vm.getHorizontalSheetPadding(geo.size))
+                        }
                     }
                 }
             }
+            .animation(.default, value: vm.showSpeedInput)
             .navigationTitle("Map")
             .navigationBarHidden(true)
             .toolbar {
