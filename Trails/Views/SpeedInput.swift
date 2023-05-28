@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SpeedInput: View {
-    @StateObject var vm = ViewModel.shared
+    @EnvironmentObject var vm: ViewModel
     @State var newSpeedUnitString = ""
     @FocusState var focused: Bool
     

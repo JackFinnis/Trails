@@ -87,3 +87,43 @@ struct Sheet<Content: View, Header: View>: View {
         .ignoresSafeArea(.keyboard)
     }
 }
+
+struct SheetStat: View {
+    let name: String
+    let value: String
+    let systemName: String
+    var tint: Color = .secondary
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(name)
+                .textCase(.uppercase)
+                .foregroundColor(.secondary)
+                .font(.caption2.weight(.bold))
+            HStack(spacing: 5) {
+                Image(systemName: systemName)
+                    .font(.footnote.weight(.bold))
+                    .foregroundColor(tint)
+                Text(value)
+                    .font(.subheadline.bold())
+            }
+        }
+    }
+}
+
+struct SheetButton: View {
+    let title: String
+    let systemName: String
+    
+    var body: some View {
+        HStack(spacing: 0) {
+            Image(systemName: systemName)
+                .font(.title3)
+                .squareButton()
+            Text(title)
+            Spacer(minLength: 0)
+        }
+        .containerBackground(light: false)
+        .continuousRadius(10)
+    }
+}

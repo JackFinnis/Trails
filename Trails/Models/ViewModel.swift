@@ -635,33 +635,45 @@ extension ViewModel {
         zoomTo(polyline, extraPadding: true)
     }
     
+    func getOrMakeTrips(trail: Trail) -> TrailTrips {
+        if let trips = getTrips(trail) {
+            return trips
+        } else {
+            let trips = TrailTrips(context: container.viewContext)
+            trips.id = trail.id
+            trailsTrips.append(trips)
+            return trips
+        }
+    }
+    
     func completeSelectPolyline() {
         guard let selectedTrail, let selectionProfile else { return }
         let selectionCoords = selectionProfile.allLocations.map(\.coordinate)
-        
-        if let selectedTrips {
-            var newCoords = Set(selectedTrips.coordsSet)
-            newCoords.formUnion(selectionCoords)
-            update(trips: selectedTrips, with: newCoords)
-        } else {
-            let trips = TrailTrips(context: container.viewContext)
-            trips.id = selectedTrail.id
-            trailsTrips.append(trips)
-            update(trips: trips, with: Set(selectionCoords))
-        }
+        let trips = getOrMakeTrips(trail: selectedTrail)
+        let newCoords = trips.coordsSet.union(selectionCoords)
+        update(trips, with: newCoords)
     }
     
     func uncompleteSelectPolyline() {
         guard let selectedTrips, let selectionProfile else { return }
         let selectionCoords = selectionProfile.allLocations.map(\.coordinate)
-        
-        var newCoords = Set(selectedTrips.coordsSet)
-        newCoords.subtract(selectionCoords)
-        
-        update(trips: selectedTrips, with: newCoords)
+        let newCoords = selectedTrips.coordsSet.subtracting(selectionCoords)
+        update(selectedTrips, with: newCoords)
     }
     
-    func update(trips: TrailTrips, with newCoords: Set<CLLocationCoordinate2D>) {
+    func completeTrail() {
+        guard let selectedTrail else { return }
+        let trips = getOrMakeTrips(trail: selectedTrail)
+        let allCoords = Set(selectedTrail.coords)
+        update(trips, with: allCoords, canShowCompletedAlert: false)
+    }
+    
+    func uncompleteTrail() {
+        guard let selectedTrips else { return }
+        update(selectedTrips, with: .init())
+    }
+    
+    func update(_ trips: TrailTrips, with newCoords: Set<CLLocationCoordinate2D>, canShowCompletedAlert: Bool = true) {
         guard let selectedTrail else { return }
         
         var newLines = [[CLLocationCoordinate2D]]()
@@ -688,7 +700,7 @@ extension ViewModel {
         if trips.metres.equalTo(selectedTrail.metres, to: -4) {
             if !completedTrails.contains(selectedTrail.id) {
                 completedTrails.append(selectedTrail.id)
-                showCompletedAlert = true
+                showCompletedAlert = canShowCompletedAlert
             }
         } else {
             completedTrails.removeAll(selectedTrail.id)

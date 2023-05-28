@@ -119,20 +119,20 @@ struct SelectionView: View {
                         Button {
                             vm.reverseSelection()
                         } label: {
-                            SelectionViewButton(title: "Reverse Selection", systemName: "arrow.left.arrow.right")
+                            SheetButton(title: "Reverse Selection", systemName: "arrow.left.arrow.right")
                         }
                         if vm.canComplete {
                             Button {
                                 vm.completeSelectPolyline()
                             } label: {
-                                SelectionViewButton(title: "Mark as Completed", systemName: "checkmark.circle")
+                                SheetButton(title: "Mark as Completed", systemName: "checkmark.circle")
                             }
                         }
                         if vm.canUncomplete {
                             Button(role: .destructive) {
                                 vm.uncompleteSelectPolyline()
                             } label: {
-                                SelectionViewButton(title: "Remove from Completed", systemName: "minus.circle")
+                                SheetButton(title: "Remove from Completed", systemName: "minus.circle")
                             }
                         }
                     }
@@ -150,22 +150,5 @@ struct SelectionView_Previews: PreviewProvider {
     static var previews: some View {
         SelectionView(profile: .example)
             .environmentObject(ViewModel())
-    }
-}
-
-struct SelectionViewButton: View {
-    let title: String
-    let systemName: String
-    
-    var body: some View {
-        HStack(spacing: 0) {
-            Image(systemName: systemName)
-                .font(.title3)
-                .squareButton()
-            Text(title)
-            Spacer(minLength: 0)
-        }
-        .containerBackground(light: false)
-        .continuousRadius(10)
     }
 }

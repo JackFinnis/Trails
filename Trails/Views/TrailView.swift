@@ -130,6 +130,23 @@ struct TrailView: View {
                         .continuousRadius(10)
                     }
                     .padding(.horizontal)
+                    
+                    VStack(spacing: 10) {
+                        if !vm.isCompleted(trail) {
+                            Button {
+                                vm.completeTrail()
+                            } label: {
+                                SheetButton(title: "Mark Trail as Completed", systemName: "checkmark.circle")
+                            }
+                        } else {
+                            Button(role: .destructive) {
+                                vm.uncompleteTrail()
+                            } label: {
+                                SheetButton(title: "Remove All Completed Sections", systemName: "minus.circle")
+                            }
+                        }
+                    }
+                    .padding(.horizontal)
                 }
                 .padding(.vertical)
                 .contentShape(Rectangle())
