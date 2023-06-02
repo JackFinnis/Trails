@@ -39,15 +39,11 @@ struct InfoView: View {
                         InfoRow(systemName: "arrow.triangle.turn.up.right.circle", title: "Get Directions", description: "Long press on your destination.")
                         InfoRow(systemName: "checkmark.circle", title: "Track Your Progress", description: "Mark sections of a trail as completed.")
                         InfoRow(systemName: "ruler", title: "Distance Unit") {
-                            Picker("", selection: $vm.measurementSystem) {
-                                ForEach(MeasurementSystem.allCases, id: \.self) { system in
-                                    Text(system.name)
-                                }
-                            }
-                            .frame(width: 250)
-                            .pickerStyle(.segmented)
-                            .labelsHidden()
-                            .padding(.top, 5)
+                            MeasurementSystemPicker(speed: false)
+                                .frame(width: 250)
+                                .pickerStyle(.segmented)
+                                .labelsHidden()
+                                .padding(.top, 5)
                         }
                     }
                 }

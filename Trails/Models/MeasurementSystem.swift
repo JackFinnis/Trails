@@ -5,7 +5,7 @@
 //  Created by Jack Finnis on 28/05/2023.
 //
 
-import Foundation
+import SwiftUI
 
 enum MeasurementSystem: String, Codable, CaseIterable {
     case metric
@@ -58,5 +58,19 @@ enum MeasurementSystem: String, Codable, CaseIterable {
     
     func formatSpeed(_ speed: Double, decimalPlaces: Int = 1) -> String {
         String(format: "%.\(decimalPlaces)f", speed) + " " + speedUnit
+    }
+}
+
+struct MeasurementSystemPicker: View {
+    @EnvironmentObject var vm: ViewModel
+    
+    let speed: Bool
+    
+    var body: some View {
+        Picker("", selection: $vm.measurementSystem) {
+            ForEach(MeasurementSystem.allCases, id: \.self) { system in
+                Text(system.name + (speed ? " per hour" : ""))
+            }
+        }
     }
 }

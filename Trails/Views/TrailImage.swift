@@ -8,13 +8,13 @@
 import SwiftUI
 
 struct TrailImage: View {
-    @State var uiImage: UIImage?
+    @StateObject var imageHelper = ImageHelper.shared
     
     let trail: Trail
     
     var body: some View {
         GeometryReader { geo in
-            if let uiImage {
+            if let uiImage = imageHelper.images[trail.photoUrl] {
                 Image(uiImage: uiImage)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
@@ -24,24 +24,31 @@ struct TrailImage: View {
                 Color(.systemFill)
             }
         }
-        .animation(.default, value: uiImage)
+        .animation(.default, value: imageHelper.images)
         .frame(height: 120)
         .task {
-            await fetchImage()
+            await imageHelper.fetchImage(url: trail.photoUrl)
         }
-    }
-    
-    func fetchImage() async {
-        guard uiImage == nil else { return }
-        do {
-            let (data, _) = try await URLSession.shared.data(from: trail.photoUrl)
-            uiImage = UIImage(data: data)
-        } catch {}
     }
 }
 
 struct TrailImage_Previews: PreviewProvider {
     static var previews: some View {
         TrailImage(trail: .example)
+    }
+}
+
+@MainActor
+class ImageHelper: ObservableObject {
+    static let shared = ImageHelper()
+    
+    @Published var images = [URL: UIImage]()
+    
+    func fetchImage(url: URL) async {
+        guard images[url] == nil else { return }
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+            images[url] = UIImage(data: data)
+        } catch {}
     }
 }

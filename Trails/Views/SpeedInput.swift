@@ -19,9 +19,17 @@ struct SpeedInput: View {
             Button("Cancel") {
                 vm.showSpeedInput = false
             }
-            TextField("Speed in \(vm.measurementSystem.speedUnit)", text: $newSpeedUnitString)
+            TextField("Enter speed", text: $newSpeedUnitString)
                 .focused($focused)
                 .keyboardType(.decimalPad)
+                .safeAreaInset(edge: .trailing) {
+                    Menu {
+                        MeasurementSystemPicker(speed: true)
+                    } label: {
+                        Text("\(vm.measurementSystem.speedUnit)")
+                    }
+                    .frame(height: 20)
+                }
                 .padding(.vertical, 8)
                 .padding(.horizontal, 12)
                 .overlay {

@@ -110,7 +110,7 @@
 		04E46CFA2A224A9E00B9E8CE /* SizeClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E46CF92A224A9E00B9E8CE /* SizeClass.swift */; };
 		04E46CFE2A22658100B9E8CE /* WaypointButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E46CFD2A22658100B9E8CE /* WaypointButton.swift */; };
 		04E46D002A2280FF00B9E8CE /* Coast to Coast.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 04E46CFF2A2280FF00B9E8CE /* Coast to Coast.geojson */; };
-		04E46D022A22DFA600B9E8CE /* DistanceUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E46D012A22DFA600B9E8CE /* DistanceUnit.swift */; };
+		04E46D022A22DFA600B9E8CE /* MeasurementSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E46D012A22DFA600B9E8CE /* MeasurementSystem.swift */; };
 		04E46D042A23692900B9E8CE /* SpeedInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E46D032A23692900B9E8CE /* SpeedInput.swift */; };
 		04E46D062A237E1500B9E8CE /* SheetsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E46D052A237E1500B9E8CE /* SheetsView.swift */; };
 		04E7185329C7CC0400876116 /* MKCoordinateRegion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E7185229C7CC0400876116 /* MKCoordinateRegion.swift */; };
@@ -224,7 +224,7 @@
 		04E46CF92A224A9E00B9E8CE /* SizeClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SizeClass.swift; sourceTree = "<group>"; };
 		04E46CFD2A22658100B9E8CE /* WaypointButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaypointButton.swift; sourceTree = "<group>"; };
 		04E46CFF2A2280FF00B9E8CE /* Coast to Coast.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Coast to Coast.geojson"; sourceTree = "<group>"; };
-		04E46D012A22DFA600B9E8CE /* DistanceUnit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DistanceUnit.swift; sourceTree = "<group>"; };
+		04E46D012A22DFA600B9E8CE /* MeasurementSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeasurementSystem.swift; sourceTree = "<group>"; };
 		04E46D032A23692900B9E8CE /* SpeedInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeedInput.swift; sourceTree = "<group>"; };
 		04E46D052A237E1500B9E8CE /* SheetsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetsView.swift; sourceTree = "<group>"; };
 		04E7185229C7CC0400876116 /* MKCoordinateRegion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MKCoordinateRegion.swift; sourceTree = "<group>"; };
@@ -320,7 +320,7 @@
 				04FCA9F22A1BFE50007B5817 /* Search.swift */,
 				04E0E91129EF704400EB08CC /* SearchScope.swift */,
 				04E46CF92A224A9E00B9E8CE /* SizeClass.swift */,
-				04E46D012A22DFA600B9E8CE /* DistanceUnit.swift */,
+				04E46D012A22DFA600B9E8CE /* MeasurementSystem.swift */,
 			);
 			name = Models;
 			path = Trails/Models;
@@ -610,7 +610,7 @@
 				04FCA9F32A1BFE50007B5817 /* Search.swift in Sources */,
 				0402C7252A1A7D8900238C51 /* TrailSort.swift in Sources */,
 				0402C7212A1A780400238C51 /* DetectSize.swift in Sources */,
-				04E46D022A22DFA600B9E8CE /* DistanceUnit.swift in Sources */,
+				04E46D022A22DFA600B9E8CE /* MeasurementSystem.swift in Sources */,
 				04FFC98B29CA6A4900BF77FD /* EmailView.swift in Sources */,
 				0416F177299EF9FC00B90E68 /* Collection.swift in Sources */,
 				0416F179299EF9FC00B90E68 /* MKMultiPoint.swift in Sources */,

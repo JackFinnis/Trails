@@ -578,6 +578,9 @@ extension ViewModel {
         annotationAddedDate = .now
         mapView?.addAnnotation(annotation)
         calculateSelection()
+        if let selectionProfile {
+            zoomTo(selectionProfile.polyline, extraPadding: true)
+        }
     }
     
     func reverseSelection() {
@@ -632,7 +635,6 @@ extension ViewModel {
         refreshSelectPolyline()
         refreshWaypoints()
         Haptics.tap()
-        zoomTo(polyline, extraPadding: true)
     }
     
     func getOrMakeTrips(trail: Trail) -> TrailTrips {
@@ -936,8 +938,11 @@ extension ViewModel: MKMapViewDelegate {
 // MARK: - UISearchBarDelegate
 extension ViewModel: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        zoomToFilteredTrails()
-        ensureMapVisible()
+        if filteredTrails.count == 1 {
+            selectTrail(filteredTrails[0])
+        } else {
+            zoomToFilteredTrails()
+        }
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {

@@ -78,6 +78,10 @@ struct RootView: View {
                 
                 GeometryReader { geo in
                     if vm.showSpeedInput {
+                        CarbonCopy()
+                            .id(scenePhase)
+                            .blur(radius: 10, opaque: true)
+                            .ignoresSafeArea()
                         Color.black.opacity(0.15)
                             .ignoresSafeArea()
                     }
