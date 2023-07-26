@@ -25,10 +25,10 @@ struct TrailsView: View {
                         Image(systemName: "info.circle")
                             .font(.icon)
                     }
+                    .sheet(isPresented: $showInfoView) {
+                        InfoView(welcome: false)
+                    }
                 }
-            }
-            .sheet(isPresented: $showInfoView) {
-                InfoView(welcome: false)
             }
         }
     }

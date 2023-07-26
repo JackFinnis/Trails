@@ -114,7 +114,6 @@
 		04E46D042A23692900B9E8CE /* SpeedInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E46D032A23692900B9E8CE /* SpeedInput.swift */; };
 		04E46D062A237E1500B9E8CE /* SheetsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E46D052A237E1500B9E8CE /* SheetsView.swift */; };
 		04E7185329C7CC0400876116 /* MKCoordinateRegion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E7185229C7CC0400876116 /* MKCoordinateRegion.swift */; };
-		04FCA9F32A1BFE50007B5817 /* Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04FCA9F22A1BFE50007B5817 /* Search.swift */; };
 		04FCA9FC2A1E9A50007B5817 /* GeoJSON in Frameworks */ = {isa = PBXBuildFile; productRef = 04FCA9FB2A1E9A50007B5817 /* GeoJSON */; };
 		04FCA9FE2A1EA323007B5817 /* ElevationChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04FCA9FD2A1EA323007B5817 /* ElevationChart.swift */; };
 		04FFC98B29CA6A4900BF77FD /* EmailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04FFC98A29CA6A4900BF77FD /* EmailView.swift */; };
@@ -228,7 +227,6 @@
 		04E46D032A23692900B9E8CE /* SpeedInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeedInput.swift; sourceTree = "<group>"; };
 		04E46D052A237E1500B9E8CE /* SheetsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetsView.swift; sourceTree = "<group>"; };
 		04E7185229C7CC0400876116 /* MKCoordinateRegion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MKCoordinateRegion.swift; sourceTree = "<group>"; };
-		04FCA9F22A1BFE50007B5817 /* Search.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Search.swift; sourceTree = "<group>"; };
 		04FCA9FD2A1EA323007B5817 /* ElevationChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElevationChart.swift; sourceTree = "<group>"; };
 		04FFC98A29CA6A4900BF77FD /* EmailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -317,7 +315,6 @@
 				0402C7242A1A7D8900238C51 /* TrailSort.swift */,
 				04626BF929C24297004880E3 /* Annotation.swift */,
 				04E46CEF2A2005DC00B9E8CE /* Waypoint.swift */,
-				04FCA9F22A1BFE50007B5817 /* Search.swift */,
 				04E0E91129EF704400EB08CC /* SearchScope.swift */,
 				04E46CF92A224A9E00B9E8CE /* SizeClass.swift */,
 				04E46D012A22DFA600B9E8CE /* MeasurementSystem.swift */,
@@ -607,7 +604,6 @@
 				048E5F2029C38A0A0080355B /* WebView.swift in Sources */,
 				04CEDFDB29A2E60400810005 /* InfoView.swift in Sources */,
 				04626BFE29C24EE7004880E3 /* TrailsView.swift in Sources */,
-				04FCA9F32A1BFE50007B5817 /* Search.swift in Sources */,
 				0402C7252A1A7D8900238C51 /* TrailSort.swift in Sources */,
 				0402C7212A1A780400238C51 /* DetectSize.swift in Sources */,
 				04E46D022A22DFA600B9E8CE /* MeasurementSystem.swift in Sources */,

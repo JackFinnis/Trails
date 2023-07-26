@@ -96,7 +96,6 @@ struct InfoView: View {
                 .frame(maxWidth: 450)
                 .horizontallyCentred()
             }
-            .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {
