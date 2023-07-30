@@ -155,6 +155,7 @@
 		04626BF929C24297004880E3 /* Annotation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Annotation.swift; sourceTree = "<group>"; };
 		04626BFD29C24EE7004880E3 /* TrailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailsView.swift; sourceTree = "<group>"; };
 		04626BFF29C25714004880E3 /* TrailRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailRow.swift; sourceTree = "<group>"; };
+		0472C7DD2A771C7900A21B73 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		048E5F1F29C38A0A0080355B /* WebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebView.swift; sourceTree = "<group>"; };
 		048E5F2129C38A930080355B /* WebVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebVM.swift; sourceTree = "<group>"; };
 		04C71F3D2A06D3F600417249 /* Thames Path.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Thames Path.geojson"; sourceTree = "<group>"; };
@@ -275,6 +276,7 @@
 		0416F16E299EF15C00B90E68 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				0472C7DD2A771C7900A21B73 /* Info.plist */,
 				0402C6482A0EA37B00238C51 /* GoogleService-Info.plist */,
 				0416F17C299EFA0B00B90E68 /* Launch Screen.storyboard */,
 				0416F159299E91B200B90E68 /* Assets.xcassets */,
@@ -755,7 +757,7 @@
 				DEVELOPMENT_TEAM = 4CQW4CFFYT;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "";
+				INFOPLIST_FILE = Trails/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "UK Trails";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Your location is shown on the map";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -788,7 +790,7 @@
 				DEVELOPMENT_TEAM = 4CQW4CFFYT;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "";
+				INFOPLIST_FILE = Trails/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "UK Trails";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Your location is shown on the map";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

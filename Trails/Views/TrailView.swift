@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct TrailView: View {
+    static let activityType = "com.jackfinnis.Headlines.StoryView"
+    
     struct Header: View {
         @EnvironmentObject var vm: ViewModel
         
@@ -29,6 +31,10 @@ struct TrailView: View {
             .contentShape(Rectangle())
             .onTapGesture {
                 vm.zoomTo(trail)
+            }
+            .userActivity(TrailView.activityType) { activity in
+                activity.userInfo = ["id": trail.id]
+                activity.isEligibleForHandoff = true
             }
         }
     }

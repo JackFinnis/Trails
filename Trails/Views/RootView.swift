@@ -107,6 +107,11 @@ struct RootView: View {
         .onChange(of: colorScheme) { _ in
             vm.refreshOverlays()
         }
+        .onContinueUserActivity(TrailView.activityType) { activity in
+            if let id = activity.userInfo?["id"] as? Int, let trail = vm.trails.first(where: { $0.id == id }) {
+                vm.selectTrail(trail)
+            }
+        }
         .task {
             if !launchedBefore {
                 launchedBefore = true
