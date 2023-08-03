@@ -18,20 +18,15 @@ struct WiFiError: View {
                 vm.openSettings()
             } label: {
                 Label("No Internet Connection", systemImage: "wifi.slash")
-                    .font(.headline)
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 10)
-                    .background(.black)
-                    .background(Color.black)
-                    .continuousRadius(10)
             }
-            .buttonStyle(.plain)
+            .buttonStyle(.borderedProminent)
+            .buttonBorderShape(.capsule)
+            .accentColor(.black)
             .padding()
             .transition(.move(edge: .bottom).combined(with: .opacity))
         } else {
             VStack(spacing: 20) {
-                BigLabel(systemName: "wifi.slash", title: "No Connection", message: "Check your internet connection\nand try again.")
+                BigLabel(systemName: "wifi.slash", title: "No Internet Connection", message: "Please check your internet\nconnection and try again.")
                 Button("Open Settings") {
                     vm.openSettings()
                 }

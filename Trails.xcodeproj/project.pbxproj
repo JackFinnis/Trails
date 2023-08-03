@@ -37,7 +37,6 @@
 		0416F1BD29A1692100B90E68 /* NSObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0416F1BC29A1692100B90E68 /* NSObject.swift */; };
 		0421202429C90E08003DE52F /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0421202329C90E08003DE52F /* Array.swift */; };
 		0421202629C9184D003DE52F /* WiFiError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0421202529C9184D003DE52F /* WiFiError.swift */; };
-		0421202929C91E03003DE52F /* WebUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0421202829C91E03003DE52F /* WebUIView.swift */; };
 		04626BF529C1E086004880E3 /* Metadata.json in Resources */ = {isa = PBXBuildFile; fileRef = 04626BF329C1E085004880E3 /* Metadata.json */; };
 		04626BFA29C24297004880E3 /* Annotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04626BF929C24297004880E3 /* Annotation.swift */; };
 		04626BFE29C24EE7004880E3 /* TrailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04626BFD29C24EE7004880E3 /* TrailsView.swift */; };
@@ -150,7 +149,6 @@
 		0416F1BC29A1692100B90E68 /* NSObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSObject.swift; sourceTree = "<group>"; };
 		0421202329C90E08003DE52F /* Array.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Array.swift; sourceTree = "<group>"; };
 		0421202529C9184D003DE52F /* WiFiError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WiFiError.swift; sourceTree = "<group>"; };
-		0421202829C91E03003DE52F /* WebUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebUIView.swift; sourceTree = "<group>"; };
 		04626BF329C1E085004880E3 /* Metadata.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Metadata.json; sourceTree = "<group>"; };
 		04626BF929C24297004880E3 /* Annotation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Annotation.swift; sourceTree = "<group>"; };
 		04626BFD29C24EE7004880E3 /* TrailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailsView.swift; sourceTree = "<group>"; };
@@ -382,7 +380,6 @@
 			isa = PBXGroup;
 			children = (
 				048E5F1F29C38A0A0080355B /* WebView.swift */,
-				0421202829C91E03003DE52F /* WebUIView.swift */,
 				048E5F2129C38A930080355B /* WebVM.swift */,
 				0421202529C9184D003DE52F /* WiFiError.swift */,
 				04E0E90D29EF33CB00EB08CC /* BigLabel.swift */,
@@ -574,7 +571,6 @@
 				04FCA9FE2A1EA323007B5817 /* ElevationChart.swift in Sources */,
 				0402C6472A0EA12700238C51 /* Emails.swift in Sources */,
 				04E46CFA2A224A9E00B9E8CE /* SizeClass.swift in Sources */,
-				0421202929C91E03003DE52F /* WebUIView.swift in Sources */,
 				04CEDFE129A2EADB00810005 /* SelectionView.swift in Sources */,
 				04CEDFDD29A2E66200810005 /* DismissCross.swift in Sources */,
 				04E7185329C7CC0400876116 /* MKCoordinateRegion.swift in Sources */,

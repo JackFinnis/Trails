@@ -13,8 +13,10 @@ class WebVM: NSObject, ObservableObject {
     @Published var loading = false
     @Published var loaded = false
     @Published var error = false
+    @Published var progress = 0.0
     
     var webView: WKWebView?
+    var observer: NSKeyValueObservation?
     
     init(url: URL) {
         self.url = url
@@ -22,8 +24,6 @@ class WebVM: NSObject, ObservableObject {
     
     @objc
     func load() {
-        loading = true
-        error = false
         webView?.load(URLRequest(url: url))
     }
     
@@ -31,21 +31,30 @@ class WebVM: NSObject, ObservableObject {
         loading = false
         webView?.scrollView.refreshControl?.endRefreshing()
     }
+    
+    func errorOcurred() {
+        error = true
+        finished()
+    }
 }
 
 extension WebVM: WKNavigationDelegate {
-    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        loaded = true
-        finished()
+    func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+        loading = true
+        error = false
+        progress = 0
     }
     
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-        self.error = true
-        finished()
+        errorOcurred()
     }
     
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
-        self.error = true
+        errorOcurred()
+    }
+    
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        loaded = true
         finished()
     }
 }

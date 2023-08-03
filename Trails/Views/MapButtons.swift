@@ -33,33 +33,30 @@ struct MapButtons: View {
         }
         .blurBackground(prominentShadow: true)
         .padding(10)
-        .transition(.opacity)
     }
     
     func updateTrackingMode() {
-        var mode: MKUserTrackingMode {
-            switch vm.trackingMode {
-            case .none:
-                return .follow
-            case .follow:
-                return .followWithHeading
-            default:
-                return .none
-            }
+        let mode: MKUserTrackingMode
+        switch vm.trackingMode {
+        case .none:
+            mode = .follow
+        case .follow:
+            mode = .followWithHeading
+        default:
+            mode = .none
         }
-        vm.updateTrackingMode(mode)
+        vm.setTrackingMode(mode)
     }
     
     func updateMapType() {
-        var type: MKMapType {
-            switch vm.mapType {
-            case .standard:
-                return .hybrid
-            default:
-                return .standard
-            }
+        let type: MKMapType
+        switch vm.mapType {
+        case .standard:
+            type = .hybrid
+        default:
+            type = .standard
         }
-        vm.updateMapType(type)
+        vm.setMapType(type)
     }
     
     var trackingModeImage: String {

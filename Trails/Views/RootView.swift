@@ -10,7 +10,7 @@ import SwiftUI
 struct RootView: View {
     @Environment(\.scenePhase) var scenePhase
     @Environment(\.colorScheme) var colorScheme
-    @AppStorage("launchedBefore") var launchedBefore = false
+    @AppStorage("firstLaunch") var firstLaunch = true
     @StateObject var vm = ViewModel.shared
     @State var showWelcomeView = false
     
@@ -24,9 +24,6 @@ struct RootView: View {
                     Color.black.opacity(disabled ? 0.15 : 0)
                 }
                 .ignoresSafeArea()
-                .sheet(isPresented: $showWelcomeView) {
-                    InfoView(welcome: true)
-                }
                 
                 VStack(spacing: 0) {
                     CarbonCopy()
@@ -84,10 +81,8 @@ struct RootView: View {
                             .ignoresSafeArea()
                         Color.black.opacity(0.15)
                             .ignoresSafeArea()
-                    }
-                    VStack {
-                        Spacer()
-                        if vm.showSpeedInput {
+                        VStack {
+                            Spacer()
                             SpeedInput()
                                 .frame(maxWidth: vm.getMaxSheetWidth(geo.size))
                                 .padding(.horizontal, vm.getHorizontalSheetPadding(geo.size))
@@ -98,33 +93,27 @@ struct RootView: View {
             .animation(.default, value: vm.showSpeedInput)
             .navigationTitle("Map")
             .navigationBarHidden(true)
-            .toolbar {
-                ToolbarItem(placement: .principal) {
-                    Text("")
-                }
-            }
         }
         .onChange(of: colorScheme) { _ in
             vm.refreshOverlays()
         }
         .onContinueUserActivity(TrailView.activityType) { activity in
-            if let id = activity.userInfo?["id"] as? Int, let trail = vm.trails.first(where: { $0.id == id }) {
+            if let id = activity.userInfo?["id"] as? Int,
+               let trail = vm.trails.first(where: { $0.id == id }) {
                 vm.selectTrail(trail)
             }
         }
         .task {
-            if !launchedBefore {
-                launchedBefore = true
+            if firstLaunch {
+                firstLaunch = false
                 showWelcomeView = true
-            }
-            if let trail = vm.trails.first(where: { $0.id == vm.selectedTrailId }) {
-                vm.selectTrail(trail, animated: false)
-            } else {
-                vm.refreshOverlays()
-                vm.zoomToFilteredTrails(animated: false)
             }
         }
         .background {
+            Text("")
+                .sheet(isPresented: $showWelcomeView) {
+                    InfoView(welcome: true)
+                }
             Text("")
                 .alert("Access Denied", isPresented: $vm.showAuthAlert) {
                     Button("Maybe Later") {}

@@ -12,7 +12,7 @@ extension View {
         self.background(.thickMaterial)
             .continuousRadius(10, corners: corners)
             .compositingGroup()
-            .shadow(color: Color.black.opacity(prominentShadow ? 0.2 : 0.1), radius: 5)
+            .shadow(prominent: prominentShadow)
     }
     
     func containerBackground(light: Bool) -> some View {
@@ -36,6 +36,10 @@ extension View {
         clipShape(RoundedCorners(radius: radius, corners: corners))
     }
     
+    func shadow(prominent: Bool = true) -> some View {
+        shadow(color: Color.black.opacity(prominent ? 0.2 : 0.1), radius: 5)
+    }
+    
     func bigButton() -> some View {
         self
             .font(.headline)
@@ -43,7 +47,7 @@ extension View {
             .horizontallyCentred()
             .foregroundColor(.white)
             .background(Color.accentColor)
-            .continuousRadius(16)
+            .continuousRadius(15)
     }
     
     func onDismiss(onDismiss: @escaping () -> Void) -> some View {

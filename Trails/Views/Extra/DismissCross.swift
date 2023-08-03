@@ -8,11 +8,12 @@
 import SwiftUI
 
 struct DismissCross: View {
-    let toolbar: Bool
+    let toolbar: Bool//todo
     
     var body: some View {
         Image(systemName: "xmark.circle.fill")
-            .font(toolbar ? .title2 : .title)
             .foregroundStyle(.secondary, Color(.tertiarySystemFill))
+            .imageScale(.large)
+            .font(.title2)
     }
 }

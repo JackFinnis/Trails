@@ -26,9 +26,6 @@ class ViewModel: NSObject, ObservableObject {
     @Published var endWaypoint: Waypoint?
     @Published var selectedTrail: Trail? { didSet {
         selectedTrailId = selectedTrail?.id ?? -1
-        if selectedTrail == nil {
-            headerSize.height = searchBarDefaultHeight
-        }
     }}
     @Storage("selectedTrailId") var selectedTrailId = Int16(-1)
     @Storage("favouriteTrails") var favouriteTrails = [Int16]() { didSet {
@@ -151,6 +148,7 @@ class ViewModel: NSObject, ObservableObject {
     override init() {
         super.init()
         locationManager.delegate = self
+        selectedTrail = trails.first { $0.id == selectedTrailId }
         loadData()
     }
     
@@ -313,11 +311,12 @@ class ViewModel: NSObject, ObservableObject {
             }
         } else {
             setShowTrailsView(true)
+            headerSize.height = searchBarDefaultHeight
         }
     }
     
-    func setShowTrailsView(_ value: Bool) {
-        if value {
+    func setShowTrailsView(_ show: Bool) {
+        if show {
             showTrailsView = true
         } else {
             withAnimation(.sheet) {
@@ -367,7 +366,7 @@ class ViewModel: NSObject, ObservableObject {
 
 // MARK: - Map
 extension ViewModel {
-    func updateTrackingMode(_ newMode: MKUserTrackingMode) {
+    func setTrackingMode(_ newMode: MKUserTrackingMode) {
         guard validateAuth() else { return }
         mapView?.setUserTrackingMode(newMode, animated: true)
         if trackingMode == .followWithHeading || newMode == .followWithHeading {
@@ -385,7 +384,7 @@ extension ViewModel {
         }
     }
     
-    func updateMapType(_ newType: MKMapType) {
+    func setMapType(_ newType: MKMapType) {
         mapView?.mapType = newType
         refreshOverlays()
         withAnimation(.easeInOut(duration: 0.25)) {
@@ -733,7 +732,7 @@ extension ViewModel: UIGestureRecognizerDelegate {
     func handlePress(_ press: UILongPressGestureRecognizer) {
         guard !(isSelecting && selectionProfile == nil), press.state == .began, let coord = getCoord(from: press) else { return }
         reverseGeocode(coord: coord) { placemark in
-            Haptics.impact()
+            Haptics.tap()
             let annotation = Annotation(type: .drop, placemark: placemark)
             self.mapView?.addAnnotation(annotation)
             self.mapView?.selectAnnotation(annotation, animated: true)
@@ -756,27 +755,22 @@ extension ViewModel: UIGestureRecognizerDelegate {
     @objc
     func tappedCompass() {
         guard trackingMode == .followWithHeading else { return }
-        updateTrackingMode(.follow)
+        setTrackingMode(.follow)
     }
 }
 
 // MARK: - CLLocationManagerDelegate
 extension ViewModel: CLLocationManagerDelegate {
-    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        authStatus = manager.authorizationStatus
-        switch authStatus {
-        case .notDetermined:
-            manager.requestWhenInUseAuthorization()
-        case .authorizedWhenInUse:
-            return
-        case .denied:
-            showAuthAlert = true
-        default:
-            return
-        }
+    func requestLocationAuthorization() {
+        locationManager.requestWhenInUseAuthorization()
     }
     
-    func validateAuth() -> Bool {
+    func locationManagerDidChangeAuthorization(_ locationManager: CLLocationManager) {
+        authStatus = locationManager.authorizationStatus
+        validateAuth()
+    }
+    
+    @discardableResult func validateAuth() -> Bool {
         showAuthAlert = authStatus == .denied
         return !showAuthAlert
     }
@@ -914,7 +908,7 @@ extension ViewModel: MKMapViewDelegate {
     
     func mapView(_ mapView: MKMapView, didChange mode: MKUserTrackingMode, animated: Bool) {
         if !animated {
-            updateTrackingMode(.none)
+            setTrackingMode(.none)
         }
     }
     

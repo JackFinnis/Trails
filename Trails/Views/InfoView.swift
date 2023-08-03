@@ -9,7 +9,6 @@ import SwiftUI
 import MessageUI
 
 struct InfoView: View {
-    @Environment(\.verticalSizeClass) var verticalSizeClass
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var vm: ViewModel
     @State var showShareSheet = false
@@ -26,7 +25,8 @@ struct InfoView: View {
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(width: 70, height: 70)
-                            .continuousRadius(15)
+                            .continuousRadius(70 * 0.2237)
+                            .shadow()
                         Text(Constants.name)
                             .font(.largeTitle.bold())
                             .multilineTextAlignment(.center)
@@ -99,7 +99,7 @@ struct InfoView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    if welcome || verticalSizeClass == .compact {
+                    if welcome {
                         Text("")
                     } else {
                         DraggableTitle()

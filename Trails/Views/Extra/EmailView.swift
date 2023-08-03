@@ -75,7 +75,7 @@ struct EmailModifier: ViewModifier {
             .alert("Email Sent", isPresented: $showEmailSent) {
                 Button("OK", role: .cancel) {}
             } message: {
-                Text("Thanks for your feedback!\nWe'll get back to you as soon as possible.")
+                Text("Thank you for your feedback!\nWe'll get back to you as soon as possible.")
             }
             .alert("Email Not Sent", isPresented: $showEmailNotSent) {
                 Button("OK", role: .cancel) {}

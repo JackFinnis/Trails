@@ -34,10 +34,20 @@ struct MapView: UIViewRepresentable {
         mapView.delegate = vm
         vm.mapView = mapView
         
+        if let trail = vm.selectedTrail {
+            vm.selectTrail(trail, animated: false)
+        } else {
+            vm.refreshOverlays()
+            vm.zoomToFilteredTrails(animated: false)
+        }
+        
         mapView.showsUserLocation = true
         mapView.showsScale = true
         mapView.showsCompass = true
         mapView.isPitchEnabled = false
+        if #available(iOS 16, *) {
+            mapView.selectableMapFeatures = [.pointsOfInterest, .physicalFeatures, .territories]
+        }
         
         mapView.register(MKPinAnnotationView.self, forAnnotationViewWithReuseIdentifier: MKPinAnnotationView.id)
         mapView.register(MKMarkerAnnotationView.self, forAnnotationViewWithReuseIdentifier: MKMarkerAnnotationView.id)

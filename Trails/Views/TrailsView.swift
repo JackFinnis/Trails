@@ -61,7 +61,7 @@ struct TrailsView: View {
                         }
                     }
                 } label: {
-                    Image(systemName: "line.3.horizontal.decrease.circle" + (vm.trailFilter == nil ? "" : ".fill"))
+                    Image(systemName: "line.3.horizontal.decrease.circle\(vm.trailFilter == nil ? "" : ".fill")")
                         .font(.icon)
                 }
                 Menu {

@@ -17,6 +17,7 @@ struct BigLabel: View {
             Image(systemName: systemName)
                 .font(.largeTitle)
                 .foregroundColor(.secondary)
+                .symbolRenderingMode(.hierarchical)
             VStack(spacing: 5) {
                 Text(title)
                     .font(.title3.bold())
