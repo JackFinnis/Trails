@@ -17,7 +17,7 @@ struct DraggableBar: View {
 }
 
 struct DraggableTitle: View {
-    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    @Environment(\.verticalSizeClass) var verticalSizeClass
     
     let title: String
     
@@ -26,8 +26,10 @@ struct DraggableTitle: View {
     }
     
     var body: some View {
-        if horizontalSizeClass == .regular {
-            Text("")
+        if verticalSizeClass == .compact {
+            Text(title)
+                .font(.headline)
+                .fixedSize()
         } else {
             VStack(spacing: 0) {
                 DraggableBar()

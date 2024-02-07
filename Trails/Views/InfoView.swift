@@ -9,6 +9,7 @@ import SwiftUI
 import MessageUI
 
 struct InfoView: View {
+    @Environment(\.verticalSizeClass) var verticalSizeClass
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var vm: ViewModel
     @State var showShareSheet = false
@@ -88,10 +89,12 @@ struct InfoView: View {
                             Text("Contribute...")
                                 .bigButton()
                         }
+                        .sharePopover(items: [Constants.appUrl], showsSharedAlert: true, isPresented: $showShareSheet)
                     }
                 }
-                .sharePopover(items: [Constants.appUrl], showsSharedAlert: true, isPresented: $showShareSheet)
-                .padding()
+                .padding(.vertical)
+                .padding(.horizontal, 20)
+                .padding(.bottom, verticalSizeClass == .compact ? 0 : 20)
                 .background(Color(.systemBackground))
                 .frame(maxWidth: 450)
                 .horizontallyCentred()
@@ -110,7 +113,7 @@ struct InfoView: View {
                         Button {
                             dismiss()
                         } label: {
-                            DismissCross(toolbar: true)
+                            DismissCross()
                         }
                         .buttonStyle(.plain)
                     }

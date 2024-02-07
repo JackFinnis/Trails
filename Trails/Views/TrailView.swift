@@ -24,7 +24,7 @@ struct TrailView: View {
                 Button {
                     vm.selectTrail(nil)
                 } label: {
-                    DismissCross(toolbar: false)
+                    DismissCross()
                 }
                 .buttonStyle(.plain)
             }

@@ -24,7 +24,11 @@ class WebVM: NSObject, ObservableObject {
     
     @objc
     func load() {
-        webView?.load(URLRequest(url: url))
+        if webView?.url == nil {
+            webView?.load(URLRequest(url: url))
+        } else {
+            webView?.reload()
+        }
     }
     
     func finished() {

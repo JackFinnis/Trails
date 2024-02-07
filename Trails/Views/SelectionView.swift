@@ -35,7 +35,7 @@ struct SelectionView: View {
                 Button {
                     vm.stopSelecting()
                 } label: {
-                    DismissCross(toolbar: false)
+                    DismissCross()
                 }
                 .buttonStyle(.plain)
             }
